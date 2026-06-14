@@ -4,7 +4,7 @@ const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_DpqBWRsDSMR3LLh3xO-djQ_1uU_crgE
 const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
 
 // ── BACKEND API ──
-const API_BASE = "http://localhost:8000"; // TODO: change to Render URL before deploy
+const API_BASE = "https://jaldarpanbackend.onrender.com/"; // TODO: change to Render URL before deploy
 
 let currentUserId = null;
 let mealImageBase64 = null; // stores uploaded meal image for /analyze
