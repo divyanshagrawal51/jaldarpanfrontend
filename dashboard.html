@@ -16,14 +16,14 @@
 
     <nav class="navbar">
         <div class="nav-logo" onclick="showPage('home')">💧 JalDarpan</div>
-        <ul class="nav-menu">
-            <li class="nav-item active" onclick="showPage('home')"><i class="fa-solid fa-chart-pie"></i> Home</li>
-            <li class="nav-item" onclick="showPage('log')"><i class="fa-solid fa-faucet-drip"></i> Log Activity</li>
-            <li class="nav-item" onclick="showPage('challenges')"><i class="fa-solid fa-trophy"></i> Challenges</li>
-            <li class="nav-item" onclick="showPage('leaderboard')"><i class="fa-solid fa-ranking-star"></i> Leaderboard</li>
-            <li class="nav-item" onclick="showPage('events')"><i class="fa-solid fa-calendar-days"></i> Events</li>
-            <li class="nav-item" onclick="showPage('knowledge')"><i class="fa-solid fa-book-open"></i> Knowledge Hub</li>
-            <li class="nav-item" onclick="showPage('profile')"><i class="fa-solid fa-user"></i> Profile</li>
+        <ul class="nav-menu" id="nav-menu">
+            <li class="nav-item active" onclick="showPage('home');closeMobileMenu()"><i class="fa-solid fa-chart-pie"></i> Home</li>
+            <li class="nav-item" onclick="showPage('log');closeMobileMenu()"><i class="fa-solid fa-faucet-drip"></i> Log Activity</li>
+            <li class="nav-item" onclick="showPage('challenges');closeMobileMenu()"><i class="fa-solid fa-trophy"></i> Challenges</li>
+            <li class="nav-item" onclick="showPage('leaderboard');closeMobileMenu()"><i class="fa-solid fa-ranking-star"></i> Leaderboard</li>
+            <li class="nav-item" onclick="showPage('events');closeMobileMenu()"><i class="fa-solid fa-calendar-days"></i> Events</li>
+            <li class="nav-item" onclick="showPage('knowledge');closeMobileMenu()"><i class="fa-solid fa-book-open"></i> Knowledge Hub</li>
+            <li class="nav-item" onclick="showPage('profile');closeMobileMenu()"><i class="fa-solid fa-user"></i> Profile</li>
         </ul>
         <div class="nav-status">
             <div class="status-badge streak" title="Current Streak"><span class="pulse-fire">🔥</span> <span id="nav-streak">12</span> Days</div>
@@ -31,8 +31,12 @@
             <div class="nav-avatar" onclick="showPage('profile')">
                 <img id="nav-avatar-img" src="https://api.dicebear.com/7.x/bottts/svg?seed=JalWater" alt="Avatar">
             </div>
+            <button class="hamburger" id="hamburger-btn" onclick="toggleMobileMenu()" aria-label="Menu">
+                <span></span><span></span><span></span>
+            </button>
         </div>
     </nav>
+    <div class="mobile-menu-overlay" id="mobile-overlay" onclick="closeMobileMenu()"></div>
 
     <main class="app-container">
 
@@ -735,5 +739,20 @@
 
     <script src="app.js"></script>
     <script src="events.js"></script>
+    <script>
+        function toggleMobileMenu() {
+            const menu = document.getElementById('nav-menu');
+            const overlay = document.getElementById('mobile-overlay');
+            const btn = document.getElementById('hamburger-btn');
+            menu.classList.toggle('mobile-open');
+            overlay.classList.toggle('active');
+            btn.classList.toggle('open');
+        }
+        function closeMobileMenu() {
+            document.getElementById('nav-menu').classList.remove('mobile-open');
+            document.getElementById('mobile-overlay').classList.remove('active');
+            document.getElementById('hamburger-btn').classList.remove('open');
+        }
+    </script>
 </body>
 </html>
