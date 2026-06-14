@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Jaldarpan — Login / Sign Up</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;font-family:'DM Sans',sans-serif;overflow:hidden}
+
+/* ── LAYOUT ── */
+.auth-wrap{
+  display:flex;
+  height:100vh;
+  width:100vw;
+}
+
+/* LEFT PANEL */
+.panel-left{
+  flex:0 0 48%;
+  position:relative;
+  background:#061a2a;
+  overflow:hidden;
+}
+#water-canvas{
+  position:absolute;inset:0;
+  width:100%;height:100%;
+  display:block;
+}
+.panel-left-overlay{
+  position:absolute;inset:0;
+  background:linear-gradient(160deg,rgba(5,28,50,0.52) 0%,rgba(5,40,65,0.38) 100%);
+}
+.panel-left-content{
+  position:relative;z-index:2;
+  height:100%;
+  display:flex;flex-direction:column;
+  justify-content:space-between;
+  padding:2.2rem 2.4rem;
+}
+.panel-logo{
+  font-family:'Syne',sans-serif;font-size:1.3rem;font-weight:800;
+  color:#fff;letter-spacing:-0.02em;text-decoration:none;
+}
+.panel-logo span{color:#7de0f8}
+.panel-quote{
+  margin-bottom:2rem;
+}
+.panel-quote-h{
+  font-family:'Syne',sans-serif;
+  font-size:clamp(1.4rem,2.5vw,2rem);
+  font-weight:700;
+  color:#fff;
+  line-height:1.3;
+  letter-spacing:-0.02em;
+  text-shadow:0 2px 20px rgba(0,0,0,0.3);
+}
+.panel-quote-h em{color:#7de0f8;font-style:normal}
+.panel-quote .sub{
+  font-size:0.85rem;font-weight:300;
+  color:rgba(200,240,255,0.7);
+  margin-top:0.7rem;
+  font-family:'DM Sans',sans-serif;
+}
+.panel-dots{
+  display:flex;gap:0.4rem;margin-bottom:0.3rem;
+}
+.panel-dot{
+  width:6px;height:6px;border-radius:50%;
+  background:rgba(255,255,255,0.3);
+}
+.panel-dot.active{background:#7de0f8;width:20px;border-radius:3px;}
+
+/* RIGHT PANEL */
+.panel-right{
+  flex:1;
+  background:#0c1825;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:2rem;
+  overflow-y:auto;
+}
+.form-box{
+  width:100%;
+  max-width:380px;
+}
+
+/* SCREENS */
+.screen{display:none}
+.screen.active{display:block}
+
+/* OAUTH */
+.oauth-divider{
+  display:flex;align-items:center;text-align:center;
+  margin:1.1rem 0;color:rgba(200,240,255,0.4);
+  font-size:0.78rem;text-transform:uppercase;letter-spacing:0.08em;
+}
+.oauth-divider::before,.oauth-divider::after{
+  content:'';flex:1;height:1px;background:rgba(255,255,255,0.08);
+}
+.oauth-divider span{padding:0 0.8rem}
+.btn-google{
+  width:100%;display:flex;align-items:center;justify-content:center;gap:0.6rem;
+  background:#fff;color:#3c4043;border:none;border-radius:8px;
+  padding:0.75rem 1rem;font-family:'DM Sans',sans-serif;font-size:0.92rem;font-weight:600;
+  cursor:pointer;transition:background 0.2s,transform 0.15s;
+}
+.btn-google:hover{background:#f1f3f4;transform:translateY(-1px)}
+
+/* HEADINGS */
+.form-title{
+  font-family:'Syne',sans-serif;
+  font-size:1.75rem;font-weight:800;
+  color:#fff;letter-spacing:-0.025em;
+  margin-bottom:0.35rem;
+}
+.form-sub{
+  font-size:0.85rem;font-weight:300;
+  color:rgba(160,200,230,0.65);
+  margin-bottom:2rem;
+  line-height:1.5;
+}
+
+/* PROGRESS BAR */
+.progress-wrap{
+  margin-bottom:1.8rem;
+}
+.progress-label{
+  display:flex;justify-content:space-between;
+  font-size:0.72rem;color:rgba(160,200,230,0.5);
+  margin-bottom:0.5rem;
+  letter-spacing:0.05em;
+}
+.progress-track{
+  height:3px;background:rgba(255,255,255,0.08);border-radius:100px;overflow:hidden;
+}
+.progress-fill{
+  height:100%;background:#5ec9f0;border-radius:100px;
+  transition:width 0.5s cubic-bezier(0.4,0,0.2,1);
+}
+
+/* FORM FIELDS */
+.field{margin-bottom:1.1rem}
+.field label{
+  display:block;font-size:0.75rem;font-weight:500;
+  color:rgba(160,210,240,0.7);
+  letter-spacing:0.07em;text-transform:uppercase;
+  margin-bottom:0.42rem;
+}
+.field input,
+.field select{
+  width:100%;
+  padding:0.72rem 1rem;
+  background:rgba(255,255,255,0.06);
+  border:1.5px solid rgba(255,255,255,0.1);
+  border-radius:10px;
+  font-family:'DM Sans',sans-serif;
+  font-size:0.92rem;
+  color:#fff;
+  outline:none;
+  transition:border-color 0.2s,background 0.2s;
+  appearance:none;
+  -webkit-appearance:none;
+}
+.field input::placeholder{color:rgba(160,200,230,0.35)}
+.field input:focus,
+.field select:focus{
+  border-color:#5ec9f0;
+  background:rgba(94,201,240,0.07);
+}
+.field select option{background:#0c1825;color:#fff}
+
+/* field row */
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:0.8rem}
+
+/* password wrapper */
+.pw-wrap{position:relative}
+.pw-wrap input{padding-right:2.8rem}
+.pw-toggle{
+  position:absolute;right:0.9rem;top:50%;transform:translateY(-50%);
+  background:none;border:none;cursor:pointer;
+  color:rgba(160,210,240,0.5);font-size:0.9rem;
+  transition:color 0.15s;
+}
+.pw-toggle:hover{color:#5ec9f0}
+
+/* remember / forgot row */
+.form-meta{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:1.4rem;
+}
+.remember{display:flex;align-items:center;gap:0.5rem;cursor:pointer}
+.remember input[type=checkbox]{
+  width:15px;height:15px;accent-color:#5ec9f0;cursor:pointer;
+}
+.remember span{font-size:0.8rem;color:rgba(160,200,230,0.6)}
+.forgot{font-size:0.8rem;color:rgba(160,200,230,0.6);text-decoration:none;transition:color 0.15s}
+.forgot:hover{color:#5ec9f0}
+
+/* OTP method toggle */
+.method-toggle{
+  display:flex;gap:0.5rem;margin-bottom:1.4rem;
+}
+.method-btn{
+  flex:1;padding:0.55rem;border-radius:8px;font-size:0.8rem;font-weight:500;
+  font-family:'DM Sans',sans-serif;cursor:pointer;
+  border:1.5px solid rgba(255,255,255,0.1);
+  background:transparent;color:rgba(160,200,230,0.6);
+  transition:all 0.18s;
+}
+.method-btn.active{
+  background:rgba(94,201,240,0.12);
+  border-color:#5ec9f0;color:#5ec9f0;
+}
+
+/* SUBMIT BUTTON */
+.btn-submit{
+  width:100%;padding:0.85rem;
+  background:#5ec9f0;color:#0a1a2e;
+  font-family:'DM Sans',sans-serif;font-size:0.95rem;font-weight:600;
+  border:none;border-radius:10px;cursor:pointer;
+  transition:background 0.2s,transform 0.15s;
+  margin-top:0.3rem;
+  letter-spacing:0.01em;
+}
+.btn-submit:hover{background:#3ab8e8;transform:translateY(-1px)}
+
+/* secondary link */
+.form-switch{
+  text-align:center;margin-top:1.4rem;
+  font-size:0.82rem;color:rgba(160,200,230,0.5);
+}
+.form-switch a{
+  color:#5ec9f0;text-decoration:none;font-weight:500;margin-left:0.3rem;
+  transition:color 0.15s;
+}
+.form-switch a:hover{color:#7de0f8}
+
+/* divider */
+.divider{
+  display:flex;align-items:center;gap:0.8rem;
+  margin:1.2rem 0;
+}
+.divider::before,.divider::after{
+  content:'';flex:1;height:1px;background:rgba(255,255,255,0.08);
+}
+.divider span{font-size:0.75rem;color:rgba(160,200,230,0.35)}
+
+/* info note */
+.info-note{
+  background:rgba(94,201,240,0.08);
+  border:1px solid rgba(94,201,240,0.15);
+  border-radius:10px;padding:0.75rem 1rem;
+  font-size:0.8rem;color:rgba(160,220,240,0.7);
+  margin-bottom:1.4rem;line-height:1.5;
+}
+.info-note strong{color:#5ec9f0}
+
+/* option cards (diet, residence etc) */
+.option-cards{
+  display:grid;grid-template-columns:1fr 1fr;gap:0.6rem;
+  margin-bottom:1.1rem;
+}
+.option-card{
+  padding:0.7rem 0.8rem;
+  background:rgba(255,255,255,0.05);
+  border:1.5px solid rgba(255,255,255,0.09);
+  border-radius:10px;cursor:pointer;
+  text-align:center;
+  transition:all 0.18s;
+}
+.option-card:hover{border-color:rgba(94,201,240,0.4);background:rgba(94,201,240,0.06)}
+.option-card.selected{
+  border-color:#5ec9f0;background:rgba(94,201,240,0.12);
+}
+.option-card .oc-icon{font-size:1.3rem;margin-bottom:0.3rem}
+.option-card .oc-label{font-size:0.78rem;font-weight:500;color:rgba(200,230,245,0.85)}
+
+/* slider field */
+.slider-row{
+  display:flex;align-items:center;gap:0.8rem;margin-top:0.4rem;
+}
+.slider-row input[type=range]{
+  flex:1;accent-color:#5ec9f0;
+  background:transparent;border:none;padding:0;
+  height:auto;
+}
+.slider-val{
+  font-family:'Syne',sans-serif;font-weight:700;font-size:1rem;
+  color:#5ec9f0;min-width:52px;text-align:right;
+}
+
+/* success screen */
+.success-icon{
+  width:64px;height:64px;border-radius:50%;
+  background:rgba(94,201,240,0.12);border:2px solid #5ec9f0;
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.8rem;margin:0 auto 1.4rem;
+}
+
+/* MOBILE */
+@media(max-width:680px){
+  .panel-left{display:none}
+  .panel-right{background:#090f18}
+  html,body{overflow:auto}
+}
+</style>
+</head>
+<body>
+<div class="auth-wrap">
+
+  <!-- LEFT PANEL -->
+  <div class="panel-left">
+    <canvas id="water-canvas"></canvas>
+    <div class="panel-left-overlay"></div>
+    <div class="panel-left-content">
+      <a class="panel-logo" href="index.html">Jal<span>darpan</span></a>
+      <div class="panel-quote">
+        <div class="panel-quote-h">Every drop<br>you save is<br><em>a drop India keeps.</em></div>
+        <p class="sub">Track your water footprint. Make it a game.</p>
+      </div>
+      <div class="panel-dots" id="panel-dots">
+        <div class="panel-dot active"></div>
+        <div class="panel-dot"></div>
+        <div class="panel-dot"></div>
+        <div class="panel-dot"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT PANEL -->
+  <div class="panel-right">
+    <div class="form-box">
+
+      <!-- ══ SCREEN 1: LOGIN ══ -->
+      <div class="screen active" id="screen-login">
+        <div class="form-title">Welcome back.</div>
+        <p class="form-sub">Sign in to continue.</p>
+
+        <button class="btn-google" onclick="signInWithGoogle()">
+          <svg width="18" height="18" viewBox="0 0 18 18" xmlns="http://www.w3.org/2000/svg">
+            <path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.252-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.875 2.684-6.616z"/>
+            <path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.184l-2.908-2.258c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332C2.438 15.983 5.482 18 9 18z"/>
+            <path fill="#FBBC05" d="M3.964 10.707c-.18-.54-.282-1.117-.282-1.707s.102-1.167.282-1.707V4.961H.957C.347 6.173 0 7.548 0 9s.348 2.827.957 4.039l3.007-2.332z"/>
+            <path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0 5.482 0 2.438 2.017.957 4.961L3.964 7.293C4.672 5.166 6.656 3.58 9 3.58z"/>
+          </svg>
+          Continue with Google
+        </button>
+      </div>
+
+      <!-- ══ SCREEN 3: PROFILE STEP 1 ══ -->
+      <div class="screen" id="screen-profile-1">
+        <div class="progress-wrap">
+          <div class="progress-label"><span>Profile setup</span><span>Step 1 of 2</span></div>
+          <div class="progress-track"><div class="progress-fill" style="width:50%"></div></div>
+        </div>
+
+        <div class="form-title">About you.</div>
+        <p class="form-sub">Helps us build your water baseline. Takes 60 seconds.</p>
+
+        <div class="field-row">
+          <div class="field">
+            <label>Age</label>
+            <input type="number" placeholder="e.g. 20" min="5" max="90" id="ob-age"/>
+          </div>
+          <div class="field">
+            <label>Gender</label>
+            <select id="ob-gender">
+              <option value="" disabled selected>Select</option>
+              <option>Male</option>
+              <option>Female</option>
+              <option>Non-binary</option>
+              <option>Prefer not to say</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>State</label>
+          <select id="ob-state">
+            <option value="" disabled selected>Select your state</option>
+            <option>Rajasthan</option><option>Maharashtra</option><option>Tamil Nadu</option>
+            <option>Karnataka</option><option>Uttar Pradesh</option><option>Punjab</option>
+            <option>West Bengal</option><option>Gujarat</option><option>Kerala</option>
+            <option>Madhya Pradesh</option><option>Bihar</option><option>Odisha</option>
+            <option>Telangana</option><option>Andhra Pradesh</option><option>Haryana</option>
+            <option>Himachal Pradesh</option><option>Uttarakhand</option><option>Jharkhand</option>
+            <option>Chhattisgarh</option><option>Assam</option><option>Other</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label>City / District</label>
+          <input type="text" placeholder="e.g. Jaipur" id="ob-city"/>
+        </div>
+
+        <div class="field">
+          <label>Occupation</label>
+          <select id="ob-occupation">
+            <option value="" disabled selected>Select</option>
+            <option>Student</option>
+            <option>Working professional</option>
+            <option>Homemaker</option>
+            <option>Farmer</option>
+            <option>Business owner</option>
+            <option>Other</option>
+          </select>
+        </div>
+
+        <button class="btn-submit" onclick="goTo('screen-profile-2')">Next →</button>
+      </div>
+
+      <!-- ══ SCREEN 4: PROFILE STEP 2 ══ -->
+      <div class="screen" id="screen-profile-2">
+        <div class="progress-wrap">
+          <div class="progress-label"><span>Profile setup</span><span>Step 2 of 2</span></div>
+          <div class="progress-track"><div class="progress-fill" style="width:100%"></div></div>
+        </div>
+
+        <div class="form-title">How you live.</div>
+        <p class="form-sub">This shapes your personal water footprint estimate.</p>
+
+        <div class="field">
+          <label>Residence type</label>
+          <div class="option-cards" id="residence-cards">
+            <div class="option-card selected" data-value="Hostel / PG" onclick="selectCard(this,'residence-cards')">
+              <div class="oc-icon">🏢</div><div class="oc-label">Hostel / PG</div>
+            </div>
+            <div class="option-card" data-value="Apartment" onclick="selectCard(this,'residence-cards')">
+              <div class="oc-icon">🏠</div><div class="oc-label">Apartment</div>
+            </div>
+            <div class="option-card" data-value="Independent house" onclick="selectCard(this,'residence-cards')">
+              <div class="oc-icon">🏡</div><div class="oc-label">Independent house</div>
+            </div>
+            <div class="option-card" data-value="Shared flat" onclick="selectCard(this,'residence-cards')">
+              <div class="oc-icon">🏘️</div><div class="oc-label">Shared flat</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="field-row">
+          <div class="field">
+            <label>People in household</label>
+            <select id="ob-household">
+              <option>Just me</option><option>2–3</option>
+              <option>4–6</option><option>7+</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Water source</label>
+            <select id="ob-water-source">
+              <option>Municipal tap</option><option>Borewell</option>
+              <option>Water tanker</option><option>Mixed</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Diet</label>
+          <div class="option-cards" id="diet-cards">
+            <div class="option-card selected" data-value="Vegetarian" onclick="selectCard(this,'diet-cards')">
+              <div class="oc-icon">🥦</div><div class="oc-label">Vegetarian</div>
+            </div>
+            <div class="option-card" data-value="Vegan" onclick="selectCard(this,'diet-cards')">
+              <div class="oc-icon">🌱</div><div class="oc-label">Vegan</div>
+            </div>
+            <div class="option-card" data-value="Eggetarian" onclick="selectCard(this,'diet-cards')">
+              <div class="oc-icon">🥚</div><div class="oc-label">Eggetarian</div>
+            </div>
+            <div class="option-card" data-value="Non-veg" onclick="selectCard(this,'diet-cards')">
+              <div class="oc-icon">🍗</div><div class="oc-label">Non-veg</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Avg. shower / bath duration</label>
+          <div class="slider-row">
+            <input type="range" min="2" max="30" value="8" id="shower-slider"
+              oninput="document.getElementById('shower-val').textContent=this.value+' min'"/>
+            <div class="slider-val" id="shower-val">8 min</div>
+          </div>
+        </div>
+
+        <button class="btn-submit" onclick="finishOnboarding()">Finish setup →</button>
+
+        <div class="form-switch" style="margin-top:1rem">
+          <a href="javascript:void(0)" onclick="goTo('screen-profile-1')" style="color:rgba(160,200,230,0.4);font-size:0.8rem;">← Back</a>
+        </div>
+      </div>
+
+      <!-- ══ SCREEN 5: DONE ══ -->
+      <div class="screen" id="screen-done">
+        <div style="text-align:center;padding:1rem 0">
+          <div class="success-icon">💧</div>
+          <div class="form-title" style="text-align:center;margin-bottom:0.5rem">You're all set.</div>
+          <p class="form-sub" style="text-align:center;margin-bottom:2rem">
+            Your Jal Account is ready.<br>
+            We've estimated your baseline water footprint.<br>
+            Start logging to see it in action.
+          </p>
+
+          <div style="background:rgba(94,201,240,0.08);border:1px solid rgba(94,201,240,0.18);border-radius:14px;padding:1.2rem;margin-bottom:2rem;">
+            <div style="font-size:0.72rem;letter-spacing:0.12em;text-transform:uppercase;color:rgba(94,201,240,0.6);margin-bottom:0.5rem;">Your estimated baseline</div>
+            <div style="font-family:'Syne',sans-serif;font-size:2.2rem;font-weight:800;color:#5ec9f0;letter-spacing:-0.02em;">~1,580 <span style="font-size:1rem;font-weight:300;color:rgba(160,220,240,0.6)">L/day</span></div>
+            <div style="font-size:0.78rem;color:rgba(160,200,230,0.5);margin-top:0.3rem;">Rajasthan average · based on your profile</div>
+          </div>
+
+          <button class="btn-submit" onclick="window.location.href='dashboard.html'">Go to my dashboard →</button>
+        </div>
+      </div>
+
+    </div><!-- /form-box -->
+  </div><!-- /panel-right -->
+
+</div><!-- /auth-wrap -->
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script>
+/* ── SUPABASE CLIENT ── */
+const SUPABASE_URL = "https://kmdsdrvvpbennilcinxl.supabase.co";
+const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_DpqBWRsDSMR3LLh3xO-djQ_1uU_crgE";
+const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
+
+async function signInWithGoogle() {
+  const { error } = await supabaseClient.auth.signInWithOAuth({
+    provider: 'google',
+    options: {
+      redirectTo: window.location.origin + '/dashboard.html'
+    }
+  });
+  if (error) {
+    alert("Google sign-in failed: " + error.message);
+  }
+}
+
+/* ── ONBOARDING SAVE ── */
+function getSelectedCard(groupId) {
+  var group = document.getElementById(groupId);
+  if (!group) return null;
+  var selected = group.querySelector('.option-card.selected');
+  return selected ? selected.getAttribute('data-value') : null;
+}
+
+async function finishOnboarding() {
+  const { data: { session } } = await supabaseClient.auth.getSession();
+  if (!session) {
+    alert("Session expired. Please sign in again.");
+    window.location.href = 'auth.html';
+    return;
+  }
+
+  const payload = {
+    age: parseInt(document.getElementById('ob-age').value) || null,
+    gender: document.getElementById('ob-gender').value || null,
+    state: document.getElementById('ob-state').value || null,
+    city: document.getElementById('ob-city').value || null,
+    occupation: document.getElementById('ob-occupation').value || null,
+    residence_type: getSelectedCard('residence-cards'),
+    household_size: document.getElementById('ob-household').value,
+    water_source: document.getElementById('ob-water-source').value,
+    diet: getSelectedCard('diet-cards'),
+    shower_minutes: parseInt(document.getElementById('shower-slider').value) || null,
+    onboarding_completed: true
+  };
+
+  const { error } = await supabaseClient
+    .from('profiles')
+    .update(payload)
+    .eq('id', session.user.id);
+
+  if (error) {
+    alert("Failed to save profile: " + error.message);
+    return;
+  }
+
+  goTo('screen-done');
+}
+
+/* ── ON LOAD: route based on session/onboarding status ── */
+(async function checkOnboardingStatus() {
+  const { data: { session } } = await supabaseClient.auth.getSession();
+  if (!session) return; // not logged in — stay on login screen
+
+  const { data: profile } = await supabaseClient
+    .from('profiles')
+    .select('onboarding_completed')
+    .eq('id', session.user.id)
+    .single();
+
+  if (profile && !profile.onboarding_completed) {
+    goTo('screen-profile-1');
+  } else if (profile && profile.onboarding_completed) {
+    window.location.href = 'dashboard.html';
+  }
+})();
+
+/* ── SCREEN NAVIGATION ── */
+const dotMap = {
+  'screen-login':     0,
+  'screen-profile-1': 1,
+  'screen-profile-2': 2,
+  'screen-done':      3
+};
+
+const quotes = [
+  { h:'Every drop<br>you save is<br><em>a drop India keeps.</em>',  s:'Track your water footprint. Make it a game.' },
+  { h:'Tell us<br>a little about<br><em>yourself.</em>',            s:'We use this to estimate your baseline footprint.' },
+  { h:'Almost<br><em>there.</em>',                                  s:'Your personalised water profile is being built.' },
+  { h:'Welcome to<br><em>Jaldarpan.</em>',                          s:"Let's start saving water, one day at a time." },
+];
+
+function goTo(id) {
+  // hide all screens
+  document.querySelectorAll('.screen').forEach(function(s) {
+    s.classList.remove('active');
+  });
+
+  // show target screen
+  var target = document.getElementById(id);
+  if (!target) { console.error('Screen not found:', id); return; }
+  target.classList.add('active');
+
+  // scroll panel-right to top
+  var pr = document.querySelector('.panel-right');
+  if (pr) pr.scrollTop = 0;
+
+  // update dot indicators (only if panel is visible)
+  var idx = (dotMap[id] !== undefined) ? dotMap[id] : 0;
+  document.querySelectorAll('.panel-dot').forEach(function(d, i) {
+    d.classList.toggle('active', i === idx);
+  });
+
+  // update left panel quote (safe — panel may be hidden on mobile)
+  var qh = document.querySelector('.panel-quote-h');
+  var qs = document.querySelector('.panel-quote .sub');
+  var q  = quotes[idx] || quotes[0];
+  if (qh) qh.innerHTML   = q.h;
+  if (qs) qs.textContent = q.s;
+}
+
+/* ── PASSWORD TOGGLE ── */
+function togglePw(id, btn) {
+  var inp = document.getElementById(id);
+  if (!inp) return;
+  if (inp.type === 'password') { inp.type = 'text';     btn.textContent = '🙈'; }
+  else                         { inp.type = 'password'; btn.textContent = '👁'; }
+}
+
+/* ── LOGIN METHOD TOGGLE ── */
+function setMethod(method, btn) {
+  document.querySelectorAll('.method-btn').forEach(function(b) { b.classList.remove('active'); });
+  btn.classList.add('active');
+  var pwField  = document.getElementById('login-password-field');
+  var otpField = document.getElementById('login-otp-field');
+  if (pwField)  pwField.style.display  = (method === 'password') ? 'block' : 'none';
+  if (otpField) otpField.style.display = (method === 'otp')      ? 'block' : 'none';
+}
+
+/* ── OPTION CARDS ── */
+function selectCard(el, groupId) {
+  var group = document.getElementById(groupId);
+  if (!group) return;
+  group.querySelectorAll('.option-card').forEach(function(c) { c.classList.remove('selected'); });
+  el.classList.add('selected');
+}
+
+/* ── WATER CANVAS — clear blue shimmer ── */
+(function(){
+  const canvas = document.getElementById('water-canvas');
+  if(!canvas) return;
+  const ctx = canvas.getContext('2d');
+
+  function resize(){
+    canvas.width = canvas.offsetWidth;
+    canvas.height = canvas.offsetHeight;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  let t = 0;
+
+  function draw(){
+    const W = canvas.width, H = canvas.height;
+    if(!W||!H){ requestAnimationFrame(draw); return; }
+
+    // Base — deep clear water gradient
+    const bg = ctx.createLinearGradient(0,0,W,H);
+    bg.addColorStop(0,   '#0d4a6e');
+    bg.addColorStop(0.3, '#0e6080');
+    bg.addColorStop(0.6, '#0d7090');
+    bg.addColorStop(1,   '#0a4a68');
+    ctx.fillStyle = bg;
+    ctx.fillRect(0,0,W,H);
+
+    // Caustic light patches — the ripple shimmer on pool/water floor
+    for(let i=0;i<18;i++){
+      const px = (W*0.05 + W*0.058*i + Math.sin(t*0.0009 + i*1.1)*55) % W;
+      const py = (H*0.04 + H*0.058*i + Math.cos(t*0.0007 + i*0.8)*45) % H;
+      const r  = 28 + Math.sin(t*0.0012 + i)*14;
+      const alpha = 0.06 + Math.sin(t*0.0015+i*0.5)*0.04;
+      const rg = ctx.createRadialGradient(px,py,0,px,py,r);
+      rg.addColorStop(0, `rgba(100,220,255,${alpha})`);
+      rg.addColorStop(0.5,`rgba(60,180,230,${alpha*0.5})`);
+      rg.addColorStop(1, 'rgba(0,0,0,0)');
+      ctx.fillStyle = rg;
+      ctx.fillRect(0,0,W,H);
+    }
+
+    // Bright sparkle points — light refracting on surface
+    for(let i=0;i<22;i++){
+      const sx = (W*0.04 + W*0.046*i + Math.sin(t*0.0011+i*2.3)*40)%W;
+      const sy = (H*0.03 + H*0.046*i + Math.cos(t*0.0009+i*1.7)*38)%H;
+      const brightness = Math.max(0, Math.sin(t*0.003+i*0.9));
+      if(brightness < 0.3) continue;
+      const sr = ctx.createRadialGradient(sx,sy,0,sx,sy,6+brightness*8);
+      sr.addColorStop(0, `rgba(220,248,255,${brightness*0.9})`);
+      sr.addColorStop(0.3,`rgba(150,230,255,${brightness*0.4})`);
+      sr.addColorStop(1,  'rgba(0,0,0,0)');
+      ctx.fillStyle = sr;
+      ctx.fillRect(0,0,W,H);
+    }
+
+    // Water surface ripple lines
+    ctx.save();
+    for(let layer=0;layer<5;layer++){
+      const spd  = 0.00035 + layer*0.00015;
+      const freq = 0.012  - layer*0.0018;
+      const amp  = 10     + layer*6;
+      const alph = 0.06   + layer*0.03;
+      ctx.strokeStyle = `rgba(140,220,255,${alph})`;
+      ctx.lineWidth = 0.9 - layer*0.12;
+      const spacing = 22 + layer*4;
+      const rows = Math.ceil(H/spacing)+2;
+      for(let row=0;row<rows;row++){
+        const baseY = (row*spacing - (t*spd*40)%spacing);
+        ctx.beginPath();
+        for(let x=0;x<=W;x+=3){
+          const y = baseY
+            + Math.sin(x*freq + t*spd*5 + layer*1.4)*amp
+            + Math.sin(x*0.022 + t*spd*3 + row*0.3)*4;
+          x===0 ? ctx.moveTo(x,y) : ctx.lineTo(x,y);
+        }
+        ctx.stroke();
+      }
+    }
+    ctx.restore();
+
+    // Overall teal tint wash
+    ctx.fillStyle = 'rgba(0,180,220,0.04)';
+    ctx.fillRect(0,0,W,H);
+
+    // Dark vignette edges
+    const vig = ctx.createRadialGradient(W/2,H/2,H*0.25,W/2,H/2,H*0.85);
+    vig.addColorStop(0,'rgba(0,0,0,0)');
+    vig.addColorStop(1,'rgba(0,0,0,0.45)');
+    ctx.fillStyle = vig;
+    ctx.fillRect(0,0,W,H);
+
+    t += 16;
+    requestAnimationFrame(draw);
+  }
+  draw();
+})();
+
+document.querySelectorAll('.field input, .field select').forEach(inp=>{
+  inp.addEventListener('focus',()=>{ const l=inp.closest('.field')?.querySelector('label'); if(l) l.style.color='#5ec9f0'; });
+  inp.addEventListener('blur',()=>{ const l=inp.closest('.field')?.querySelector('label'); if(l) l.style.color=''; });
+});
+</script>
+</body>
+</html>

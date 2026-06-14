@@ -1,0 +1,124 @@
+.knowledge-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 2rem;
+    align-items: stretch;
+}
+
+.glass-card-greenwater,
+.glass-card-bluewater,
+.glass-card-greywater {
+    backdrop-filter: blur(12px);
+    border-radius: 20px;
+    padding: 2rem;
+    text-align: center;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: all 0.3s ease;
+}
+
+.glass-card-greenwater {
+    background-color: rgba(10, 74, 33, 0.7);
+    border-top: 4px solid #4ade80;
+}
+.glass-card-bluewater {
+    background-color: rgba(12, 32, 87, 0.7);
+    border-top: 4px solid #38bdf8;
+}
+.glass-card-greywater {
+    background-color: rgba(41, 49, 62, 0.7);
+    border-top: 4px solid #94a3b8;
+}
+
+.glass-card-greenwater:hover,
+.glass-card-bluewater:hover,
+.glass-card-greywater:hover {
+    transform: translateY(-8px);
+}
+
+.glass-card-greenwater:hover {
+    border-color: #53f990;
+    box-shadow: 0 8px 20px 0 rgba(48, 255, 100, 0.3);
+    background-color: #147d3b;
+}
+.glass-card-bluewater:hover {
+    border-color: #38bdf8;
+    box-shadow: 0 8px 20px 0 rgba(56, 189, 248, 0.3);
+    background-color: #1e3a8a;
+}   
+.glass-card-greywater:hover {
+    border-color: #94a3b8;
+    box-shadow: 0 8px 20px 0 rgba(148, 163, 184, 0.3);
+    background-color: #374151;
+}
+
+
+/* Green Water */
+.glass-card-greenwater {
+    border-top: 4px solid #4ade80;
+}
+
+.glass-card-greenwater .article-icon {
+    color: #4ade80;
+}
+
+/* Blue Water */
+.glass-card-bluewater {
+    border-top: 4px solid #38bdf8;
+}
+
+.glass-card-bluewater .article-icon {
+    color: #38bdf8;
+}
+
+/* Grey Water */
+.glass-card-greywater {
+    border-top: 4px solid #94a3b8;
+}
+
+.glass-card-greywater .article-icon {
+    color: #94a3b8;
+}
+
+.article-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+}
+
+.knowledge-grid h3 {
+    font-size: 1.8rem;
+    margin-bottom: 1rem;
+    color: #fff;
+}
+
+.knowledge-grid h4 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #dbeafe;
+    line-height: 1.5;
+    margin-bottom: 1rem;
+}
+
+.knowledge-grid p {
+    color: rgba(255, 255, 255, 0.8);
+    line-height: 1.7;
+    font-size: 0.95rem;
+}
+
+
+
+.glass-card-knowledge-article {
+        background: var(--glass-bg);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-lg);
+    padding: 24px;
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+    transition: var(--transition-smooth);
+}
+
+.glass-card-knowledge-article:hover {
+    transform: translateY(-8px);
+    background-color: rgba(5, 191, 219, 0.9);
+    box-shadow: 0 2px 10px 0 rgb(255, 255, 255);
+}

@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JalDarpan - Track Every Drop. Save Every Drop.</title>
+    <link rel="stylesheet" href="dashboard.css">
+    <link rel="stylesheet" href="knowledgehub.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="nav-logo" onclick="showPage('home')">💧 JalDarpan</div>
+        <ul class="nav-menu">
+            <li class="nav-item active" onclick="showPage('home')"><i class="fa-solid fa-chart-pie"></i> Home</li>
+            <li class="nav-item" onclick="showPage('log')"><i class="fa-solid fa-faucet-drip"></i> Log Activity</li>
+            <li class="nav-item" onclick="showPage('challenges')"><i class="fa-solid fa-trophy"></i> Challenges</li>
+            <li class="nav-item" onclick="showPage('leaderboard')"><i class="fa-solid fa-ranking-star"></i> Leaderboard</li>
+            <li class="nav-item" onclick="showPage('events')"><i class="fa-solid fa-calendar-days"></i> Events</li>
+            <li class="nav-item" onclick="showPage('knowledge')"><i class="fa-solid fa-book-open"></i> Knowledge Hub</li>
+            <li class="nav-item" onclick="showPage('profile')"><i class="fa-solid fa-user"></i> Profile</li>
+        </ul>
+        <div class="nav-status">
+            <div class="status-badge streak" title="Current Streak"><span class="pulse-fire">🔥</span> <span id="nav-streak">12</span> Days</div>
+            <div class="status-badge xp" title="Total Experience Points">⭐ <span id="nav-xp">540</span> XP</div>
+            <div class="nav-avatar" onclick="showPage('profile')">
+                <img id="nav-avatar-img" src="https://api.dicebear.com/7.x/bottts/svg?seed=JalWater" alt="Avatar">
+            </div>
+        </div>
+    </nav>
+
+    <main class="app-container">
+
+        <section id="page-home" class="app-page active">
+            <div class="hero-section">
+                <div class="hero-text">
+                    <h1>Welcome Back, <span id="hero-username">Eco Warrior</span>!</h1>
+                    <p class="tagline">"Track Every Drop. Save Every Drop."</p>
+                </div>
+                <div class="hero-stats">
+                    <div class="mini-stat">
+                        <span class="stat-label">Level</span>
+                        <span class="stat-val" id="dash-level-name">Stream Protector</span>
+                    </div>
+                    <div class="mini-stat">
+                        <span class="stat-label">Water Saved (Month)</span>
+                        <span class="stat-val-highlight">💧 <span id="dash-water-saved">3,200</span> L</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="dashboard-grid">
+                <div class="glass-card highlight-card">
+                    <div class="card-badge">Most Important</div>
+                    <h3><i class="fa-solid fa-pen-to-square"></i> Log Today's Footprint</h3>
+                    <div class="footprint-overview">
+                        <div class="progress-ring-container">
+                            <svg class="progress-ring" width="120" height="120">
+                                <circle class="progress-ring__background" stroke="rgba(255,255,255,0.1)" stroke-width="8" fill="transparent" r="50" cx="60" cy="60"/>
+                                <circle class="progress-ring__circle" id="today-progress-circle" stroke="#05BFDB" stroke-width="8" fill="transparent" r="50" cx="60" cy="60"/>
+                            </svg>
+                            <div class="progress-ring-text">
+                                <span id="dash-today-litres">0</span>
+                                <small>Litres</small>
+                            </div>
+                        </div>
+                        <div class="footprint-summary">
+                            <p>Tracked items dynamically calculate your impact relative to global averages.</p>
+                            <button class="btn btn-primary" onclick="showPage('log')">Log Today's Activities</button>
+                        </div>
+                    </div>
+                    <div class="quick-actions">
+                        <span class="quick-label">Quick Log:</span>
+                        <button onclick="quickLog(400, 'Logged Meal')"><i class="fa-solid fa-utensils"></i> Meal</button>
+                        <button onclick="quickLog(50, 'Logged Short Shower')"><i class="fa-solid fa-shower"></i> Quick Shower</button>
+                        <button onclick="quickLog(3, 'Logged Water Glass')"><i class="fa-solid fa-glass-water"></i> Drink Water</button>
+                    </div>
+                </div>
+
+                <div class="glass-card">
+                    <h3><i class="fa-solid fa-bolt"></i> Active Challenges</h3>
+                    <div class="challenges-preview-list" id="dash-challenges-list">
+                        </div>
+                    <button class="btn btn-secondary" onclick="showPage('challenges')">View All Challenges</button>
+                </div>
+
+                <div class="glass-card">
+                    <h3><i class="fa-solid fa-medal"></i> Pod Standings (Friends)</h3>
+                    <div class="mini-leaderboard" id="dash-leaderboard-list">
+                        </div>
+                    <div class="card-actions-split">
+                        <button class="btn btn-secondary" onclick="showPage('leaderboard')">Open Leaderboard</button>
+                        <button class="btn btn-action" onclick="openInviteModal()"><i class="fa-solid fa-user-plus"></i> Invite</button>
+                    </div>
+                </div>
+
+                <div class="glass-card rotating-hub-card">
+                    <h3><i class="fa-solid fa-lightbulb"></i> Did You Know?</h3>
+                    <div class="fact-carousel" id="fact-carousel-container">
+                        <p class="fact-text">"1 kg of beef may require significantly more water than most vegetables—averaging around 15,000 litres!"</p>
+                    </div>
+                    <button class="btn btn-text" onclick="showPage('knowledge')">Learn More <i class="fa-solid fa-arrow-right"></i></button>
+                </div>
+            </div>
+        </section>
+
+        <section id="page-log" class="app-page">
+            <div class="page-header">
+                <h2><i class="fa-solid fa-faucet-drip"></i> Log Daily Footprint</h2>
+                <p>Submit your resource interactions honestly to compute real-time aquatic equity models.</p>
+            </div>
+
+            <div class="split-layout">
+                <div class="form-container">
+                    <div class="glass-card form-section">
+                        <h4><i class="fa-solid fa-utensils"></i> Section A — Meals</h4>
+
+                        <!-- Toggle tabs -->
+                        <div class="meal-mode-toggle">
+                            <button class="meal-mode-btn active" id="btn-mode-text" onclick="switchMealMode('text')">
+                                <i class="fa-solid fa-pen-to-square"></i> Enter Manually
+                            </button>
+                            <button class="meal-mode-btn" id="btn-mode-image" onclick="switchMealMode('image')">
+                                <i class="fa-solid fa-camera"></i> Upload Image
+                            </button>
+                        </div>
+
+                        <!-- TEXT MODE -->
+                        <div id="meal-mode-text">
+                            <div id="meal-items-list">
+                                <div class="meal-item-row">
+                                    <input type="text" placeholder="Food item (e.g. Chapati)" class="meal-item-name"/>
+                                    <input type="text" placeholder="Qty (e.g. 2 pieces)" class="meal-item-qty"/>
+                                    <button class="meal-row-remove" onclick="removeMealRow(this)" title="Remove">
+                                        <i class="fa-solid fa-xmark"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <button class="btn-add-item" onclick="addMealRow()">
+                                <i class="fa-solid fa-plus"></i> Add item
+                            </button>
+                        </div>
+
+                        <!-- IMAGE MODE -->
+                        <div id="meal-mode-image" style="display:none">
+                            <input type="file" id="food-image" accept="image/*" style="display:none" onchange="handleMealImageUpload(event)"/>
+                            <div class="upload-box" onclick="document.getElementById('food-image').click()">
+                                <i class="fa-solid fa-cloud-arrow-up"></i>
+                                <span id="upload-status">Drop or Click to Upload Meal Image</span>
+                            </div>
+                            <img id="meal-image-preview" style="display:none;width:100%;border-radius:10px;margin-top:0.75rem;max-height:200px;object-fit:cover;" alt="Meal preview"/>
+                        </div>
+
+                        <button class="btn btn-primary btn-block" style="margin-top:1.25rem" onclick="analyzeMeal()">
+                            <i class="fa-solid fa-droplet"></i> Analyze Meal
+                        </button>
+                    </div>
+
+                    <div class="glass-card form-section">
+                        <h4><i class="fa-solid fa-sliders"></i> Section B — Domestic Activities</h4>
+                        
+                        <div class="range-group">
+                            <div class="range-labels">
+                                <label>Shower Duration</label>
+                                <span class="range-value"><span id="val-shower">5</span> mins</span>
+                            </div>
+                            <input type="range" id="input-shower" min="0" max="30" value="5" oninput="updateRangeVal(this, 'val-shower')">
+                        </div>
+
+                        <div class="range-group">
+                            <div class="range-labels">
+                                <label>Laundry Cycles Run</label>
+                                <span class="range-value"><span id="val-laundry">0</span> Loads</span>
+                            </div>
+                            <input type="range" id="input-laundry" min="0" max="4" value="0" oninput="updateRangeVal(this, 'val-laundry')">
+                        </div>
+
+                        <div class="range-group">
+                            <div class="range-labels">
+                                <label>Dishwashing (Manual Run Time)</label>
+                                <span class="range-value"><span id="val-dishes">10</span> mins</span>
+                            </div>
+                            <input type="range" id="input-dishes" min="0" max="40" value="10" oninput="updateRangeVal(this, 'val-dishes')">
+                        </div>
+
+                        <div class="range-group">
+                            <div class="range-labels">
+                                <label>Gardening Hose Activity</label>
+                                <span class="range-value"><span id="val-garden">0</span> mins</span>
+                            </div>
+                            <input type="range" id="input-garden" min="0" max="60" value="0" oninput="updateRangeVal(this, 'val-garden')">
+                        </div>
+
+                        <div class="range-group">
+                            <div class="range-labels">
+                                <label>Car Wash Event</label>
+                                <span class="range-value"><span id="val-car">0</span> Sessions</span>
+                            </div>
+                            <input type="range" id="input-car" min="0" max="2" value="0" oninput="updateRangeVal(this, 'val-car')">
+                        </div>
+
+                        <div class="range-group">
+                            <div class="range-labels">
+                                <label>Direct Drinking Water Intake</label>
+                                <span class="range-value"><span id="val-drink">2</span> Litres</span>
+                            </div>
+                            <input type="range" id="input-drink" min="0" max="8" value="2" step="0.5" oninput="updateRangeVal(this, 'val-drink')">
+                        </div>
+
+                        <button class="btn btn-primary btn-block" onclick="calculateFootprint()">Process Metrics & Log Entry</button>
+                    </div>
+                </div>
+
+                <div class="results-container">
+
+                    <div class="glass-card diagnostic-card">
+                        <div id="result">
+                            <h3>Food Analysis</h3>
+                            <p>Search results will appear here.</p>
+                        </div>
+                    </div>
+
+                    <div class="glass-card diagnostic-card">
+                        <h3>Today's Water Impact</h3>
+
+                        <div class="meter-wrapper">
+                            <div class="meter-fluid" id="meter-fill" style="height: 40%;">
+                                <div class="wave-overlay"></div>
+                            </div>
+
+                            <div class="meter-value">
+                                <span id="calculated-litres">0</span>
+                                <small>Litres</small>
+                            </div>
+                        </div>
+
+                        <p class="impact-eval" id="impact-evaluation-text">
+                            Awaiting metric submission...
+                        </p>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <section id="page-challenges" class="app-page">
+            <div class="page-header">
+                <h2><i class="fa-solid fa-trophy"></i> Quest Center</h2>
+                <p>Complete curated ecological tasks to level up and accumulate operational experience points.</p>
+            </div>
+
+            <div class="challenges-layout">
+                <div class="challenges-column">
+                    <h3>Daily Tasks</h3>
+                    <div class="challenge-stack" id="container-daily-challenges"></div>
+
+                    <h3>Weekly Campaigns</h3>
+                    <div class="challenge-stack" id="container-weekly-challenges"></div>
+
+                    <h3>Monthly Directives</h3>
+                    <div class="challenge-stack" id="container-monthly-challenges"></div>
+                </div>
+
+                <div class="badges-sidebar">
+                    <div class="glass-card">
+                        <h3><i class="fa-solid fa-award"></i> Achievement Matrix</h3>
+                        <div class="badges-grid" id="badges-container-grid">
+                            </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="page-leaderboard" class="app-page">
+            <div class="page-header">
+                <h2><i class="fa-solid fa-ranking-star"></i> Pod Networks</h2>
+                <p>Compete in controlled friend groups to drive community structural sustainability targets.</p>
+            </div>
+
+            <div class="glass-card leaderboard-card">
+                <div class="leaderboard-header-actions">
+                    <div class="toggle-group">
+                        <button class="toggle-btn active" id="btn-toggle-veg" onclick="filterLeaderboard('veg')">Vegetarian Base</button>
+                        <button class="toggle-btn" id="btn-toggle-nonveg" onclick="filterLeaderboard('nonveg')">Non-Vegetarian Base</button>
+                    </div>
+                    <button class="btn btn-action" onclick="openInviteModal()"><i class="fa-solid fa-user-plus"></i> Invite Ally</button>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="leaderboard-table">
+                        <thead>
+                            <tr>
+                                <th>Rank</th>
+                                <th>Identity</th>
+                                <th>Experience</th>
+                                <th>Conserved Volume</th>
+                                <th>Tier Rank</th>
+                            </tr>
+                        </thead>
+                        <tbody id="main-leaderboard-body">
+                            </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <section id="page-events" class="app-page">
+            <div class="page-header">
+                <h2><i class="fa-solid fa-hands-holding-droplet"></i> Community Drives & Events</h2>
+                <p>Discover seminars, river cleanups, plantation drives & workshops near you — or host one yourself.</p>
+            </div>
+
+            <div class="events-toolbar">
+                <div class="event-filters" id="event-filters">
+                    <button class="toggle-btn active" data-filter="all" onclick="filterEvents('all', this)">All</button>
+                    <button class="toggle-btn" data-filter="cleanup" onclick="filterEvents('cleanup', this)">River Cleanups</button>
+                    <button class="toggle-btn" data-filter="seminar" onclick="filterEvents('seminar', this)">Seminars</button>
+                    <button class="toggle-btn" data-filter="workshop" onclick="filterEvents('workshop', this)">Workshops</button>
+                    <button class="toggle-btn" data-filter="plantation" onclick="filterEvents('plantation', this)">Plantation</button>
+                </div>
+                <div class="event-toolbar-actions">
+                    <label class="admin-toggle">
+                        <input type="checkbox" id="admin-mode-toggle" onchange="toggleAdminMode()">
+                        <span><i class="fa-solid fa-user-shield"></i> Admin View</span>
+                    </label>
+                    <button class="btn btn-primary" onclick="openEventModal()"><i class="fa-solid fa-plus"></i> Propose an Event</button>
+                </div>
+            </div>
+
+            <div class="glass-card admin-queue-card" id="admin-queue-card">
+                <h3><i class="fa-solid fa-clipboard-check"></i> Pending Approval Queue</h3>
+                <p class="admin-queue-subtitle">Review events submitted by users and club members before they go live on the Events page.</p>
+                <div class="pending-events-list" id="pending-events-list">
+
+                    <div class="pending-event-row" id="pending-evt-1">
+                        <div class="pending-event-info">
+                            <h4><i class="fa-solid fa-broom"></i> Hostel Block D — Tap Leak Hunt & Awareness Walk</h4>
+                            <p>Submitted by <strong>Muskan (Student, ECE Club)</strong> · Type: Awareness Drive · Proposed Date: 25 June 2026 · Location: Hostel Block D Corridor</p>
+                        </div>
+                        <div class="pending-event-actions">
+                            <button class="btn btn-secondary btn-approve" onclick="approveEvent('pending-evt-1', this)"><i class="fa-solid fa-check"></i> Approve</button>
+                            <button class="btn btn-secondary btn-reject" onclick="rejectEvent('pending-evt-1')"><i class="fa-solid fa-xmark"></i> Reject</button>
+                        </div>
+                    </div>
+
+                    <div class="pending-event-row" id="pending-evt-2">
+                        <div class="pending-event-info">
+                            <h4><i class="fa-solid fa-flask"></i> River Walk & Water Quality Testing</h4>
+                            <p>Submitted by <strong>Aarav Patel (Student)</strong> · Type: Seminar · Proposed Date: 1 July 2026 · Location: Tapi Riverfront, Surat</p>
+                        </div>
+                        <div class="pending-event-actions">
+                            <button class="btn btn-secondary btn-approve" onclick="approveEvent('pending-evt-2', this)"><i class="fa-solid fa-check"></i> Approve</button>
+                            <button class="btn btn-secondary btn-reject" onclick="rejectEvent('pending-evt-2')"><i class="fa-solid fa-xmark"></i> Reject</button>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="events-grid" id="events-grid">
+
+                <div class="glass-card event-card" data-type="cleanup">
+                    <div class="event-cover type-cleanup">
+                        <i class="fa-solid fa-water"></i>
+                        <span class="event-type-badge">River Cleanup</span>
+                        <span class="event-status-badge approved">Approved</span>
+                    </div>
+                    <div class="event-body">
+                        <h3>Tapi Riverfront Cleanup Drive</h3>
+                        <p class="event-desc">Join 100+ volunteers to clear plastic waste along the Tapi riverbanks and learn how urban rivers connect to your daily water footprint.</p>
+                        <div class="event-meta">
+                            <span><i class="fa-regular fa-calendar"></i> Sat, 22 June 2026 · 6:30 AM</span>
+                            <span><i class="fa-solid fa-location-dot"></i> Tapi Riverfront, Surat</span>
+                        </div>
+                        <div class="event-organizer">
+                            <span class="organizer-avatar"><i class="fa-solid fa-shield-halved"></i></span>
+                            Organized by Jal Mitra NGO · Verified by Admin
+                        </div>
+                        <div class="event-footer">
+                            <span class="event-capacity"><strong>64</strong> / 100 registered</span>
+                            <button class="btn btn-primary btn-register" onclick="registerEvent(this)">Register</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="glass-card event-card" data-type="seminar">
+                    <div class="event-cover type-seminar">
+                        <i class="fa-solid fa-chalkboard-user"></i>
+                        <span class="event-type-badge">Seminar</span>
+                        <span class="event-status-badge approved">Approved</span>
+                    </div>
+                    <div class="event-body">
+                        <h3>Groundwater Recharge 101</h3>
+                        <p class="event-desc">A beginner-friendly session on aquifer recharge structures, rooftop harvesting basics, and why Gujarat's groundwater table matters to you.</p>
+                        <div class="event-meta">
+                            <span><i class="fa-regular fa-calendar"></i> Wed, 18 June 2026 · 4:00 PM</span>
+                            <span><i class="fa-solid fa-location-dot"></i> Auditorium Block C + Live Stream</span>
+                        </div>
+                        <div class="event-organizer">
+                            <span class="organizer-avatar"><i class="fa-solid fa-users"></i></span>
+                            Organized by EcoTech Club · Verified by Admin
+                        </div>
+                        <div class="event-footer">
+                            <span class="event-capacity"><strong>88</strong> / 150 registered</span>
+                            <button class="btn btn-primary btn-register registered" onclick="registerEvent(this)"><i class="fa-solid fa-check"></i> Registered</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="glass-card event-card" data-type="workshop">
+                    <div class="event-cover type-workshop">
+                        <i class="fa-solid fa-screwdriver-wrench"></i>
+                        <span class="event-type-badge">Workshop</span>
+                        <span class="event-status-badge approved">Approved</span>
+                    </div>
+                    <div class="event-body">
+                        <h3>DIY Rainwater Harvesting Build</h3>
+                        <p class="event-desc">Hands-on workshop building a low-cost rooftop rainwater harvesting model you can replicate at home or in your hostel.</p>
+                        <div class="event-meta">
+                            <span><i class="fa-regular fa-calendar"></i> Sun, 5 July 2026 · 10:00 AM</span>
+                            <span><i class="fa-solid fa-location-dot"></i> Community Hall, Adajan</span>
+                        </div>
+                        <div class="event-organizer">
+                            <span class="organizer-avatar"><i class="fa-solid fa-shield-halved"></i></span>
+                            Organized by Surat Municipal Corporation
+                        </div>
+                        <div class="event-footer">
+                            <span class="event-capacity"><strong>32</strong> / 60 registered</span>
+                            <button class="btn btn-primary btn-register" onclick="registerEvent(this)">Register</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="glass-card event-card" data-type="plantation">
+                    <div class="event-cover type-plantation">
+                        <i class="fa-solid fa-seedling"></i>
+                        <span class="event-type-badge">Plantation</span>
+                        <span class="event-status-badge approved">Approved</span>
+                    </div>
+                    <div class="event-body">
+                        <h3>Riverside Sapling Plantation Drive</h3>
+                        <p class="event-desc">Plant native saplings along the riverbank to reduce soil erosion and improve water retention across the watershed.</p>
+                        <div class="event-meta">
+                            <span><i class="fa-regular fa-calendar"></i> Sat, 28 June 2026 · 7:00 AM</span>
+                            <span><i class="fa-solid fa-location-dot"></i> Sarthana Nature Park</span>
+                        </div>
+                        <div class="event-organizer">
+                            <span class="organizer-avatar"><i class="fa-solid fa-users"></i></span>
+                            Organized by Green Hands Collective
+                        </div>
+                        <div class="event-footer">
+                            <span class="event-capacity"><strong>41</strong> / 80 registered</span>
+                            <button class="btn btn-primary btn-register" onclick="registerEvent(this)">Register</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="glass-card event-card" data-type="seminar">
+                    <div class="event-cover type-seminar">
+                        <i class="fa-solid fa-industry"></i>
+                        <span class="event-type-badge">Seminar</span>
+                        <span class="event-status-badge approved">Approved</span>
+                    </div>
+                    <div class="event-body">
+                        <h3>Industrial Water Reuse: Open Talk</h3>
+                        <p class="event-desc">Engineers from local textile units discuss greywater recycling systems and the embedded water costs hidden in manufacturing.</p>
+                        <div class="event-meta">
+                            <span><i class="fa-regular fa-calendar"></i> Fri, 3 July 2026 · 5:30 PM</span>
+                            <span><i class="fa-solid fa-location-dot"></i> Online (Google Meet)</span>
+                        </div>
+                        <div class="event-organizer">
+                            <span class="organizer-avatar"><i class="fa-solid fa-shield-halved"></i></span>
+                            Organized by Dept. of ECE Sustainability Cell
+                        </div>
+                        <div class="event-footer">
+                            <span class="event-capacity"><strong>120</strong> / 200 registered</span>
+                            <button class="btn btn-primary btn-register" onclick="registerEvent(this)">Register</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="glass-card event-card add-event-card" onclick="openEventModal()">
+                    <div class="add-event-inner">
+                        <i class="fa-solid fa-circle-plus"></i>
+                        <h3>Host Your Own Drive</h3>
+                        <p>Running a seminar, cleanup, or plantation drive? Submit it for admin approval and get it listed here.</p>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <section id="page-knowledge" class="app-page">
+            <div class="page-header">
+                <h2><i class="fa-solid fa-book-open"></i> Knowledge Infrastructure</h2>
+                <p>Interrogate the metadata metrics governing embedded water parameters inside supply frameworks.</p>
+            </div>
+
+            <div class="knowledge-grid">
+                <div class="glass-card knowledge-article">
+                    <div class="article-icon"><i class="fa-solid fa-earth-americas"></i></div>
+                    <h3>What is a Water Footprint?</h3>
+                    <p>The total volume of freshwater used to produce the goods and services consumed by an individual or community. It factors internal usage vectors alongside systemic tracking chains.</p>
+                </div>
+
+                <div class="glass-card knowledge-article">
+                    <div class="article-icon"><i class="fa-solid fa-droplet"></i></div>
+                    <h3>Why Should We Care?</h3>
+                    <p>Less than 1% of the world's freshwater resources are accessible for direct societal deployment. Rapid scaling populations threaten localized aquifer recovery cycles.</p>
+                </div>
+
+                <div class="glass-card knowledge-article">
+                    <div class="article-icon"><i class="fa-solid fa-shrimp"></i></div>
+                    <h3>The Hidden Water Construct</h3>
+                    <p>Virtually all structural consumer products house extensive supply matrices. An iPhone, for example, absorbs thousands of liters of embedded water via chemical microchip configurations before retail shipment.</p>
+                </div>
+
+                <div class="glass-card glass-card-greenwater knowledge-article">
+                    <div class="article-icon"><i class="fa-solid fa-seedling"></i></div>
+                    <h3>Green Water</h3>
+                    <h5>Rainwater stored in soil and used by plants.</h5>
+                     <p>Green water is mainly consumed in agriculture when crops absorb moisture from rainfall rather than irrigation systems.</p>
+                </div>
+
+                <div class="glass-card glass-card-bluewater knowledge-article">
+                    <div class="article-icon"><i class="fa-solid fa-faucet"></i></div>
+                    <h3>Blue Water</h3>
+                    <h5>Freshwater taken from rivers, lakes, and groundwater sources.</h5>
+                     <p>Blue water is used for drinking, irrigation, manufacturing, and other human activities that withdraw water from natural reserves.</p>
+                </div>
+
+                <div class="glass-card glass-card-greywater knowledge-article">
+                    <div class="article-icon"><i class="fa-solid fa-industry"></i></div>
+                    <h3>Grey Water</h3>
+                    <h5>Wastewater generated from household and industrial activities.</h5>
+                     <p>Grey water is typically less contaminated than black water and can be treated for reuse in irrigation and other non-potable applications.</p>
+                </div>
+            </div>
+
+            <h3 class="section-divider-title">Embedded Resource Expenditures</h3>
+            <div class="accordion-container">
+                <div class="glass-card accordion-item" onclick="toggleAccordion(this)">
+                    <div class="accordion-trigger">
+                        <span>Agricultural & Nutritional Load Constants</span>
+                        <i class="fa-solid fa-chevron-down"></i>
+                    </div>
+                    <div class="accordion-content">
+                        <p>Animal husbandries and intensive multi-crop methods deplete deep basin groundwater profiles significantly faster than local rainwater can replenish them. Transitions to direct grains yield an approximate 70% optimization step.</p>
+                    </div>
+                </div>
+
+                <div class="glass-card accordion-item" onclick="toggleAccordion(this)">
+                    <div class="accordion-trigger">
+                        <span>Daily Micro-Optimization Paths</span>
+                        <i class="fa-solid fa-chevron-down"></i>
+                    </div>
+                    <div class="accordion-content">
+                        <p>1. Restrict mechanical laundry deployments to completely full drum load allocations.<br>2. Irrigate vegetation strictly at early pre-dawn intervals to minimize evaporation overhead losses.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="page-profile" class="app-page">
+            <div class="page-header">
+                <h2><i class="fa-solid fa-user-gear"></i> System Profile Dashboard</h2>
+                <p>Manage localized account parameters and configuration structures.</p>
+            </div>
+
+            <div class="profile-layout">
+                <div class="glass-card profile-identity-card">
+                    <div class="profile-avatar-wrapper">
+                        <img id="profile-avatar-display" src="https://api.dicebear.com/7.x/bottts/svg?seed=JalWater" alt="Avatar Big">
+                    </div>
+                    <h3 id="profile-name-display">Eco Warrior</h3>
+                    <span class="badge-pill" id="profile-rank-display">Stream Protector</span>
+                    
+                    <div class="profile-stats-grid">
+                        <div class="p-stat"><strong>⭐ <span id="prof-xp">540</span></strong><small>XP</small></div>
+                        <div class="p-stat"><strong>🔥 <span id="prof-streak">12</span></strong><small>Streak</small></div>
+                        <div class="p-stat"><strong>💧 <span id="prof-saved">3.2k</span>L</strong><small>Conserved</small></div>
+                        <div class="p-stat"><strong>🏆 <span id="prof-challenges">8</span></strong><small>Quests completed</small></div>
+                        <div class="p-stat"><strong>👥 <span id="prof-friends">3</span></strong><small>Allies Invited</small></div>
+                    </div>
+
+                    <div class="heatmap-section">
+                        <h4>Activity Heatmap</h4>
+                        <div class="heatmap-grid" id="heatmap-container-grid">
+                            </div>
+                        <div class="heatmap-legend">
+                            <span>Less Impact</span>
+                            <div class="cube level-0"></div>
+                            <div class="cube level-1"></div>
+                            <div class="cube level-2"></div>
+                            <div class="cube level-3"></div>
+                            <span>More Impact</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="glass-card profile-settings-card">
+                    <h3>Account Parameters Configuration</h3>
+                    <div class="input-group">
+                        <label for="settings-username">Display Name</label>
+                        <input type="text" id="settings-username" value="Eco Warrior" onchange="updateProfileSettings()">
+                    </div>
+                    <div class="input-group">
+                        <label for="settings-avatar-seed">Avatar Design Generator Seed</label>
+                        <input type="text" id="settings-avatar-seed" value="JalWater" onchange="updateProfileSettings()">
+                    </div>
+                    <div class="input-group">
+                        <label>Notification Engine Status</label>
+                        <label class="switch">
+                            <input type="checkbox" checked>
+                            <span class="slider-round"></span>
+                        </label>
+                    </div>
+                    <div class="input-group">
+                        <label>Enforce High Anonymity Modes</label>
+                        <label class="switch">
+                            <input type="checkbox">
+                            <span class="slider-round"></span>
+                        </label>
+                    </div>
+                    <div class="input-group">
+                        <label>Dynamic Deep Water Render Engine</label>
+                        <label class="switch">
+                            <input type="checkbox" id="theme-toggle-checkbox" checked onchange="toggleThemeOverride()">
+                            <span class="slider-round"></span>
+                        </label>
+                    </div>
+                    <button class="logout-btn" style="margin-top:1rem;width:100%;" onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i> Log out</button>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <div class="modal-overlay" id="invite-modal">
+        <div class="glass-card modal-content">
+            <div class="modal-header">
+                <h3>Generate Pod Invite Allocation</h3>
+                <button class="close-modal-btn" onclick="closeInviteModal()">&times;</button>
+            </div>
+            <p>Distribute this localized invitation validation array code token to pull peer profiles into your private leaderboard dashboard structure.</p>
+            <div class="invite-code-box">
+                <input type="text" id="invite-code-field" value="JALDARPAN-4567" readonly>
+                <button class="btn btn-primary" onclick="copyInviteCode()"><i class="fa-solid fa-copy"></i> Copy</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="event-modal">
+        <div class="glass-card modal-content large">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-hands-holding-droplet"></i> Propose a Water Conservation Event</h3>
+                <button class="close-modal-btn" onclick="closeEventModal()">&times;</button>
+            </div>
+            <form class="event-form" id="event-form" onsubmit="submitEventProposal(event)">
+                <div class="input-group">
+                    <label for="event-title">Event Title</label>
+                    <input type="text" id="event-title" placeholder="e.g. Hostel Tap Leak Hunt" required>
+                </div>
+                <div class="input-row">
+                    <div class="input-group">
+                        <label for="event-type">Event Type</label>
+                        <select id="event-type">
+                            <option value="cleanup">River / Lake Cleanup</option>
+                            <option value="seminar">Seminar / Talk</option>
+                            <option value="workshop">Workshop</option>
+                            <option value="plantation">Plantation Drive</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label for="event-date">Date & Time</label>
+                        <input type="text" id="event-date" placeholder="e.g. 25 June 2026, 6:00 PM" required>
+                    </div>
+                </div>
+                <div class="input-row">
+                    <div class="input-group">
+                        <label for="event-location">Location</label>
+                        <input type="text" id="event-location" placeholder="e.g. Hostel Block D, Campus" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="event-capacity">Expected Capacity</label>
+                        <input type="text" id="event-capacity" placeholder="e.g. 50">
+                    </div>
+                </div>
+                <div class="input-group">
+                    <label for="event-description">Description</label>
+                    <textarea id="event-description" placeholder="What will participants do? Why does it matter?" required></textarea>
+                </div>
+                <div class="input-group">
+                    <label for="event-organizer">Organizer Name</label>
+                    <input type="text" id="event-organizer" placeholder="Your name / club / NGO name" required>
+                </div>
+                <div class="form-helper-note">
+                    <i class="fa-solid fa-circle-info"></i>
+                    Submitted events are sent to the Pending Approval Queue. An admin will review and publish your event to the Community Drives page before it becomes visible and open for registration.
+                </div>
+                <button type="submit" class="btn btn-primary btn-block"><i class="fa-solid fa-paper-plane"></i> Submit for Approval</button>
+            </form>
+        </div>
+    </div>
+
+
+    <footer class="wave-footer">
+        <div class="waves-container">
+            <svg class="waves" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 24 150 28" preserveAspectRatio="none" shape-rendering="auto">
+                <defs>
+                    <path id="gentle-wave" d="M-160 44c30 0 58-18 88-18s58 18 88 18 58-18 88-18 58 18 88 18 v44h-352z" />
+                </defs>
+                <g class="parallax">
+                    <use xlink:href="#gentle-wave" x="48" y="0" fill="rgba(5, 191, 219, 0.3)" />
+                    <use xlink:href="#gentle-wave" x="48" y="3" fill="rgba(180, 241, 241, 0.2)" />
+                    <use xlink:href="#gentle-wave" x="48" y="5" fill="rgba(10, 77, 104, 0.4)" />
+                    <use xlink:href="#gentle-wave" x="48" y="7" fill="rgba(10, 77, 104, 1)" />
+                </g>
+            </svg>
+        </div>
+        <div class="footer-content">
+            <p class="footer-tag">Every Drop Counts.</p>
+            <div class="footer-links">
+                <a href="#" onclick="alert('JalDarpan tracking platform infrastructure active node.')">About Matrix</a>
+                <a href="#" onclick="alert('Data cached locally on user storage layers.')">Privacy Architecture</a>
+                <a href="#" onclick="alert('Contact endpoint: support@jaldarpan.eco')">Node Contact</a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="app.js"></script>
+    <script src="events.js"></script>
+</body>
+</html>
