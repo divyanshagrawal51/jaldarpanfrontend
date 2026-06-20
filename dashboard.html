@@ -23,6 +23,7 @@
             <li class="nav-item" onclick="showPage('leaderboard');closeMobileMenu()"><i class="fa-solid fa-ranking-star"></i> Leaderboard</li>
             <li class="nav-item" onclick="showPage('events');closeMobileMenu()"><i class="fa-solid fa-calendar-days"></i> Events</li>
             <li class="nav-item" onclick="showPage('knowledge');closeMobileMenu()"><i class="fa-solid fa-book-open"></i> Knowledge Hub</li>
+            <li class="nav-item" onclick="showPage('farmer');closeMobileMenu()"><i class="fa-solid fa-seedling"></i> Farmer Corner</li>
             <li class="nav-item" onclick="showPage('profile');closeMobileMenu()"><i class="fa-solid fa-user"></i> Profile</li>
         </ul>
         <div class="nav-status">
@@ -640,6 +641,100 @@
                     </div>
                     <button class="logout-btn" style="margin-top:1rem;width:100%;" onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i> Log out</button>
                 </div>
+            </div>
+        </section>
+
+        <!-- ══ FARMER CORNER ══ -->
+        <section id="page-farmer" class="app-page">
+            <div class="page-hero">
+                <h1><i class="fa-solid fa-seedling"></i> Farmer Corner</h1>
+                <p>Understand your crop's water footprint and get AI-powered conservation tips.</p>
+            </div>
+
+            <div class="farmer-layout">
+
+                <!-- LEFT: Inputs -->
+                <div class="farmer-inputs">
+                    <div class="glass-card">
+                        <h3><i class="fa-solid fa-leaf"></i> Crop Water Analysis</h3>
+
+                        <div class="input-group">
+                            <label>Crop Name</label>
+                            <input type="text" id="farmer-crop" placeholder="e.g. Rice, Wheat, Cotton"/>
+                        </div>
+                        <div class="input-group">
+                            <label>Farm Area (Acres)</label>
+                            <input type="number" id="farmer-area" placeholder="e.g. 5" min="0.1"/>
+                        </div>
+                        <div class="input-group">
+                            <label>Irrigation Method</label>
+                            <select id="farmer-irrigation">
+                                <option>Flood Irrigation</option>
+                                <option>Drip Irrigation</option>
+                                <option>Sprinkler</option>
+                            </select>
+                        </div>
+
+                        <h3 style="margin-top:1.5rem"><i class="fa-solid fa-cloud-rain"></i> Farm Conditions</h3>
+
+                        <div class="input-group">
+                            <label>Region / District</label>
+                            <input type="text" id="farmer-region" placeholder="e.g. Vidarbha, Punjab"/>
+                        </div>
+                        <div class="input-group">
+                            <label>Soil Type</label>
+                            <select id="farmer-soil">
+                                <option>Clay</option>
+                                <option>Loamy</option>
+                                <option>Sandy</option>
+                                <option>Black Cotton Soil</option>
+                                <option>Red Soil</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <label>Water Source</label>
+                            <select id="farmer-water-source">
+                                <option>Borewell</option>
+                                <option>Canal</option>
+                                <option>Pond</option>
+                                <option>Rainwater Storage</option>
+                                <option>River</option>
+                            </select>
+                        </div>
+
+                        <button class="btn btn-primary btn-block" onclick="analyzeFarm()" id="farmer-analyze-btn">
+                            <i class="fa-solid fa-droplet"></i> Analyze Crop
+                        </button>
+                    </div>
+                </div>
+
+                <!-- RIGHT: Results -->
+                <div class="farmer-results">
+                    <div class="glass-card" id="farmer-result-card">
+                        <h3>Farm Water Impact</h3>
+                        <div class="farmer-impact-number" id="farmer-total-litres">—</div>
+                        <p style="text-align:center;color:var(--text-muted);font-size:0.85rem">Estimated Litres Used</p>
+
+                        <div class="farmer-stat-grid">
+                            <div class="farmer-stat">
+                                <h4 id="farmer-efficiency">—</h4>
+                                <p>Efficiency</p>
+                            </div>
+                            <div class="farmer-stat">
+                                <h4 id="farmer-saving">—</h4>
+                                <p>Saving Potential</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="glass-card" id="farmer-tips-card">
+                        <h3><i class="fa-solid fa-lightbulb"></i> AI Water Suggestions</h3>
+                        <div id="farmer-tips-container">
+                            <p style="color:var(--text-muted);font-size:0.88rem">Fill in your farm details and click Analyze Crop to get personalized suggestions.</p>
+                        </div>
+                    </div>
+                </div>
+
             </div>
         </section>
 
