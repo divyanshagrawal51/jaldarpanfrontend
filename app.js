@@ -304,6 +304,61 @@ async function analyzeMeal() {
     }
 }
 
+// ── FARMER CORNER ──
+
+async function analyzeFarm() {
+    const crop = document.getElementById('farmer-crop').value.trim();
+    const area = document.getElementById('farmer-area').value.trim();
+    const irrigation = document.getElementById('farmer-irrigation').value;
+    const region = document.getElementById('farmer-region').value.trim();
+    const soil = document.getElementById('farmer-soil').value;
+    const waterSource = document.getElementById('farmer-water-source').value;
+
+    if (!crop || !area) {
+        alert('Please enter at least crop name and farm area.');
+        return;
+    }
+
+    const btn = document.getElementById('farmer-analyze-btn');
+    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Analyzing...';
+    btn.disabled = true;
+
+    try {
+        const res = await fetch(`${API_BASE}/farmer`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ crop, area: parseFloat(area), irrigation, region, soil, water_source: waterSource })
+        });
+        const data = await res.json();
+
+        if (!data.success) {
+            alert('Analysis failed: ' + (data.message || 'Unknown error'));
+            return;
+        }
+
+        // Update result card
+        document.getElementById('farmer-total-litres').textContent =
+            data.total_litres.toLocaleString('en-IN');
+        document.getElementById('farmer-efficiency').textContent =
+            data.efficiency + '%';
+        document.getElementById('farmer-saving').textContent =
+            data.saving_potential.toLocaleString('en-IN') + 'L';
+
+        // Update tips
+        const tipsContainer = document.getElementById('farmer-tips-container');
+        tipsContainer.innerHTML = (data.tips || [])
+            .map(tip => `<div class="farmer-tip">${tip}</div>`)
+            .join('');
+
+    } catch (err) {
+        console.error('Farmer analyze error:', err);
+        alert('Could not reach the backend.');
+    } finally {
+        btn.innerHTML = '<i class="fa-solid fa-droplet"></i> Analyze Crop';
+        btn.disabled = false;
+    }
+}
+
 // ── EVENTS ──
 
 const EVENT_TYPE_META = {
