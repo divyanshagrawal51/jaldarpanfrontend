@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JalDarpan - Premium Diet Hub</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            /* Premium Refined Palette based on your mockup screenshots */
+            --bg-dark: #083444;               
+            --panel-bg: linear-gradient(145deg, #0c4454, #0a3a48);              
+            --panel-inner: rgba(0, 0, 0, 0.25);
+            --primary-cyan: #05BFDB;          
+            --accent-green: #2ed573;          
+            --text-main: #ffffff;             
+            --text-muted: rgba(255, 255, 255, 0.65);
+            --border-glow: rgba(5, 191, 219, 0.15);
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            margin: 0;
+            padding: 32px 24px;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .diet-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .back-link {
+            color: var(--primary-cyan);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 600;
+            margin-bottom: 28px;
+            font-size: 0.95rem;
+            transition: all 0.2s ease;
+        }
+
+        .back-link:hover {
+            color: #fff;
+            transform: translateX(-4px);
+        }
+
+        .hero-header {
+            margin-bottom: 36px;
+            position: relative;
+        }
+
+        .hero-header h2 {
+            font-size: 2.2rem;
+            margin: 0 0 10px 0;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+        }
+
+        .diet-grid {
+            display: grid;
+            grid-template-columns: 1.1fr 0.9fr;
+            gap: 32px;
+        }
+
+        @media (max-width: 960px) {
+            .diet-grid { grid-template-columns: 1fr; }
+        }
+
+        .glass-card {
+            background: var(--panel-bg);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            padding: 32px;
+            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.35);
+            transition: border-color 0.3s ease;
+        }
+        
+        .glass-card:hover {
+            border-color: var(--border-glow);
+        }
+
+        .choice-tabs {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-bottom: 28px;
+            background: var(--panel-inner);
+            padding: 6px;
+            border-radius: 10px;
+        }
+
+        .tab-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            padding: 14px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 0.9rem;
+            transition: all 0.2s ease;
+        }
+
+        .tab-btn:hover {
+            color: #fff;
+        }
+
+        .tab-btn.active {
+            background: var(--primary-cyan);
+            color: var(--bg-dark);
+            box-shadow: 0 4px 12px rgba(5, 191, 219, 0.25);
+        }
+
+        .form-group {
+            margin-bottom: 22px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 10px;
+            letter-spacing: 0.3px;
+        }
+
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 14px;
+            background: var(--panel-inner);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 8px;
+            color: #fff;
+            box-sizing: border-box;
+            font-family: inherit;
+            font-size: 0.95rem;
+            transition: all 0.2s ease;
+        }
+
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary-cyan);
+            background: rgba(0,0,0,0.4);
+            box-shadow: 0 0 0 3px rgba(5, 191, 219, 0.15);
+        }
+
+        .btn-primary {
+            background: var(--primary-cyan);
+            color: var(--bg-dark);
+            padding: 16px 20px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 800;
+            font-size: 1rem;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.2s ease;
+        }
+
+        .btn-primary:hover {
+            opacity: 0.95;
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(5, 191, 219, 0.3);
+        }
+
+        .btn-edit {
+            background: rgba(255, 255, 255, 0.05);
+            color: #fff;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 20px;
+            font-weight: 600;
+            transition: background 0.2s;
+        }
+
+        .btn-edit:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .hook-badge {
+            background: rgba(46, 213, 115, 0.12);
+            border: 1px solid var(--accent-green);
+            color: var(--accent-green);
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .score-circle-container {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+            background: var(--panel-inner);
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 28px;
+            border: 1px solid rgba(255,255,255,0.03);
+        }
+
+        .score-ring {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: conic-gradient(var(--accent-green) 0%, rgba(255,255,255,0.1) 0);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 1.3rem;
+            color: #fff;
+            position: relative;
+            transition: background 0.4s ease;
+        }
+
+        .score-ring::after {
+            content: '';
+            position: absolute;
+            width: 64px;
+            height: 64px;
+            background: #0b3f4e; /* Clean visual center fill blend */
+            border-radius: 50%;
+            z-index: 1;
+        }
+
+        .score-text-inner {
+            position: relative;
+            z-index: 2;
+        }
+
+        /* NEW IMMERSIVE MEAL TRACKER COMPONENT */
+        .meal-checker-box {
+            margin-top: 24px;
+            background: var(--panel-inner);
+            padding: 16px;
+            border-radius: 12px;
+        }
+        
+        .meal-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 8px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+        
+        .meal-row:last-child { border-bottom: none; }
+        
+        .meal-label {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 0.95rem;
+            font-weight: 500;
+        }
+        
+        .meal-checkbox {
+            width: 22px;
+            height: 22px;
+            accent-color: var(--accent-green);
+            cursor: pointer;
+        }
+
+        .swap-box {
+            background: rgba(5, 191, 219, 0.06);
+            border: 1px dashed rgba(5, 191, 219, 0.25);
+            border-radius: 12px;
+            padding: 18px;
+            margin-top: 28px;
+        }
+
+        .swap-title {
+            color: var(--primary-cyan);
+            font-weight: 700;
+            font-size: 0.95rem;
+            margin: 0 0 8px 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        ul { padding-left: 20px; margin: 12px 0; }
+        li { margin-bottom: 12px; font-size: 0.9rem; color: rgba(255,255,255,0.85); line-height: 1.6; }
+    </style>
+</head>
+<body>
+
+    <div class="diet-container">
+        <a href="dashboard.html" class="back-link"><i class="fa-solid fa-arrow-left"></i> Return to Main Dashboard</a>
+
+        <div class="hero-header">
+            <h2>🥗 AI Smart Diet Companion</h2>
+            <p style="color: var(--text-muted); margin: 0; font-size: 1.05rem;">Manage personal health logs dynamically while maintaining water preservation thresholds automatically.</p>
+        </div>
+
+        <div class="diet-grid">
+            
+            <!-- LEFT PANEL: Configuration System -->
+            <div class="glass-card" id="left-card">
+                
+                <!-- VIEW MODE -->
+                <div id="view-mode" style="display: none;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                        <h3 style="color: var(--primary-cyan); margin:0; font-weight: 700;"><i class="fa-solid fa-seedling"></i> Active Target Track</h3>
+                        <span class="hook-badge"><i class="fa-solid fa-fire"></i> 7-Day Streak Active</span>
+                    </div>
+                    
+                    <div id="saved-summary-box" style="line-height: 1.6;"></div>
+                    <button class="btn-edit" onclick="showForm()"><i class="fa-solid fa-pen-to-square"></i> Modify Plan Layout Settings</button>
+                </div>
+
+                <!-- FORM/SETUP MODE -->
+                <div id="form-mode">
+                    <h3 style="margin-top:0; margin-bottom: 24px; color: var(--primary-cyan); font-weight: 700;">Configure Personal Nutrition</h3>
+                    
+                    <div class="choice-tabs">
+                        <button class="tab-btn active" id="tab-have" onclick="switchFormTab('have')">My Dietitian Chart</button>
+                        <button class="tab-btn" id="tab-need" onclick="switchFormTab('need')">Build New Menu</button>
+                    </div>
+
+                    <!-- TAB 1: User Paste -->
+                    <form id="form-have-diet" onsubmit="saveExistingDiet(event)">
+                        <div class="form-group">
+                            <label>Drop your tailored meal charts directly below:</label>
+                            <textarea id="diet-text-input" rows="8" placeholder="Breakfast: Eggs & Oats&#10;Lunch: Dal, Rice and Green Salad&#10;Dinner: Steamed Sprouts and Paneer Bowl" required></textarea>
+                        </div>
+                        <button type="submit" class="btn-primary">Initialize My Chart</button>
+                    </form>
+
+                    <!-- TAB 2: System Auto Generate -->
+                    <form id="form-need-diet" onsubmit="generateDietPlan(event)" style="display: none;">
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                            <div class="form-group">
+                                <label>Your Age (Years)</label>
+                                <input type="number" id="user-age" required placeholder="24">
+                            </div>
+                            <div class="form-group">
+                                <label>Weight Target (kg)</label>
+                                <input type="number" id="user-weight" required placeholder="68">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>What is your current fitness objective?</label>
+                            <select id="user-goal">
+                                <option value="Weight Loss">Fat Loss & Leaning Down</option>
+                                <option value="Maintain Fitness">Optimize Balance & Vitality</option>
+                                <option value="Muscle Gain">Muscle Matrix & Weight Scaling</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn-primary">Generate Tailored Routine</button>
+                    </form>
+                </div>
+
+            </div>
+
+            <!-- RIGHT PANEL: Visual Gamified Tracking Analytics -->
+            <div class="glass-card">
+                <h3 style="margin-top: 0; color: var(--primary-cyan); font-weight: 700;"><i class="fa-solid fa-chart-pie"></i> Performance Sync Audit</h3>
+                
+                <!-- Inactive Default Message -->
+                <div id="no-diet-warning" style="color: var(--text-muted); text-align: center; padding: 70px 0;">
+                    <i class="fa-solid fa-unlock-keyhole" style="font-size: 2.8rem; color: rgba(255,255,255,0.1); display:block; margin-bottom:16px;"></i>
+                    Unlock tracking configurations by setting up your active chart strategy parameters.
+                </div>
+
+                <!-- Active Analytical Modules -->
+                <div id="analysis-box" style="display: none;">
+                    <div class="score-circle-container">
+                        <div class="score-ring" id="compliance-ring">
+                            <span class="score-text-inner" id="compliance-pct">0%</span>
+                        </div>
+                        <div>
+                            <h4 style="margin: 0 0 6px 0; color: var(--accent-green); font-size: 1.1rem;" id="compliance-headline">Day Plan Started</h4>
+                            <p style="margin: 0; font-size: 0.85rem; color: var(--text-muted);">Check off your meal targets below to watch your score update live.</p>
+                        </div>
+                    </div>
+
+                    <!-- NEW: HIGH RETENTION USER LOGGING INTERACTIVE BLOCK -->
+                    <h4 style="margin-bottom: 12px; font-size: 1rem;"><i class="fa-solid fa-calendar-check"></i> Mark Logged Meals Today</h4>
+                    <div class="meal-checker-box">
+                        <div class="meal-row">
+                            <div class="meal-label"><i class="fa-solid fa-egg" style="color:var(--primary-cyan);"></i> Breakfast Window</div>
+                            <input type="checkbox" class="meal-checkbox" onchange="updateComplianceMeter()">
+                        </div>
+                        <div class="meal-row">
+                            <div class="meal-label"><i class="fa-solid fa-bowl-rice" style="color:var(--primary-cyan);"></i> Lunch Window</div>
+                            <input type="checkbox" class="meal-checkbox" onchange="updateComplianceMeter()">
+                        </div>
+                        <div class="meal-row">
+                            <div class="meal-label"><i class="fa-solid fa-leaf" style="color:var(--primary-cyan);"></i> Dinner Window</div>
+                            <input type="checkbox" class="meal-checkbox" onchange="updateComplianceMeter()">
+                        </div>
+                    </div>
+
+                    <h4 style="color: var(--primary-cyan); margin-top: 24px; margin-bottom: 10px;"><i class="fa-solid fa-lightbulb"></i> Routine Optimization Directives</h4>
+                    <ul id="friendly-tips"></ul>
+
+                    <!-- THE SNEAKY CONSERVATION TARGET HOOK -->
+                    <div class="swap-box">
+                        <p class="swap-title"><i class="fa-solid fa-droplet"></i> Dynamic Planet Water Save</p>
+                        <p style="margin: 0; font-size: 0.88rem; line-height: 1.5; color: rgba(255,255,255,0.9)" id="swap-suggestion-text"></p>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            checkSavedDiet();
+        });
+
+        function switchFormTab(mode) {
+            const tabHave = document.getElementById("form-have-diet");
+            const tabNeed = document.getElementById("form-need-diet");
+            const btnHave = document.getElementById("tab-have");
+            const btnNeed = document.getElementById("tab-need");
+
+            if (mode === 'have') {
+                tabHave.style.display = "block";
+                tabNeed.style.display = "none";
+                btnHave.classList.add("active");
+                btnNeed.classList.remove("active");
+            } else {
+                tabHave.style.display = "none";
+                tabNeed.style.display = "block";
+                btnHave.classList.remove("active");
+                btnNeed.classList.add("active");
+            }
+        }
+
+        function checkSavedDiet() {
+            const savedData = localStorage.getItem("jaldarpan_user_diet");
+            const viewMode = document.getElementById("view-mode");
+            const formMode = document.getElementById("form-mode");
+            const warningBox = document.getElementById("no-diet-warning");
+            const analysisBox = document.getElementById("analysis-box");
+
+            if (savedData) {
+                viewMode.style.display = "block";
+                formMode.style.display = "none";
+                warningBox.style.display = "none";
+                analysisBox.style.display = "block";
+
+                const diet = JSON.parse(savedData);
+                let displayHTML = `<p style="margin-top: 0; margin-bottom: 14px; font-size:0.95rem;"><strong>Active Model:</strong> ${diet.source === 'user' ? 'Dietitian Verified Schedule' : 'AI Custom Framework'}</p>`;
+                displayHTML += `<div style="white-space: pre-wrap; background: var(--panel-inner); padding: 18px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.05); font-size: 0.95rem; line-height:1.6; color:rgba(255,255,255,0.95);">${diet.text}</div>`;
+                document.getElementById("saved-summary-box").innerHTML = displayHTML;
+
+                loadInsightsAndHooks(diet);
+                updateComplianceMeter(); // Initialize default meter score state
+            } else {
+                viewMode.style.display = "none";
+                formMode.style.display = "block";
+                warningBox.style.display = "block";
+                analysisBox.style.display = "none";
+            }
+        }
+
+        // Real-Time Compliance Metric Engine Updates
+        function updateComplianceMeter() {
+            const boxes = document.querySelectorAll(".meal-checkbox");
+            let checkedCount = 0;
+            boxes.forEach(box => { if(box.checked) checkedCount++; });
+
+            const percent = Math.round((checkedCount / boxes.length) * 100);
+            
+            // Visual Update Elements
+            document.getElementById("compliance-pct").innerText = `${percent}%`;
+            document.getElementById("compliance-ring").style.background = `conic-gradient(var(--accent-green) ${percent}%, rgba(255,255,255,0.1) 0)`;
+
+            const headline = document.getElementById("compliance-headline");
+            if(percent === 0) headline.innerText = "Day Schedule Open";
+            else if(percent < 100) { headline.innerText = "Making Great Progress!"; headline.style.color = "var(--primary-cyan)"; }
+            else { headline.innerText = "Perfect Day Locked!"; headline.style.color = "var(--accent-green)"; }
+        }
+
+        function saveExistingDiet(e) {
+            e.preventDefault();
+            const textVal = document.getElementById("diet-text-input").value;
+            localStorage.setItem("jaldarpan_user_diet", JSON.stringify({ source: 'user', text: textVal, goal: 'Custom Routine' }));
+            checkSavedDiet();
+        }
+
+        function generateDietPlan(e) {
+            e.preventDefault();
+            const goal = document.getElementById("user-goal").value;
+            let planText = "";
+
+            if (goal === "Weight Loss") {
+                planText = "🥣 Breakfast: Rolled oats with almond slivers and sliced apple.\n🥗 Lunch: 2 multigrain rotis, a broad cup of steamed dal, and large cucumber cucumber mint salad.\n🍲 Dinner: Pan-seared cottage cheese (paneer) cubes alongside warm vegetable broth.";
+            } else if (goal === "Muscle Gain") {
+                planText = "🍳 Breakfast: 3 egg omelet or customized tofu scramble paired with peanut butter toast.\n🥗 Lunch: Brown rice platter alongside chickpea stew and thick homemade yogurt.\n🍲 Dinner: Sautéed mushrooms, sweet potato mash, and a clean protein shake mix.";
+            } else {
+                planText = "🌾 Breakfast: Wholesome vegetable vegetable vegetable poha topped with lime juice.\n🥗 Lunch: Traditional wheat flatbreads served with mixed sabji curry and sprout salads.\n🍲 Dinner: Light yellow lentil khichdi cooked with a drizzle of ghee.";
+            }
+
+            localStorage.setItem("jaldarpan_user_diet", JSON.stringify({ source: 'generated', text: planText, goal: goal }));
+            checkSavedDiet();
+        }
+
+        function showForm() {
+            document.getElementById("view-mode").style.display = "none";
+            document.getElementById("form-mode").style.display = "block";
+            // Uncheck verification indicators for subsequent resets
+            document.querySelectorAll(".meal-checkbox").forEach(b => b.checked = false);
+        }
+
+        function loadInsightsAndHooks(diet) {
+            document.getElementById("friendly-tips").innerHTML = `
+                <li><strong>Metabolic Rate Sync:</strong> Keeping consistent windows running helps stabilize overall performance metrics perfectly.</li>
+                <li><strong>Hydration Alert:</strong> Remember to log direct fluid tracking values on the main page to ensure perfect internal metabolic transfer tracking.</li>
+            `;
+
+            const swapText = document.getElementById("swap-suggestion-text");
+            if(diet.goal === "Muscle Gain" || diet.text.toLowerCase().includes("chicken") || diet.text.toLowerCase().includes("egg")) {
+                swapText.innerHTML = "✨ <strong>Impact Hack:</strong> Swapping out one serving of poultry for a clean plant protein source like dal or tofu tomorrow keeps muscle syntheses active while preserving <strong>1,200 Liters of implicit global water flow</strong>!";
+            } else {
+                swapText.innerHTML = "✨ <strong>Footprint Winner:</strong> Your current menu configuration minimizes hidden fluid overhead. By completing these targets, you save <strong>850 Liters of hidden embedded environmental resource flow</strong> today!";
+            }
+        }
+    </script>
+</body>
+</html>
