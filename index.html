@@ -654,9 +654,10 @@ document.querySelectorAll('.reveal').forEach(el=>revealObserver.observe(el));
 
 /* ── OCEAN AUDIO ── */
 (function(){
-  const btn = document.getElementById('sound-btn');
+    const btn = document.getElementById('sound-btn');
+  const audio = new Audio('assets/ocean.mp3');
   // Royalty-free looping ocean ambience from Pixabay CDN
-  const audio = new Audio('https://cdn.pixabay.com/audio/2022/03/10/audio_270f9b1e55.mp3');
+  // const audio = new Audio('https://cdn.pixabay.com/audio/2022/03/10/audio_270f9b1e55.mp3');
   audio.loop = true;
   audio.volume = 0;
   let playing = false;
