@@ -1911,14 +1911,14 @@ html, body {
 
 
 .farm-area-btn {
-    display: block;
-    margin: 12px auto 0 auto;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 10px;
-    background: #14b8a6;
-    color: white;
+    width: 100%;
+    background: rgba(0,0,0,0.25);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-md);
+    padding: 12px;
+    color: var(--text-main);
+    font-family: var(--font-stack);
+    outline: none;
     font-size: 0.95rem;
-    font-weight: 600;
-    cursor: pointer;
+    transition: var(--transition-smooth);
 }
