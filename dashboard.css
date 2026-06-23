@@ -1782,3 +1782,43 @@ input:checked + .slider-round:before { transform: translateX(22px); }
         box-sizing: border-box;
     }
 }
+
+
+.farm-area-label {
+    display: block;
+    margin-bottom: 6px;
+
+    color: #e8f4f8;
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+.farm-area-btn {
+    width: 100%;
+    height: 44px;              /* reduced height */
+
+    background: #15566d;
+    border: 1px solid #2b6f86;
+    border-radius: 12px;
+
+    padding: 0 12px;           /* reduced padding */
+    box-sizing: border-box;
+
+    display: flex;
+    align-items: center;
+}
+
+.farm-area-btn input {
+    width: 100%;
+
+    background: transparent;
+    border: none;
+    outline: none;
+
+    color: #e8f4f8;
+    font-size: 1rem;
+}
+
+.farm-area-btn input::placeholder {
+    color: rgba(232, 244, 248, 0.65);
+}
