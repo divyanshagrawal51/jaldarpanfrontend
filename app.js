@@ -9,19 +9,13 @@ const API_BASE = "https://jaldarpanbackend.onrender.com"; // Render deployment
 let currentUserId = null;
 let mealImageBase64 = null; // stores uploaded meal image for /analyze
 
-// Hardcoded mock friends for leaderboard (real friend system out of scope)
-const MOCK_FRIENDS = [
-    { name: "Muskan", xp: 1200, waterSaved: 4800, level: "Ocean Hero", isVeg: true },
-    { name: "Riya", xp: 1100, waterSaved: 4200, level: "River Guardian", isVeg: true },
-    { name: "Aryan", xp: 900, waterSaved: 3600, level: "Stream Protector", isVeg: false },
-    { name: "Karan", xp: 520, waterSaved: 2100, level: "Water Explorer", isVeg: false }
-];
+// (Mock friends removed — leaderboard now shows only the real logged-in user)
 
 // Runtime state — populated from Supabase on load
 let appState = {
     userProfile: null,
     challenges: [],
-    friends: MOCK_FRIENDS,
+    friends: [],
     badges: [],
     events: []
 };
@@ -850,24 +844,33 @@ function renderMainQuestMatrix() {
     });
 }
 
-function renderLeaderboards(filterType = 'veg') {
+async function renderLeaderboards(filterType = 'veg') {
     const mainBody = document.getElementById('main-leaderboard-body');
     const dashMiniList = document.getElementById('dash-leaderboard-list');
 
-    // Aggregate user profile entry into dataset matching format
-    const formattedUser = {
-        name: appState.userProfile.username + " (You)",
-        xp: appState.userProfile.xp,
-        waterSaved: appState.userProfile.waterSavedMonth,
-        level: getLevelName(appState.userProfile.xp),
-        isVeg: true, // Defaulting tracking filter alignment
-        isUser: true
-    };
+    // Fetch all profiles from Supabase, ranked by XP
+    const { data: profiles, error } = await supabaseClient
+        .from('profiles')
+        .select('id, username, avatar_seed, xp, diet')
+        .order('xp', { ascending: false });
 
-    let dataset = [...appState.friends, formattedUser];
-    
-    // Sort array descending based on XP yields
-    dataset.sort((a,b) => b.xp - a.xp);
+    if (error) {
+        console.error('Leaderboard fetch error:', error);
+        return;
+    }
+
+    const dataset = (profiles || []).map(p => ({
+        id: p.id,
+        name: p.id === currentUserId ? `${p.username} (You)` : p.username,
+        xp: p.xp,
+        level: getLevelName(p.xp),
+        avatarSeed: p.avatar_seed || p.username,
+        isVeg: !p.diet || p.diet === 'Vegetarian' || p.diet === 'Vegan' || p.diet === 'Eggetarian',
+        isUser: p.id === currentUserId
+    }));
+
+    // Already sorted by XP from the query, but ensure consistency
+    dataset.sort((a, b) => b.xp - a.xp);
 
     // Mini Dash Render (Top 3)
     if(dashMiniList) {
@@ -876,7 +879,7 @@ function renderLeaderboards(filterType = 'veg') {
             const row = document.createElement('div');
             row.className = "mini-l-item";
             row.innerHTML = `
-                <span style="font-size:0.9rem; font-weight:600;">${ind.name}</span>
+                <span style="font-size:0.9rem; font-weight:600;">${escapeHTML(ind.name)}</span>
                 <span style="color:var(--color-aqua); font-size:0.85rem; font-weight:700;">${ind.xp} XP</span>
             `;
             dashMiniList.appendChild(row);
@@ -905,12 +908,11 @@ function renderLeaderboards(filterType = 'veg') {
             <td><span class="rank-num">${index + 1}</span></td>
             <td>
                 <div class="identity-cell">
-                    <img class="mini-avatar-list" src="https://api.dicebear.com/7.x/bottts/svg?seed=${ind.name}" alt="av">
-                    <strong>${ind.name}</strong>
+                    <img class="mini-avatar-list" src="https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(ind.avatarSeed)}" alt="av">
+                    <strong>${escapeHTML(ind.name)}</strong>
                 </div>
             </td>
-            <td>${ind.xp}</td>
-            <td style="color:var(--color-aqua); font-weight:700;">💧 ${ind.waterSaved}L</td>
+            <td style="color:var(--color-aqua); font-weight:700;">${ind.xp}</td>
             <td><span class="badge-pill">${ind.level}</span></td>
         `;
         mainBody.appendChild(tr);
