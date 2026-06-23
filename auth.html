@@ -10,297 +10,113 @@
 html,body{height:100%;font-family:'DM Sans',sans-serif;overflow:hidden}
 
 /* ── LAYOUT ── */
-.auth-wrap{
-  display:flex;
-  height:100vh;
-  width:100vw;
-}
+.auth-wrap{display:flex;height:100vh;width:100vw;}
 
 /* LEFT PANEL */
-.panel-left{
-  flex:0 0 48%;
-  position:relative;
-  background:#061a2a;
-  overflow:hidden;
-}
-#water-canvas{
-  position:absolute;inset:0;
-  width:100%;height:100%;
-  display:block;
-}
-.panel-left-overlay{
-  position:absolute;inset:0;
-  background:linear-gradient(160deg,rgba(5,28,50,0.52) 0%,rgba(5,40,65,0.38) 100%);
-}
-.panel-left-content{
-  position:relative;z-index:2;
-  height:100%;
-  display:flex;flex-direction:column;
-  justify-content:space-between;
-  padding:2.2rem 2.4rem;
-}
-.panel-logo{
-  font-family:'Syne',sans-serif;font-size:1.3rem;font-weight:800;
-  color:#fff;letter-spacing:-0.02em;text-decoration:none;
-}
+.panel-left{flex:0 0 48%;position:relative;background:#061a2a;overflow:hidden;}
+#water-canvas{position:absolute;inset:0;width:100%;height:100%;display:block;}
+.panel-left-overlay{position:absolute;inset:0;background:linear-gradient(160deg,rgba(5,28,50,0.52) 0%,rgba(5,40,65,0.38) 100%);}
+.panel-left-content{position:relative;z-index:2;height:100%;display:flex;flex-direction:column;justify-content:space-between;padding:2.2rem 2.4rem;}
+.panel-logo{font-family:'Syne',sans-serif;font-size:1.3rem;font-weight:800;color:#fff;letter-spacing:-0.02em;text-decoration:none;}
 .panel-logo span{color:#7de0f8}
-.panel-quote{
-  margin-bottom:2rem;
-}
-.panel-quote-h{
-  font-family:'Syne',sans-serif;
-  font-size:clamp(1.4rem,2.5vw,2rem);
-  font-weight:700;
-  color:#fff;
-  line-height:1.3;
-  letter-spacing:-0.02em;
-  text-shadow:0 2px 20px rgba(0,0,0,0.3);
-}
+.panel-quote{margin-bottom:2rem;}
+.panel-quote-h{font-family:'Syne',sans-serif;font-size:clamp(1.4rem,2.5vw,2rem);font-weight:700;color:#fff;line-height:1.3;letter-spacing:-0.02em;text-shadow:0 2px 20px rgba(0,0,0,0.3);}
 .panel-quote-h em{color:#7de0f8;font-style:normal}
-.panel-quote .sub{
-  font-size:0.85rem;font-weight:300;
-  color:rgba(200,240,255,0.7);
-  margin-top:0.7rem;
-  font-family:'DM Sans',sans-serif;
-}
-.panel-dots{
-  display:flex;gap:0.4rem;margin-bottom:0.3rem;
-}
-.panel-dot{
-  width:6px;height:6px;border-radius:50%;
-  background:rgba(255,255,255,0.3);
-}
+.panel-quote .sub{font-size:0.85rem;font-weight:300;color:rgba(200,240,255,0.7);margin-top:0.7rem;font-family:'DM Sans',sans-serif;}
+.panel-dots{display:flex;gap:0.4rem;margin-bottom:0.3rem;}
+.panel-dot{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,0.3);}
 .panel-dot.active{background:#7de0f8;width:20px;border-radius:3px;}
 
 /* RIGHT PANEL */
-.panel-right{
-  flex:1;
-  background:#0c1825;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  padding:2rem;
-  overflow-y:auto;
-}
-.form-box{
-  width:100%;
-  max-width:380px;
-}
+.panel-right{flex:1;background:#0c1825;display:flex;align-items:center;justify-content:center;padding:2rem;overflow-y:auto;}
+.form-box{width:100%;max-width:380px;}
 
 /* SCREENS */
 .screen{display:none}
 .screen.active{display:block}
 
 /* OAUTH */
-.oauth-divider{
-  display:flex;align-items:center;text-align:center;
-  margin:1.1rem 0;color:rgba(200,240,255,0.4);
-  font-size:0.78rem;text-transform:uppercase;letter-spacing:0.08em;
-}
-.oauth-divider::before,.oauth-divider::after{
-  content:'';flex:1;height:1px;background:rgba(255,255,255,0.08);
-}
-.oauth-divider span{padding:0 0.8rem}
-.btn-google{
-  width:100%;display:flex;align-items:center;justify-content:center;gap:0.6rem;
-  background:#fff;color:#3c4043;border:none;border-radius:8px;
-  padding:0.75rem 1rem;font-family:'DM Sans',sans-serif;font-size:0.92rem;font-weight:600;
-  cursor:pointer;transition:background 0.2s,transform 0.15s;
-}
+.btn-google{width:100%;display:flex;align-items:center;justify-content:center;gap:0.6rem;background:#fff;color:#3c4043;border:none;border-radius:8px;padding:0.75rem 1rem;font-family:'DM Sans',sans-serif;font-size:0.92rem;font-weight:600;cursor:pointer;transition:background 0.2s,transform 0.15s;}
 .btn-google:hover{background:#f1f3f4;transform:translateY(-1px)}
 
 /* HEADINGS */
-.form-title{
-  font-family:'Syne',sans-serif;
-  font-size:1.75rem;font-weight:800;
-  color:#fff;letter-spacing:-0.025em;
-  margin-bottom:0.35rem;
-}
-.form-sub{
-  font-size:0.85rem;font-weight:300;
-  color:rgba(160,200,230,0.65);
-  margin-bottom:2rem;
-  line-height:1.5;
-}
+.form-title{font-family:'Syne',sans-serif;font-size:1.75rem;font-weight:800;color:#fff;letter-spacing:-0.025em;margin-bottom:0.35rem;}
+.form-sub{font-size:0.85rem;font-weight:300;color:rgba(160,200,230,0.65);margin-bottom:2rem;line-height:1.5;}
 
 /* PROGRESS BAR */
-.progress-wrap{
-  margin-bottom:1.8rem;
-}
-.progress-label{
-  display:flex;justify-content:space-between;
-  font-size:0.72rem;color:rgba(160,200,230,0.5);
-  margin-bottom:0.5rem;
-  letter-spacing:0.05em;
-}
-.progress-track{
-  height:3px;background:rgba(255,255,255,0.08);border-radius:100px;overflow:hidden;
-}
-.progress-fill{
-  height:100%;background:#5ec9f0;border-radius:100px;
-  transition:width 0.5s cubic-bezier(0.4,0,0.2,1);
-}
+.progress-wrap{margin-bottom:1.8rem;}
+.progress-label{display:flex;justify-content:space-between;font-size:0.72rem;color:rgba(160,200,230,0.5);margin-bottom:0.5rem;letter-spacing:0.05em;}
+.progress-track{height:3px;background:rgba(255,255,255,0.08);border-radius:100px;overflow:hidden;}
+.progress-fill{height:100%;background:#5ec9f0;border-radius:100px;transition:width 0.5s cubic-bezier(0.4,0,0.2,1);}
 
 /* FORM FIELDS */
 .field{margin-bottom:1.1rem}
-.field label{
-  display:block;font-size:0.75rem;font-weight:500;
-  color:rgba(160,210,240,0.7);
-  letter-spacing:0.07em;text-transform:uppercase;
-  margin-bottom:0.42rem;
-}
-.field input,
-.field select{
-  width:100%;
-  padding:0.72rem 1rem;
-  background:rgba(255,255,255,0.06);
-  border:1.5px solid rgba(255,255,255,0.1);
-  border-radius:10px;
-  font-family:'DM Sans',sans-serif;
-  font-size:0.92rem;
-  color:#fff;
-  outline:none;
-  transition:border-color 0.2s,background 0.2s;
-  appearance:none;
-  -webkit-appearance:none;
-}
+.field label{display:block;font-size:0.75rem;font-weight:500;color:rgba(160,210,240,0.7);letter-spacing:0.07em;text-transform:uppercase;margin-bottom:0.42rem;}
+.field input,.field select{width:100%;padding:0.72rem 1rem;background:rgba(255,255,255,0.06);border:1.5px solid rgba(255,255,255,0.1);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:0.92rem;color:#fff;outline:none;transition:border-color 0.2s,background 0.2s;appearance:none;-webkit-appearance:none;}
 .field input::placeholder{color:rgba(160,200,230,0.35)}
-.field input:focus,
-.field select:focus{
-  border-color:#5ec9f0;
-  background:rgba(94,201,240,0.07);
-}
+.field input:focus,.field select:focus{border-color:#5ec9f0;background:rgba(94,201,240,0.07);}
 .field select option{background:#0c1825;color:#fff}
-
-/* field row */
 .field-row{display:grid;grid-template-columns:1fr 1fr;gap:0.8rem}
 
-/* password wrapper */
+/* ── CITY COMBO ── */
+.city-combo{position:relative;}
+.city-combo input{width:100%;padding:0.72rem 2.6rem 0.72rem 1rem;background:rgba(255,255,255,0.06);border:1.5px solid rgba(255,255,255,0.1);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:0.92rem;color:#fff;outline:none;transition:border-color 0.2s,background 0.2s;}
+.city-combo input::placeholder{color:rgba(160,200,230,0.35)}
+.city-combo input:focus{border-color:#5ec9f0;background:rgba(94,201,240,0.07);}
+.city-combo input:disabled{opacity:0.4;cursor:not-allowed;}
+.city-combo-arrow{position:absolute;right:0.9rem;top:50%;transform:translateY(-50%);pointer-events:none;color:rgba(160,210,240,0.4);font-size:0.75rem;}
+.city-dropdown{
+  position:absolute;top:calc(100% + 4px);left:0;right:0;z-index:999;
+  background:#0f2135;border:1.5px solid rgba(94,201,240,0.25);border-radius:10px;
+  max-height:200px;overflow-y:auto;display:none;
+  box-shadow:0 8px 32px rgba(0,0,0,0.5);
+}
+.city-dropdown.open{display:block;}
+.city-dropdown::-webkit-scrollbar{width:4px;}
+.city-dropdown::-webkit-scrollbar-track{background:transparent;}
+.city-dropdown::-webkit-scrollbar-thumb{background:rgba(94,201,240,0.3);border-radius:2px;}
+.city-opt{padding:0.6rem 1rem;font-size:0.88rem;color:rgba(200,230,245,0.85);cursor:pointer;transition:background 0.12s;}
+.city-opt:hover,.city-opt.highlighted{background:rgba(94,201,240,0.12);color:#7de0f8;}
+.city-opt-empty{padding:0.6rem 1rem;font-size:0.82rem;color:rgba(160,200,230,0.35);font-style:italic;}
+
+/* password */
 .pw-wrap{position:relative}
 .pw-wrap input{padding-right:2.8rem}
-.pw-toggle{
-  position:absolute;right:0.9rem;top:50%;transform:translateY(-50%);
-  background:none;border:none;cursor:pointer;
-  color:rgba(160,210,240,0.5);font-size:0.9rem;
-  transition:color 0.15s;
-}
+.pw-toggle{position:absolute;right:0.9rem;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:rgba(160,210,240,0.5);font-size:0.9rem;transition:color 0.15s;}
 .pw-toggle:hover{color:#5ec9f0}
 
-/* remember / forgot row */
-.form-meta{
-  display:flex;align-items:center;justify-content:space-between;
-  margin-bottom:1.4rem;
-}
+/* remember / forgot */
+.form-meta{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.4rem;}
 .remember{display:flex;align-items:center;gap:0.5rem;cursor:pointer}
-.remember input[type=checkbox]{
-  width:15px;height:15px;accent-color:#5ec9f0;cursor:pointer;
-}
+.remember input[type=checkbox]{width:15px;height:15px;accent-color:#5ec9f0;cursor:pointer;}
 .remember span{font-size:0.8rem;color:rgba(160,200,230,0.6)}
 .forgot{font-size:0.8rem;color:rgba(160,200,230,0.6);text-decoration:none;transition:color 0.15s}
 .forgot:hover{color:#5ec9f0}
 
-/* OTP method toggle */
-.method-toggle{
-  display:flex;gap:0.5rem;margin-bottom:1.4rem;
-}
-.method-btn{
-  flex:1;padding:0.55rem;border-radius:8px;font-size:0.8rem;font-weight:500;
-  font-family:'DM Sans',sans-serif;cursor:pointer;
-  border:1.5px solid rgba(255,255,255,0.1);
-  background:transparent;color:rgba(160,200,230,0.6);
-  transition:all 0.18s;
-}
-.method-btn.active{
-  background:rgba(94,201,240,0.12);
-  border-color:#5ec9f0;color:#5ec9f0;
-}
-
-/* SUBMIT BUTTON */
-.btn-submit{
-  width:100%;padding:0.85rem;
-  background:#5ec9f0;color:#0a1a2e;
-  font-family:'DM Sans',sans-serif;font-size:0.95rem;font-weight:600;
-  border:none;border-radius:10px;cursor:pointer;
-  transition:background 0.2s,transform 0.15s;
-  margin-top:0.3rem;
-  letter-spacing:0.01em;
-}
+/* SUBMIT */
+.btn-submit{width:100%;padding:0.85rem;background:#5ec9f0;color:#0a1a2e;font-family:'DM Sans',sans-serif;font-size:0.95rem;font-weight:600;border:none;border-radius:10px;cursor:pointer;transition:background 0.2s,transform 0.15s;margin-top:0.3rem;letter-spacing:0.01em;}
 .btn-submit:hover{background:#3ab8e8;transform:translateY(-1px)}
 
-/* secondary link */
-.form-switch{
-  text-align:center;margin-top:1.4rem;
-  font-size:0.82rem;color:rgba(160,200,230,0.5);
-}
-.form-switch a{
-  color:#5ec9f0;text-decoration:none;font-weight:500;margin-left:0.3rem;
-  transition:color 0.15s;
-}
+.form-switch{text-align:center;margin-top:1.4rem;font-size:0.82rem;color:rgba(160,200,230,0.5);}
+.form-switch a{color:#5ec9f0;text-decoration:none;font-weight:500;margin-left:0.3rem;transition:color 0.15s;}
 .form-switch a:hover{color:#7de0f8}
 
-/* divider */
-.divider{
-  display:flex;align-items:center;gap:0.8rem;
-  margin:1.2rem 0;
-}
-.divider::before,.divider::after{
-  content:'';flex:1;height:1px;background:rgba(255,255,255,0.08);
-}
-.divider span{font-size:0.75rem;color:rgba(160,200,230,0.35)}
-
-/* info note */
-.info-note{
-  background:rgba(94,201,240,0.08);
-  border:1px solid rgba(94,201,240,0.15);
-  border-radius:10px;padding:0.75rem 1rem;
-  font-size:0.8rem;color:rgba(160,220,240,0.7);
-  margin-bottom:1.4rem;line-height:1.5;
-}
-.info-note strong{color:#5ec9f0}
-
-/* option cards (diet, residence etc) */
-.option-cards{
-  display:grid;grid-template-columns:1fr 1fr;gap:0.6rem;
-  margin-bottom:1.1rem;
-}
-.option-card{
-  padding:0.7rem 0.8rem;
-  background:rgba(255,255,255,0.05);
-  border:1.5px solid rgba(255,255,255,0.09);
-  border-radius:10px;cursor:pointer;
-  text-align:center;
-  transition:all 0.18s;
-}
+/* option cards */
+.option-cards{display:grid;grid-template-columns:1fr 1fr;gap:0.6rem;margin-bottom:1.1rem;}
+.option-card{padding:0.7rem 0.8rem;background:rgba(255,255,255,0.05);border:1.5px solid rgba(255,255,255,0.09);border-radius:10px;cursor:pointer;text-align:center;transition:all 0.18s;}
 .option-card:hover{border-color:rgba(94,201,240,0.4);background:rgba(94,201,240,0.06)}
-.option-card.selected{
-  border-color:#5ec9f0;background:rgba(94,201,240,0.12);
-}
+.option-card.selected{border-color:#5ec9f0;background:rgba(94,201,240,0.12);}
 .option-card .oc-icon{font-size:1.3rem;margin-bottom:0.3rem}
 .option-card .oc-label{font-size:0.78rem;font-weight:500;color:rgba(200,230,245,0.85)}
 
-/* slider field */
-.slider-row{
-  display:flex;align-items:center;gap:0.8rem;margin-top:0.4rem;
-}
-.slider-row input[type=range]{
-  flex:1;accent-color:#5ec9f0;
-  background:transparent;border:none;padding:0;
-  height:auto;
-}
-.slider-val{
-  font-family:'Syne',sans-serif;font-weight:700;font-size:1rem;
-  color:#5ec9f0;min-width:52px;text-align:right;
-}
+/* slider */
+.slider-row{display:flex;align-items:center;gap:0.8rem;margin-top:0.4rem;}
+.slider-row input[type=range]{flex:1;accent-color:#5ec9f0;background:transparent;border:none;padding:0;height:auto;}
+.slider-val{font-family:'Syne',sans-serif;font-weight:700;font-size:1rem;color:#5ec9f0;min-width:52px;text-align:right;}
 
-/* success screen */
-.success-icon{
-  width:64px;height:64px;border-radius:50%;
-  background:rgba(94,201,240,0.12);border:2px solid #5ec9f0;
-  display:flex;align-items:center;justify-content:center;
-  font-size:1.8rem;margin:0 auto 1.4rem;
-}
+/* success */
+.success-icon{width:64px;height:64px;border-radius:50%;background:rgba(94,201,240,0.12);border:2px solid #5ec9f0;display:flex;align-items:center;justify-content:center;font-size:1.8rem;margin:0 auto 1.4rem;}
 
-/* MOBILE */
 @media(max-width:680px){
   .panel-left{display:none}
   .panel-right{background:#090f18}
@@ -338,7 +154,6 @@ html,body{height:100%;font-family:'DM Sans',sans-serif;overflow:hidden}
       <div class="screen active" id="screen-login">
         <div class="form-title">Welcome back.</div>
         <p class="form-sub">Sign in to continue.</p>
-
         <button class="btn-google" onclick="signInWithGoogle()">
           <svg width="18" height="18" viewBox="0 0 18 18" xmlns="http://www.w3.org/2000/svg">
             <path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.252-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.875 2.684-6.616z"/>
@@ -356,7 +171,6 @@ html,body{height:100%;font-family:'DM Sans',sans-serif;overflow:hidden}
           <div class="progress-label"><span>Profile setup</span><span>Step 1 of 2</span></div>
           <div class="progress-track"><div class="progress-fill" style="width:50%"></div></div>
         </div>
-
         <div class="form-title">About you.</div>
         <p class="form-sub">Helps us build your water baseline. Takes 60 seconds.</p>
 
@@ -379,21 +193,47 @@ html,body{height:100%;font-family:'DM Sans',sans-serif;overflow:hidden}
 
         <div class="field">
           <label>State</label>
-          <select id="ob-state">
+          <select id="ob-state" onchange="onStateChange(this.value)">
             <option value="" disabled selected>Select your state</option>
-            <option>Rajasthan</option><option>Maharashtra</option><option>Tamil Nadu</option>
-            <option>Karnataka</option><option>Uttar Pradesh</option><option>Punjab</option>
-            <option>West Bengal</option><option>Gujarat</option><option>Kerala</option>
-            <option>Madhya Pradesh</option><option>Bihar</option><option>Odisha</option>
-            <option>Telangana</option><option>Andhra Pradesh</option><option>Haryana</option>
-            <option>Himachal Pradesh</option><option>Uttarakhand</option><option>Jharkhand</option>
-            <option>Chhattisgarh</option><option>Assam</option><option>Other</option>
+            <option>Andhra Pradesh</option><option>Arunachal Pradesh</option>
+            <option>Assam</option><option>Bihar</option>
+            <option>Chhattisgarh</option><option>Goa</option>
+            <option>Gujarat</option><option>Haryana</option>
+            <option>Himachal Pradesh</option><option>Jharkhand</option>
+            <option>Karnataka</option><option>Kerala</option>
+            <option>Madhya Pradesh</option><option>Maharashtra</option>
+            <option>Manipur</option><option>Meghalaya</option>
+            <option>Mizoram</option><option>Nagaland</option>
+            <option>Odisha</option><option>Punjab</option>
+            <option>Rajasthan</option><option>Sikkim</option>
+            <option>Tamil Nadu</option><option>Telangana</option>
+            <option>Tripura</option><option>Uttar Pradesh</option>
+            <option>Uttarakhand</option><option>West Bengal</option>
+            <option>Delhi</option><option>Jammu and Kashmir</option>
+            <option>Ladakh</option><option>Chandigarh</option>
+            <option>Dadra and Nagar Haveli and Daman and Diu</option>
+            <option>Lakshadweep</option><option>Puducherry</option>
           </select>
         </div>
 
+        <!-- ── CITY COMBO BOX ── -->
         <div class="field">
           <label>City / District</label>
-          <input type="text" placeholder="e.g. Jaipur" id="ob-city"/>
+          <div class="city-combo" id="city-combo-wrap">
+            <input
+              type="text"
+              id="ob-city"
+              placeholder="Select state first"
+              disabled
+              autocomplete="off"
+              oninput="onCityInput(this.value)"
+              onfocus="openCityDropdown()"
+              onblur="closeCityDropdownDelayed()"
+              onkeydown="onCityKeydown(event)"
+            />
+            <span class="city-combo-arrow">▾</span>
+            <div class="city-dropdown" id="city-dropdown"></div>
+          </div>
         </div>
 
         <div class="field">
@@ -418,7 +258,6 @@ html,body{height:100%;font-family:'DM Sans',sans-serif;overflow:hidden}
           <div class="progress-label"><span>Profile setup</span><span>Step 2 of 2</span></div>
           <div class="progress-track"><div class="progress-fill" style="width:100%"></div></div>
         </div>
-
         <div class="form-title">How you live.</div>
         <p class="form-sub">This shapes your personal water footprint estimate.</p>
 
@@ -485,7 +324,6 @@ html,body{height:100%;font-family:'DM Sans',sans-serif;overflow:hidden}
         </div>
 
         <button class="btn-submit" onclick="finishOnboarding()">Finish setup →</button>
-
         <div class="form-switch" style="margin-top:1rem">
           <a href="javascript:void(0)" onclick="goTo('screen-profile-1')" style="color:rgba(160,200,230,0.4);font-size:0.8rem;">← Back</a>
         </div>
@@ -501,13 +339,11 @@ html,body{height:100%;font-family:'DM Sans',sans-serif;overflow:hidden}
             We've estimated your baseline water footprint.<br>
             Start logging to see it in action.
           </p>
-
           <div style="background:rgba(94,201,240,0.08);border:1px solid rgba(94,201,240,0.18);border-radius:14px;padding:1.2rem;margin-bottom:2rem;">
             <div style="font-size:0.72rem;letter-spacing:0.12em;text-transform:uppercase;color:rgba(94,201,240,0.6);margin-bottom:0.5rem;">Your estimated baseline</div>
             <div style="font-family:'Syne',sans-serif;font-size:2.2rem;font-weight:800;color:#5ec9f0;letter-spacing:-0.02em;">~1,580 <span style="font-size:1rem;font-weight:300;color:rgba(160,220,240,0.6)">L/day</span></div>
             <div style="font-size:0.78rem;color:rgba(160,200,230,0.5);margin-top:0.3rem;">Rajasthan average · based on your profile</div>
           </div>
-
           <button class="btn-submit" onclick="window.location.href='dashboard.html'">Go to my dashboard →</button>
         </div>
       </div>
@@ -519,7 +355,145 @@ html,body{height:100%;font-family:'DM Sans',sans-serif;overflow:hidden}
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script>
-/* ── SUPABASE CLIENT ── */
+/* ══════════════════════════════════════════
+   INDIA CITIES DATABASE — state → cities[]
+══════════════════════════════════════════ */
+const INDIA_CITIES = {
+  "Andhra Pradesh":["Visakhapatnam","Vijayawada","Guntur","Nellore","Kurnool","Rajahmundry","Tirupati","Kakinada","Kadapa","Eluru","Ongole","Anantapur","Vizianagaram","Bhimavaram","Nandyal","Machilipatnam","Adoni","Tenali","Proddatur","Chittoor","Srikakulam","Hindupur","Gudivada","Narasaraopet","Tadipatri","Mangalagiri","Guntakal","Dharmavaram","Tadepalligudem","Madanapalle","Chilakaluripet","Yemmiganur","Markapur","Gudur","Kavali","Palakollu","Tanuku","Bapatla","Sullurpeta","Naidupet"],
+  "Arunachal Pradesh":["Itanagar","Naharlagun","Pasighat","Namsai","Bomdila","Ziro","Along","Tezu","Khonsa","Changlang","Tawang","Daporijo","Roing","Anini","Yingkiong","Aalo","Nirjuli","Banderdewa","Deomali","Chimpu"],
+  "Assam":["Guwahati","Silchar","Dibrugarh","Jorhat","Nagaon","Tinsukia","Tezpur","Bongaigaon","Dhubri","Diphu","North Lakhimpur","Sivasagar","Goalpara","Barpeta","Mangaldoi","Karimganj","Hailakandi","Kokrajhar","Golaghat","Morigaon","Nalbari","Dhemaji","Lakhimpur","Cachar","Sonitpur","Darrang","Kamrup","Biswanath","Charaideo","Dima Hasao","Hojai","Majuli","South Salmara-Mankachar","Udalguri","West Karbi Anglong"],
+  "Bihar":["Patna","Gaya","Muzaffarpur","Bhagalpur","Darbhanga","Arrah","Bihar Sharif","Begusarai","Purnia","Katihar","Munger","Chhapra","Sitamarhi","Samastipur","Hajipur","Aurangabad","Bettiah","Motihari","Nawada","Saharsa","Supaul","Madhubani","Kishanganj","Araria","Siwan","Gopalganj","Sasaram","Dehri","Buxar","Lakhisarai","Sheikhpura","Jahanabad","Vaishali","Saran","Rohtas","Bhojpur","Kaimur","Khagaria","Jamui","Banka","Sheohar","Madhepura","Nalanda","West Champaran","East Champaran"],
+  "Chhattisgarh":["Raipur","Bhilai","Bilaspur","Korba","Durg","Rajnandgaon","Raigarh","Jagdalpur","Ambikapur","Dhamtari","Mahasamund","Kanker","Kondagaon","Narayanpur","Jashpur","Balod","Baloda Bazar","Balrampur","Bemetara","Bijapur","Gariaband","Gaurela-Pendra-Marwahi","Janjgir-Champa","Kabirdham","Mungeli","Sakti","Sarangarh-Bilaigarh","Surajpur","Sukma","Korea","Surguja"],
+  "Goa":["Panaji","Margao","Vasco da Gama","Mapusa","Ponda","Bicholim","Curchorem","Sanquelim","Cuncolim","Quepem","Valpoi","Pernem","Canacona","Mormugao","Calangute","Candolim","Anjuna","Colva","Benaulim","Panjim"],
+  "Gujarat":["Ahmedabad","Surat","Vadodara","Rajkot","Bhavnagar","Jamnagar","Gandhinagar","Junagadh","Anand","Nadiad","Morbi","Surendranagar","Mehsana","Bharuch","Navsari","Valsad","Amreli","Porbandar","Godhra","Himatnagar","Palanpur","Botad","Dahod","Patan","Dwarka","Veraval","Gandhidham","Ankleshwar","Vapi","Bilimora","Deesa","Dhrangadhra","Gondal","Jetpur","Wankaner","Sidhpur","Unjha","Idar","Modasa","Kadi","Kalol","Sanand","Dholka","Dhandhuka","Wadhwan","Limbdi","Mangrol","Rajpipla","Chhota Udaipur","Tapi","Narmada","Kheda","Aravalli","Mahisagar","Gir Somnath","Devbhoomi Dwarka","Botad","Morbi"],
+  "Haryana":["Faridabad","Gurgaon","Panipat","Ambala","Yamunanagar","Rohtak","Hisar","Karnal","Sonipat","Panchkula","Bhiwani","Sirsa","Bahadurgarh","Jind","Thanesar","Kaithal","Rewari","Palwal","Fatehabad","Hansi","Narnaul","Mahendragarh","Jhajjar","Nuh","Charkhi Dadri","Kurukshetra","Pehowa","Radaur","Narwana","Tosham","Ballabhgarh","Narnol","Hathin","Mewat","Farrukhnagar","Sohna","Manesar","Dharuhera","Hodal"],
+  "Himachal Pradesh":["Shimla","Manali","Dharamshala","Solan","Mandi","Palampur","Baddi","Nahan","Kullu","Hamirpur","Una","Bilaspur","Chamba","Rampur","Sundarnagar","Parwanoo","Paonta Sahib","Nurpur","Kangra","Jogindernagar","Rewalsar","Kasauli","Nalagarh","Arki","Kinnaur","Lahaul and Spiti","Sirmaur","Nagrota Bagwan","Theog","Rohru"],
+  "Jharkhand":["Ranchi","Jamshedpur","Dhanbad","Bokaro","Hazaribagh","Deoghar","Giridih","Ramgarh","Phusro","Medininagar","Chaibasa","Dumka","Pakur","Sahibganj","Godda","Koderma","Chatra","Lohardaga","Gumla","Simdega","Khunti","Jamtara","Latehar","Palamu","Garhwa","Seraikela","Kharsawan","East Singhbhum","West Singhbhum"],
+  "Karnataka":["Bengaluru","Mysuru","Mangaluru","Hubballi","Dharwad","Belagavi","Kalaburagi","Ballari","Vijayapura","Shivamogga","Tumkur","Davangere","Bidar","Raichur","Udupi","Hassan","Chitradurga","Kolar","Mandya","Chikkamagaluru","Gadag","Koppal","Yadgir","Bagalkot","Chamarajanagar","Chikkaballapur","Kodagu","Ramanagara","Hospet","Gangavathi","Ranebennur","Bhadravati","Tarikere","Hiriyur","Tiptur","Sira","Madhugiri","Pavagada","Challakere","Harihar","Byadagi","Savanur","Hangal","Shiggaon","Haveri","Shirahatti","Mundargi","Ron","Nargund","Lakshmeshwar"],
+  "Kerala":["Thiruvananthapuram","Kochi","Kozhikode","Thrissur","Kollam","Palakkad","Alappuzha","Kannur","Kottayam","Malappuram","Kasaragod","Pathanamthitta","Idukki","Wayanad","Ernakulam","Munnar","Varkala","Thalassery","Vadakara","Manjeri","Perinthalmanna","Ottapalam","Ponnani","Tirur","Guruvayur","Irinjalakuda","Muvattupuzha","Kanhangad","Nedumangad","Attingal","Karunagappally","Cherthala","Kayamkulam","Tiruvalla","Punalur","Adoor","Pathanapuram","Thodupuzha","Kothamangalam","Perumbavoor","Aluva","Chalakudy","Thrippunithura","Angamaly","North Paravur","Piravom"],
+  "Madhya Pradesh":["Bhopal","Indore","Gwalior","Jabalpur","Ujjain","Sagar","Dewas","Satna","Ratlam","Rewa","Murwara","Singrauli","Burhanpur","Khandwa","Bhind","Chhindwara","Guna","Shivpuri","Vidisha","Chhatarpur","Damoh","Mandsaur","Khargone","Neemuch","Pithampur","Hoshangabad","Itarsi","Sehore","Betul","Seoni","Datia","Nagda","Narsimhapur","Tikamgarh","Shajapur","Dhar","Barwani","Rajgarh","Balaghat","Katni","Alirajpur","Anuppur","Ashoknagar","Burhanpur","Dindori","Harda","Mandla","Morena","Narsinghpur","Panna","Raisen","Sheopur","Sidhi","Umaria"],
+  "Maharashtra":["Mumbai","Pune","Nagpur","Thane","Pimpri-Chinchwad","Nashik","Kalyan","Vasai-Virar","Aurangabad","Navi Mumbai","Solapur","Mira-Bhayandar","Bhiwandi","Amravati","Nanded","Kolhapur","Akola","Latur","Dhule","Ahmednagar","Chandrapur","Panvel","Parbhani","Ichalkaranji","Jalgaon","Sangli","Malegaon","Jalna","Satara","Ratnagiri","Wardha","Buldhana","Osmanabad","Hingoli","Washim","Gondia","Yavatmal","Beed","Nandurbar","Gadchiroli","Sindhudurg","Alibag","Raigad","Gondia","Bhandara","Akola","Washim","Ambarnath","Ulhasnagar","Badlapur","Titwala","Karjat","Khopoli","Panvel","Uran","Pen","Roha","Mahad"],
+  "Manipur":["Imphal","Thoubal","Bishnupur","Churachandpur","Ukhrul","Senapati","Tamenglong","Chandel","Jiribam","Kakching","Kamjong","Kangpokpi","Noney","Pherzawl","Tengnoupal","Moreh","Lilong","Nambol","Wangjing","Sugnu"],
+  "Meghalaya":["Shillong","Tura","Nongpoh","Jowai","Baghmara","Williamnagar","Resubelpara","Nongstoin","Khliehriat","East Khasi Hills","West Khasi Hills","Ri Bhoi","East Jaintia Hills","West Jaintia Hills","East Garo Hills","West Garo Hills","South Garo Hills","South West Khasi Hills","Eastern West Khasi Hills"],
+  "Mizoram":["Aizawl","Lunglei","Champhai","Serchhip","Kolasib","Mamit","Lawngtlai","Siaha","Khawzawl","Hnahthial","Saitual","Saiha","Thenzawl","Bairabi","Zawlnuam"],
+  "Nagaland":["Kohima","Dimapur","Mokokchung","Tuensang","Wokha","Zunheboto","Phek","Mon","Kiphire","Longleng","Peren","Noklak","Tseminyu","Chumoukedima","Niuland","Shamator"],
+  "Odisha":["Bhubaneswar","Cuttack","Rourkela","Brahmapur","Sambalpur","Puri","Balasore","Bhadrak","Baripada","Jharsuguda","Bargarh","Angul","Dhenkanal","Kendujhar","Balangir","Rayagada","Koraput","Bhawanipatna","Nabarangpur","Malkangiri","Sundargarh","Mayurbhanj","Jagatsinghpur","Kendrapara","Jajpur","Nayagarh","Khurda","Ganjam","Gajapati","Kandhamal","Boudh","Sonepur","Nuapada","Kalahandi","Phulbani","Titlagarh","Jeypore","Parlakhemundi","Berhampur","Talcher","Barbil","Rourkela","Rajgangpur"],
+  "Punjab":["Ludhiana","Amritsar","Jalandhar","Patiala","Bathinda","Mohali","Firozpur","Batala","Pathankot","Hoshiarpur","Moga","Abohar","Malerkotla","Khanna","Phagwara","Muktsar","Barnala","Rajpura","Morinda","Gurdaspur","Fazilka","Kapurthala","Nawanshahr","Sangrur","Faridkot","Mansa","Rupnagar","Tarn Taran","Fatehgarh Sahib","Zirakpur","Jagraon","Rampura Phul","Sunam","Dirba","Moonak","Dhuri","Nabha","Patiala","Samana","Sirhind"],
+  "Rajasthan":["Jaipur","Jodhpur","Kota","Bikaner","Ajmer","Udaipur","Bhilwara","Alwar","Bharatpur","Sri Ganganagar","Pali","Sikar","Tonk","Barmer","Jhunjhunu","Nagaur","Churu","Jhalawar","Banswara","Dungarpur","Hanumangarh","Sawai Madhopur","Chittorgarh","Dausa","Bundi","Jalore","Baran","Dholpur","Karauli","Sirohi","Pratapgarh","Rajsamand","Jaisalmer","Ganganagar","Beawar","Kishangarh","Bhiwadi","Pushkar","Nathdwara","Hindaun","Gangapur City","Makrana","Nimbahera","Sujangarh","Ladnu","Didwana","Phalodi"],
+  "Sikkim":["Gangtok","Namchi","Geyzing","Mangan","Rangpo","Jorethang","Singtam","Naya Bazar","Rongli","Ravangla","Pelling","Yuksom","Lachen","Lachung","Gyalshing","Soreng"],
+  "Tamil Nadu":["Chennai","Coimbatore","Madurai","Tiruchirappalli","Salem","Tirunelveli","Tiruppur","Vellore","Erode","Thoothukkudi","Dindigul","Thanjavur","Ranipet","Sivakasi","Karur","Udhagamandalam","Hosur","Nagercoil","Kanchipuram","Kumarapalayam","Karaikkudi","Neyveli","Cuddalore","Kumbakonam","Tiruvannamalai","Pollachi","Rajapalayam","Gudiyatham","Pudukkottai","Vaniyambadi","Ambur","Nagapattinam","Villupuram","Virudhunagar","Ariyalur","Perambalur","Ramanathapuram","Tenkasi","Tirupathur","Kallakurichi","Chengalpattu","Krishnagiri","Dharmapuri","Namakkal","The Nilgiris","Mayiladuthurai","Tiruvarur","Tiruvallur","Kancheepuram"],
+  "Telangana":["Hyderabad","Warangal","Nizamabad","Karimnagar","Ramagundam","Khammam","Mahbubnagar","Nalgonda","Adilabad","Suryapet","Miryalaguda","Siddipet","Jagtial","Mancherial","Nirmal","Kamareddy","Sangareddy","Vikarabad","Wanaparthy","Narayanpet","Mahabubabad","Bhadradri Kothagudem","Jayashankar Bhupalpally","Mulugu","Nagarkurnool","Yadadri Bhuvanagiri","Medchal-Malkajgiri","Rangareddy","Gadwal","Asifabad","Peddapalli","Rajanna Sircilla","Medak","Jangaon","Jogulamba Gadwal","Nagar Kurnool"],
+  "Tripura":["Agartala","Dharmanagar","Udaipur","Kailashahar","Belonia","Khowai","Ambassa","Sabroom","Sonamura","Bishalgarh","Melaghar","Kamalpur","Dhalai","Unakoti","Gomati","Sipahijala","West Tripura","North Tripura","South Tripura","Sepahijala"],
+  "Uttar Pradesh":["Lucknow","Kanpur","Ghaziabad","Agra","Meerut","Varanasi","Prayagraj","Bareilly","Aligarh","Moradabad","Saharanpur","Gorakhpur","Faridabad","Jhansi","Noida","Loni","Firozabad","Mathura","Rampur","Shahjahanpur","Farrukhabad","Mau","Hapur","Etawah","Mirzapur","Bulandshahr","Sambhal","Amroha","Hardoi","Fatehpur","Raebareli","Orai","Bahraich","Sitapur","Muzaffarnagar","Modinagar","Unnao","Jaunpur","Lakhimpur","Hathras","Banda","Pilibhit","Barabanki","Khurja","Gonda","Mainpuri","Lalitpur","Etah","Deoria","Bijnor","Akbarpur","Azamgarh","Sultanpur","Pratapgarh","Basti","Ballia","Chandauli","Kushinagar","Sant Kabir Nagar","Maharajganj","Siddharthnagar","Ambedkar Nagar","Amethi","Auraiya","Chitrakoot","Hamirpur","Mahoba","Sonbhadra","Shrawasti","Balrampur","Ghazipur","Jalaun","Kasganj","Shamli","Agra","Ayodhya","Mathura","Vrindavan"],
+  "Uttarakhand":["Dehradun","Haridwar","Roorkee","Haldwani","Rudrapur","Kashipur","Rishikesh","Kotdwar","Manglaur","Mussoorie","Nainital","Pithoragarh","Almora","Bageshwar","Champawat","Pauri","Tehri","Chamoli","Rudraprayag","Uttarkashi","Srinagar","Lansdowne","Ramnagar","Jaspur","Kichha","Sitarganj","Tanakpur","Champawat"],
+  "West Bengal":["Kolkata","Asansol","Siliguri","Durgapur","Bardhaman","Malda","Barasat","Krishnanagar","Medinipur","Howrah","Murshidabad","Cooch Behar","Jalpaiguri","Darjeeling","Alipurduar","Raiganj","Balurghat","Gangarampur","Islampur","Barrackpore","Titagarh","North Barrackpore","Panihati","Kamarhati","Bidhannagar","Dum Dum","South Dum Dum","Uluberia","Serampore","Bally","Uttarpara-Kotrung","Bansberia","Chandannagar","Rishra","Naihati","Hoogly","Birbhum","Bankura","Purulia","North 24 Parganas","South 24 Parganas","East Midnapore","West Midnapore","Nadia","Jhargram","Baruipur","Diamond Harbour","Mathabhanga","Mekhliganj","Haldibari","Tufanganj","Dinhata"],
+  "Delhi":["New Delhi","Central Delhi","North Delhi","South Delhi","East Delhi","West Delhi","North East Delhi","North West Delhi","South East Delhi","South West Delhi","Shahdara","Dwarka","Rohini","Pitampura","Janakpuri","Laxmi Nagar","Paharganj","Connaught Place","Karol Bagh","Saket","Vasant Kunj","Hauz Khas","Chandni Chowk","Narela","Najafgarh","Mehrauli","Badarpur","Tughlakabad"],
+  "Jammu and Kashmir":["Srinagar","Jammu","Anantnag","Baramulla","Udhampur","Sopore","Kathua","Punch","Rajouri","Kupwara","Ganderbal","Kulgam","Shopian","Bandipora","Budgam","Doda","Kishtwar","Ramban","Reasi","Samba","Pulwama","Pahalgam","Gulmarg","Patnitop"],
+  "Ladakh":["Leh","Kargil","Nubra","Zanskar","Drass","Padum","Diskit","Turtuk","Nyoma","Durbuk"],
+  "Chandigarh":["Chandigarh","Manimajra","Panchkula","Mohali","Zirakpur","Kharar","Derabassi","Banur"],
+  "Dadra and Nagar Haveli and Daman and Diu":["Silvassa","Daman","Diu","Amli","Khanvel","Dadra","Naroli","Samarvarni","Pardi"],
+  "Lakshadweep":["Kavaratti","Agatti","Amini","Andrott","Bithra","Chetlat","Kadmat","Kalpeni","Kiltan","Minicoy"],
+  "Puducherry":["Puducherry","Karaikal","Yanam","Mahe","Oulgaret","Villianur","Ariyankuppam","Bahour","Mannadipet","Nettapakkam","Thirunallar","Thirubhuvanai"]
+};
+
+/* ══════════════════════════════════════════
+   CITY COMBO BOX LOGIC
+══════════════════════════════════════════ */
+var _cityList = [];
+var _cityHighlightIdx = -1;
+var _cityCloseTimer = null;
+
+function onStateChange(state) {
+  var input = document.getElementById('ob-city');
+  var dd    = document.getElementById('city-dropdown');
+  input.value = '';
+  input.disabled = false;
+  input.placeholder = 'Type to search or scroll...';
+  _cityList = INDIA_CITIES[state] || [];
+  _cityHighlightIdx = -1;
+  dd.classList.remove('open');
+  dd.innerHTML = '';
+}
+
+function renderCityOptions(filter) {
+  var dd = document.getElementById('city-dropdown');
+  var q  = (filter || '').toLowerCase().trim();
+  var matches = q
+    ? _cityList.filter(function(c){ return c.toLowerCase().includes(q); })
+    : _cityList;
+
+  if (matches.length === 0) {
+    dd.innerHTML = '<div class="city-opt-empty">No match — you can still type a custom city</div>';
+  } else {
+    dd.innerHTML = matches.map(function(c, i){
+      return '<div class="city-opt" data-city="'+c+'" onmousedown="pickCity(\''+c.replace(/'/g,"\\'")+'\')">' + c + '</div>';
+    }).join('');
+  }
+  _cityHighlightIdx = -1;
+}
+
+function openCityDropdown() {
+  if (_cityList.length === 0) return;
+  if (_cityCloseTimer) { clearTimeout(_cityCloseTimer); _cityCloseTimer = null; }
+  var dd = document.getElementById('city-dropdown');
+  renderCityOptions(document.getElementById('ob-city').value);
+  dd.classList.add('open');
+}
+
+function closeCityDropdownDelayed() {
+  _cityCloseTimer = setTimeout(function(){
+    document.getElementById('city-dropdown').classList.remove('open');
+  }, 180);
+}
+
+function onCityInput(val) {
+  if (_cityList.length === 0) return;
+  var dd = document.getElementById('city-dropdown');
+  renderCityOptions(val);
+  dd.classList.add('open');
+}
+
+function pickCity(city) {
+  document.getElementById('ob-city').value = city;
+  var dd = document.getElementById('city-dropdown');
+  dd.classList.remove('open');
+  if (_cityCloseTimer) { clearTimeout(_cityCloseTimer); _cityCloseTimer = null; }
+}
+
+function onCityKeydown(e) {
+  var dd   = document.getElementById('city-dropdown');
+  var opts = dd.querySelectorAll('.city-opt');
+  if (!dd.classList.contains('open')) { openCityDropdown(); return; }
+  if (e.key === 'ArrowDown') {
+    e.preventDefault();
+    _cityHighlightIdx = Math.min(_cityHighlightIdx + 1, opts.length - 1);
+    updateCityHighlight(opts);
+  } else if (e.key === 'ArrowUp') {
+    e.preventDefault();
+    _cityHighlightIdx = Math.max(_cityHighlightIdx - 1, 0);
+    updateCityHighlight(opts);
+  } else if (e.key === 'Enter') {
+    e.preventDefault();
+    if (_cityHighlightIdx >= 0 && opts[_cityHighlightIdx]) {
+      pickCity(opts[_cityHighlightIdx].getAttribute('data-city'));
+    }
+  } else if (e.key === 'Escape') {
+    dd.classList.remove('open');
+  }
+}
+
+function updateCityHighlight(opts) {
+  opts.forEach(function(o, i){
+    o.classList.toggle('highlighted', i === _cityHighlightIdx);
+  });
+  if (opts[_cityHighlightIdx]) {
+    opts[_cityHighlightIdx].scrollIntoView({ block:'nearest' });
+  }
+}
+
+/* ══════════════════════════════════════════
+   SUPABASE
+══════════════════════════════════════════ */
 const SUPABASE_URL = "https://kmdsdrvvpbennilcinxl.supabase.co";
 const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_DpqBWRsDSMR3LLh3xO-djQ_1uU_crgE";
 const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
@@ -527,16 +501,11 @@ const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_
 async function signInWithGoogle() {
   const { error } = await supabaseClient.auth.signInWithOAuth({
     provider: 'google',
-    options: {
-      redirectTo: window.location.origin + '/dashboard.html'
-    }
+    options: { redirectTo: window.location.origin + '/dashboard.html' }
   });
-  if (error) {
-    alert("Google sign-in failed: " + error.message);
-  }
+  if (error) alert("Google sign-in failed: " + error.message);
 }
 
-/* ── ONBOARDING SAVE ── */
 function getSelectedCard(groupId) {
   var group = document.getElementById(groupId);
   if (!group) return null;
@@ -546,11 +515,7 @@ function getSelectedCard(groupId) {
 
 async function finishOnboarding() {
   const { data: { session } } = await supabaseClient.auth.getSession();
-  if (!session) {
-    alert("Session expired. Please sign in again.");
-    window.location.href = 'auth.html';
-    return;
-  }
+  if (!session) { alert("Session expired. Please sign in again."); window.location.href = 'auth.html'; return; }
 
   const payload = {
     age: parseInt(document.getElementById('ob-age').value) || null,
@@ -566,74 +531,39 @@ async function finishOnboarding() {
     onboarding_completed: true
   };
 
-  const { error } = await supabaseClient
-    .from('profiles')
-    .update(payload)
-    .eq('id', session.user.id);
-
-  if (error) {
-    alert("Failed to save profile: " + error.message);
-    return;
-  }
-
+  const { error } = await supabaseClient.from('profiles').update(payload).eq('id', session.user.id);
+  if (error) { alert("Failed to save profile: " + error.message); return; }
   goTo('screen-done');
 }
 
-/* ── ON LOAD: route based on session/onboarding status ── */
 (async function checkOnboardingStatus() {
   const { data: { session } } = await supabaseClient.auth.getSession();
-  if (!session) return; // not logged in — stay on login screen
-
-  const { data: profile } = await supabaseClient
-    .from('profiles')
-    .select('onboarding_completed')
-    .eq('id', session.user.id)
-    .single();
-
-  if (profile && !profile.onboarding_completed) {
-    goTo('screen-profile-1');
-  } else if (profile && profile.onboarding_completed) {
-    window.location.href = 'dashboard.html';
-  }
+  if (!session) return;
+  const { data: profile } = await supabaseClient.from('profiles').select('onboarding_completed').eq('id', session.user.id).single();
+  if (profile && !profile.onboarding_completed) goTo('screen-profile-1');
+  else if (profile && profile.onboarding_completed) window.location.href = 'dashboard.html';
 })();
 
-/* ── SCREEN NAVIGATION ── */
-const dotMap = {
-  'screen-login':     0,
-  'screen-profile-1': 1,
-  'screen-profile-2': 2,
-  'screen-done':      3
-};
-
+/* ══════════════════════════════════════════
+   SCREEN NAVIGATION
+══════════════════════════════════════════ */
+const dotMap = {'screen-login':0,'screen-profile-1':1,'screen-profile-2':2,'screen-done':3};
 const quotes = [
-  { h:'Every drop<br>you save is<br><em>a drop India keeps.</em>',  s:'Track your water footprint. Make it a game.' },
-  { h:'Tell us<br>a little about<br><em>yourself.</em>',            s:'We use this to estimate your baseline footprint.' },
-  { h:'Almost<br><em>there.</em>',                                  s:'Your personalised water profile is being built.' },
-  { h:'Welcome to<br><em>Jaldarpan.</em>',                          s:"Let's start saving water, one day at a time." },
+  {h:'Every drop<br>you save is<br><em>a drop India keeps.</em>',s:'Track your water footprint. Make it a game.'},
+  {h:'Tell us<br>a little about<br><em>yourself.</em>',s:'We use this to estimate your baseline footprint.'},
+  {h:'Almost<br><em>there.</em>',s:'Your personalised water profile is being built.'},
+  {h:'Welcome to<br><em>Jaldarpan.</em>',s:"Let's start saving water, one day at a time."},
 ];
 
 function goTo(id) {
-  // hide all screens
-  document.querySelectorAll('.screen').forEach(function(s) {
-    s.classList.remove('active');
-  });
-
-  // show target screen
+  document.querySelectorAll('.screen').forEach(function(s){ s.classList.remove('active'); });
   var target = document.getElementById(id);
   if (!target) { console.error('Screen not found:', id); return; }
   target.classList.add('active');
-
-  // scroll panel-right to top
   var pr = document.querySelector('.panel-right');
   if (pr) pr.scrollTop = 0;
-
-  // update dot indicators (only if panel is visible)
   var idx = (dotMap[id] !== undefined) ? dotMap[id] : 0;
-  document.querySelectorAll('.panel-dot').forEach(function(d, i) {
-    d.classList.toggle('active', i === idx);
-  });
-
-  // update left panel quote (safe — panel may be hidden on mobile)
+  document.querySelectorAll('.panel-dot').forEach(function(d,i){ d.classList.toggle('active', i===idx); });
   var qh = document.querySelector('.panel-quote-h');
   var qs = document.querySelector('.panel-quote .sub');
   var q  = quotes[idx] || quotes[0];
@@ -641,133 +571,88 @@ function goTo(id) {
   if (qs) qs.textContent = q.s;
 }
 
-/* ── PASSWORD TOGGLE ── */
 function togglePw(id, btn) {
   var inp = document.getElementById(id);
   if (!inp) return;
-  if (inp.type === 'password') { inp.type = 'text';     btn.textContent = '🙈'; }
-  else                         { inp.type = 'password'; btn.textContent = '👁'; }
+  if (inp.type==='password'){inp.type='text';btn.textContent='🙈';}
+  else{inp.type='password';btn.textContent='👁';}
 }
 
-/* ── LOGIN METHOD TOGGLE ── */
-function setMethod(method, btn) {
-  document.querySelectorAll('.method-btn').forEach(function(b) { b.classList.remove('active'); });
-  btn.classList.add('active');
-  var pwField  = document.getElementById('login-password-field');
-  var otpField = document.getElementById('login-otp-field');
-  if (pwField)  pwField.style.display  = (method === 'password') ? 'block' : 'none';
-  if (otpField) otpField.style.display = (method === 'otp')      ? 'block' : 'none';
-}
-
-/* ── OPTION CARDS ── */
 function selectCard(el, groupId) {
   var group = document.getElementById(groupId);
   if (!group) return;
-  group.querySelectorAll('.option-card').forEach(function(c) { c.classList.remove('selected'); });
+  group.querySelectorAll('.option-card').forEach(function(c){ c.classList.remove('selected'); });
   el.classList.add('selected');
 }
 
-/* ── WATER CANVAS — clear blue shimmer ── */
+/* ══════════════════════════════════════════
+   WATER CANVAS
+══════════════════════════════════════════ */
 (function(){
   const canvas = document.getElementById('water-canvas');
   if(!canvas) return;
   const ctx = canvas.getContext('2d');
-
-  function resize(){
-    canvas.width = canvas.offsetWidth;
-    canvas.height = canvas.offsetHeight;
-  }
-  resize();
-  window.addEventListener('resize', resize);
-
-  let t = 0;
-
+  function resize(){ canvas.width=canvas.offsetWidth; canvas.height=canvas.offsetHeight; }
+  resize(); window.addEventListener('resize',resize);
+  let t=0;
   function draw(){
-    const W = canvas.width, H = canvas.height;
-    if(!W||!H){ requestAnimationFrame(draw); return; }
-
-    // Base — deep clear water gradient
-    const bg = ctx.createLinearGradient(0,0,W,H);
-    bg.addColorStop(0,   '#0d4a6e');
-    bg.addColorStop(0.3, '#0e6080');
-    bg.addColorStop(0.6, '#0d7090');
-    bg.addColorStop(1,   '#0a4a68');
-    ctx.fillStyle = bg;
-    ctx.fillRect(0,0,W,H);
-
-    // Caustic light patches — the ripple shimmer on pool/water floor
+    const W=canvas.width,H=canvas.height;
+    if(!W||!H){requestAnimationFrame(draw);return;}
+    const bg=ctx.createLinearGradient(0,0,W,H);
+    bg.addColorStop(0,'#0d4a6e');bg.addColorStop(0.3,'#0e6080');
+    bg.addColorStop(0.6,'#0d7090');bg.addColorStop(1,'#0a4a68');
+    ctx.fillStyle=bg;ctx.fillRect(0,0,W,H);
     for(let i=0;i<18;i++){
-      const px = (W*0.05 + W*0.058*i + Math.sin(t*0.0009 + i*1.1)*55) % W;
-      const py = (H*0.04 + H*0.058*i + Math.cos(t*0.0007 + i*0.8)*45) % H;
-      const r  = 28 + Math.sin(t*0.0012 + i)*14;
-      const alpha = 0.06 + Math.sin(t*0.0015+i*0.5)*0.04;
-      const rg = ctx.createRadialGradient(px,py,0,px,py,r);
-      rg.addColorStop(0, `rgba(100,220,255,${alpha})`);
+      const px=(W*0.05+W*0.058*i+Math.sin(t*0.0009+i*1.1)*55)%W;
+      const py=(H*0.04+H*0.058*i+Math.cos(t*0.0007+i*0.8)*45)%H;
+      const r=28+Math.sin(t*0.0012+i)*14;
+      const alpha=0.06+Math.sin(t*0.0015+i*0.5)*0.04;
+      const rg=ctx.createRadialGradient(px,py,0,px,py,r);
+      rg.addColorStop(0,`rgba(100,220,255,${alpha})`);
       rg.addColorStop(0.5,`rgba(60,180,230,${alpha*0.5})`);
-      rg.addColorStop(1, 'rgba(0,0,0,0)');
-      ctx.fillStyle = rg;
-      ctx.fillRect(0,0,W,H);
+      rg.addColorStop(1,'rgba(0,0,0,0)');
+      ctx.fillStyle=rg;ctx.fillRect(0,0,W,H);
     }
-
-    // Bright sparkle points — light refracting on surface
     for(let i=0;i<22;i++){
-      const sx = (W*0.04 + W*0.046*i + Math.sin(t*0.0011+i*2.3)*40)%W;
-      const sy = (H*0.03 + H*0.046*i + Math.cos(t*0.0009+i*1.7)*38)%H;
-      const brightness = Math.max(0, Math.sin(t*0.003+i*0.9));
-      if(brightness < 0.3) continue;
-      const sr = ctx.createRadialGradient(sx,sy,0,sx,sy,6+brightness*8);
-      sr.addColorStop(0, `rgba(220,248,255,${brightness*0.9})`);
+      const sx=(W*0.04+W*0.046*i+Math.sin(t*0.0011+i*2.3)*40)%W;
+      const sy=(H*0.03+H*0.046*i+Math.cos(t*0.0009+i*1.7)*38)%H;
+      const brightness=Math.max(0,Math.sin(t*0.003+i*0.9));
+      if(brightness<0.3)continue;
+      const sr=ctx.createRadialGradient(sx,sy,0,sx,sy,6+brightness*8);
+      sr.addColorStop(0,`rgba(220,248,255,${brightness*0.9})`);
       sr.addColorStop(0.3,`rgba(150,230,255,${brightness*0.4})`);
-      sr.addColorStop(1,  'rgba(0,0,0,0)');
-      ctx.fillStyle = sr;
-      ctx.fillRect(0,0,W,H);
+      sr.addColorStop(1,'rgba(0,0,0,0)');
+      ctx.fillStyle=sr;ctx.fillRect(0,0,W,H);
     }
-
-    // Water surface ripple lines
     ctx.save();
     for(let layer=0;layer<5;layer++){
-      const spd  = 0.00035 + layer*0.00015;
-      const freq = 0.012  - layer*0.0018;
-      const amp  = 10     + layer*6;
-      const alph = 0.06   + layer*0.03;
-      ctx.strokeStyle = `rgba(140,220,255,${alph})`;
-      ctx.lineWidth = 0.9 - layer*0.12;
-      const spacing = 22 + layer*4;
-      const rows = Math.ceil(H/spacing)+2;
+      const spd=0.00035+layer*0.00015,freq=0.012-layer*0.0018,amp=10+layer*6,alph=0.06+layer*0.03;
+      ctx.strokeStyle=`rgba(140,220,255,${alph})`;
+      ctx.lineWidth=0.9-layer*0.12;
+      const spacing=22+layer*4,rows=Math.ceil(H/spacing)+2;
       for(let row=0;row<rows;row++){
-        const baseY = (row*spacing - (t*spd*40)%spacing);
+        const baseY=(row*spacing-(t*spd*40)%spacing);
         ctx.beginPath();
         for(let x=0;x<=W;x+=3){
-          const y = baseY
-            + Math.sin(x*freq + t*spd*5 + layer*1.4)*amp
-            + Math.sin(x*0.022 + t*spd*3 + row*0.3)*4;
-          x===0 ? ctx.moveTo(x,y) : ctx.lineTo(x,y);
+          const y=baseY+Math.sin(x*freq+t*spd*5+layer*1.4)*amp+Math.sin(x*0.022+t*spd*3+row*0.3)*4;
+          x===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
         }
         ctx.stroke();
       }
     }
     ctx.restore();
-
-    // Overall teal tint wash
-    ctx.fillStyle = 'rgba(0,180,220,0.04)';
-    ctx.fillRect(0,0,W,H);
-
-    // Dark vignette edges
-    const vig = ctx.createRadialGradient(W/2,H/2,H*0.25,W/2,H/2,H*0.85);
-    vig.addColorStop(0,'rgba(0,0,0,0)');
-    vig.addColorStop(1,'rgba(0,0,0,0.45)');
-    ctx.fillStyle = vig;
-    ctx.fillRect(0,0,W,H);
-
-    t += 16;
-    requestAnimationFrame(draw);
+    ctx.fillStyle='rgba(0,180,220,0.04)';ctx.fillRect(0,0,W,H);
+    const vig=ctx.createRadialGradient(W/2,H/2,H*0.25,W/2,H/2,H*0.85);
+    vig.addColorStop(0,'rgba(0,0,0,0)');vig.addColorStop(1,'rgba(0,0,0,0.45)');
+    ctx.fillStyle=vig;ctx.fillRect(0,0,W,H);
+    t+=16;requestAnimationFrame(draw);
   }
   draw();
 })();
 
 document.querySelectorAll('.field input, .field select').forEach(inp=>{
-  inp.addEventListener('focus',()=>{ const l=inp.closest('.field')?.querySelector('label'); if(l) l.style.color='#5ec9f0'; });
-  inp.addEventListener('blur',()=>{ const l=inp.closest('.field')?.querySelector('label'); if(l) l.style.color=''; });
+  inp.addEventListener('focus',()=>{const l=inp.closest('.field')?.querySelector('label');if(l)l.style.color='#5ec9f0';});
+  inp.addEventListener('blur',()=>{const l=inp.closest('.field')?.querySelector('label');if(l)l.style.color='';});
 });
 </script>
 </body>
