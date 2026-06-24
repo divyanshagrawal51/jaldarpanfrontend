@@ -1865,3 +1865,29 @@ input:checked + .slider-round:before { transform: translateX(22px); }
 .didyouknowbtn:active {
     transform: translateY(0);
 }
+/* ── AVATAR PICKER (dashboard) ── */
+.avatar-picker {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 10px;
+    margin-top: 4px;
+}
+.avatar-option {
+    border: 2px solid rgba(255,255,255,0.1);
+    border-radius: 50%;
+    cursor: pointer;
+    overflow: hidden;
+    aspect-ratio: 1;
+    transition: all 0.2s ease;
+    background: rgba(255,255,255,0.05);
+}
+.avatar-option img { width: 100%; height: 100%; display: block; }
+.avatar-option.selected {
+    border-color: var(--color-aqua);
+    box-shadow: 0 0 0 3px rgba(5,191,219,0.3);
+    transform: scale(1.08);
+}
+.avatar-option:hover:not(.selected) {
+    border-color: rgba(5,191,219,0.5);
+    transform: scale(1.05);
+}
