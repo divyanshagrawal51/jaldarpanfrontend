@@ -260,6 +260,13 @@ async function analyzeMeal() {
         appState.userProfile.todayWaterLogged += litres;
         appState.userProfile.xp += 30;
         bumpStreak();
+
+        // Update water impact meter
+        const newTotal = appState.userProfile.todayWaterLogged;
+        document.getElementById('calculated-litres').textContent = newTotal;
+        const fillPercent = Math.min((newTotal / 3000) * 100, 100);
+        document.getElementById('meter-fill').style.height = `${fillPercent}%`;
+
         await syncProfile();
         await logActivity('meal_scan', litres, 30, {
             source: isImageMode ? 'image' : 'text',
