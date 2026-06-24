@@ -927,6 +927,8 @@ function renderProfileHeatmaps() {
     document.getElementById('prof-saved').textContent = (appState.userProfile.waterSavedMonth/1000).toFixed(1) + 'k';
     document.getElementById('prof-challenges').textContent = appState.userProfile.challengesCompletedCount;
     document.getElementById('prof-friends').textContent = appState.userProfile.friendsInvitedCount;
+
+    initDashAvatarPicker();
 }
 
 // User Actions Handlers
@@ -1067,14 +1069,40 @@ function toggleAccordion(element) {
     element.classList.toggle('open');
 }
 
+// ── AVATAR PICKER ──
+
+const AVATAR_SEEDS = [
+    'JalWater', 'EcoBot', 'RiverRaj', 'GreenMira', 'AquaVeer',
+    'NeerSavy', 'DropBot', 'TidalTara', 'WaveWiz', 'StreamStar'
+];
+
+function initDashAvatarPicker() {
+    const container = document.getElementById('dash-avatar-picker');
+    if (!container) return;
+    container.innerHTML = '';
+    AVATAR_SEEDS.forEach((seed, i) => {
+        const div = document.createElement('div');
+        const isSelected = seed === appState.userProfile.avatarSeed;
+        div.className = 'avatar-option' + (isSelected ? ' selected' : '');
+        div.onclick = async () => {
+            container.querySelectorAll('.avatar-option').forEach(el => el.classList.remove('selected'));
+            div.classList.add('selected');
+            appState.userProfile.avatarSeed = seed;
+            await syncProfile();
+            updateUIRefreshes();
+        };
+        const img = document.createElement('img');
+        img.src = `https://api.dicebear.com/7.x/bottts/svg?seed=${seed}`;
+        img.alt = seed;
+        div.appendChild(img);
+        container.appendChild(div);
+    });
+}
+
 // Profile Sync Configurations Layer updates
 async function updateProfileSettings() {
     const newName = document.getElementById('settings-username').value;
-    const newSeed = document.getElementById('settings-avatar-seed').value;
-    
     if(newName.trim()) appState.userProfile.username = newName;
-    if(newSeed.trim()) appState.userProfile.avatarSeed = newSeed;
-
     await syncProfile();
     updateUIRefreshes();
 }
