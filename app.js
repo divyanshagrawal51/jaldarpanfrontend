@@ -208,6 +208,7 @@ function renderMealAnalysisResult(data) {
 
 async function analyzeMeal() {
     const isImageMode = document.getElementById('meal-mode-image').style.display !== 'none';
+    console.log('analyzeMeal called, isImageMode:', isImageMode);
 
     let body;
     if (isImageMode) {
@@ -224,6 +225,7 @@ async function analyzeMeal() {
             const quantity = row.querySelector('.meal-item-qty').value.trim();
             if (name) items.push({ name, quantity: quantity || '1 serving' });
         });
+        console.log('items collected:', items);
         if (items.length === 0) {
             alert('Please add at least one food item.');
             return;
@@ -231,29 +233,29 @@ async function analyzeMeal() {
         body = { items };
     }
 
-    // Show loading state
     const btn = document.getElementById('meal-analyze-btn');
     const originalText = btn.innerHTML;
     btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Analyzing...';
     btn.disabled = true;
 
     try {
+        console.log('fetching /analyze with body:', body);
         const res = await fetch(`${API_BASE}/analyze`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(body)
         });
+        console.log('response status:', res.status);
         const data = await res.json();
+        console.log('response data:', data);
 
         if (!data.success) {
             alert('Analysis failed: ' + (data.message || 'Unknown error'));
             return;
         }
 
-        // Render result
         renderMealAnalysisResult(data);
 
-        // Save to activity_logs + award XP + bump streak
         const litres = Math.round(data.total_litres || 0);
         appState.userProfile.todayWaterLogged += litres;
         appState.userProfile.xp += 30;
@@ -264,6 +266,7 @@ async function analyzeMeal() {
             items: JSON.parse(JSON.stringify(data.items || []))
         });
         updateUIRefreshes();
+        console.log('analyzeMeal complete');
 
     } catch (err) {
         console.error('Analyze error:', err);
