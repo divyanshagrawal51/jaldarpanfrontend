@@ -232,7 +232,7 @@ async function analyzeMeal() {
     }
 
     // Show loading state
-    const btn = document.querySelector('[onclick="analyzeMeal()"]');
+    const btn = document.getElementById('meal-analyze-btn');
     const originalText = btn.innerHTML;
     btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Analyzing...';
     btn.disabled = true;
