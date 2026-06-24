@@ -63,30 +63,6 @@ function renderResult(data, foodName) {
         `;
 }
 
-async function lookup() {
-    const food = document.getElementById("meal-text").value;
-
-    const response = await fetch("${API_BASE}/lookup", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-            food_name: food
-        })
-    });
-
-    const data = await response.json();
-
-    if (!data.found) {
-        document.getElementById("result").innerHTML =
-            `<p>${data.message}</p>`;
-        return;
-    }
-
-    renderResult(data, food);
-}
-
 // 1. The Core Logic: Handles reading the file and sending it to the API
 async function scan(file) {
     if (!file) return;
@@ -105,7 +81,7 @@ async function scan(file) {
         try {
             const base64 = e.target.result.split(",")[1];
 
-            const response = await fetch("${API_BASE}/scan", {
+            const response = await fetch(`${API_BASE}/scan`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
@@ -989,12 +965,6 @@ function triggerMockUpload() {
 
 // Core Analytical Calculations Logic
 async function calculateFootprint() {
-    const mealVal = document.getElementById('meal-select').value;
-    let mealLitres = 400; // default base vector value array allocation mappings
-    if(mealVal === 'dairy') mealLitres = 1200;
-    if(mealVal === 'poultry') mealLitres = 900;
-    if(mealVal === 'meat') mealLitres = 2500;
-
     const showerMins = parseInt(document.getElementById('input-shower').value) || 0;
     const laundryLoads = parseInt(document.getElementById('input-laundry').value) || 0;
     const dishMins = parseInt(document.getElementById('input-dishes').value) || 0;
@@ -1003,64 +973,59 @@ async function calculateFootprint() {
     const directDrink = parseFloat(document.getElementById('input-drink').value) || 0;
 
     // Direct Consumption Variable Allocation Formula Indices
-    const showerRate = 9; // Litres per min baseline averages standard
-    const laundryRate = 75; // Litres per machine load iteration standard
-    const dishRate = 6; // Litres per operational direct cleaning duration variable
-    const hoseRate = 12; // Litres per operational hose activity variable duration mapping
-    const carRate = 150; // Litres per targeted manual wash sequence
+    const showerRate = 9;   // Litres per min
+    const laundryRate = 75; // Litres per load
+    const dishRate = 6;     // Litres per min
+    const hoseRate = 12;    // Litres per min
+    const carRate = 150;    // Litres per wash
 
-    const domesticSum = (showerMins * showerRate) + (laundryLoads * laundryRate) + (dishMins * dishRate) + (gardenMins * hoseRate) + (carSessions * carRate) + directDrink;
-    const totalImpactCalculated = mealLitres + Math.round(domesticSum);
+    const totalImpactCalculated = Math.round(
+        (showerMins * showerRate) +
+        (laundryLoads * laundryRate) +
+        (dishMins * dishRate) +
+        (gardenMins * hoseRate) +
+        (carSessions * carRate) +
+        directDrink
+    );
 
     // Update UI Elements
     document.getElementById('calculated-litres').textContent = totalImpactCalculated;
-    
-    // Animate diagnostic fluid cylinder metric tracking bounds metrics visualization
+
+    // Animate meter fill
     const fillPercent = Math.min((totalImpactCalculated / 3000) * 100, 100);
     document.getElementById('meter-fill').style.height = `${fillPercent}%`;
 
-    // Process micro targeted optimization coaching algorithm loops text configurations
+    // Diagnostic text
+    const diagnosticTextNode = document.getElementById('impact-evaluation-text');
+    if (diagnosticTextNode) diagnosticTextNode.textContent = `Today's Domestic Water Impact: ${totalImpactCalculated} Litres`;
+
+    // Suggestions
     const suggestionsBox = document.getElementById('ai-suggestions-list');
     suggestionsBox.innerHTML = "";
-
-    const diagnosticTextNode = document.getElementById('impact-evaluation-text');
-    diagnosticTextNode.textContent = `Today's Water Impact: ${totalImpactCalculated} Litres total system parameter profile tracking values loaded.`;
-
-    // Construct constructive optimization lists safely without applying standard compliance shaming vectors
     let feedbackCards = [];
-    if(showerMins > 5) {
-        feedbackCards.push("You could conserve approximately 18-36 litres tomorrow by restricting structural shower durations by 2-4 minutes.");
-    }
-    if(mealVal === 'meat' || mealVal === 'dairy') {
-        feedbackCards.push("Transitioning at least one weekly routine meal selection to direct plant-based ingredients maximizes sub-basin hydro retention levels.");
-    }
-    if(laundryLoads > 0) {
-        feedbackCards.push("Consolidating garment cycles strictly into completely full load distributions reduces wastewater downstream processing friction.");
-    }
-    if(gardenMins > 0) {
-        feedbackCards.push("Consider shifting automated irrigation parameters to cool evening or pre-dawn slots to bypass heavy atmospheric evaporation penalties.");
-    }
 
-    if(feedbackCards.length === 0) {
-        feedbackCards.push("Operational profile exhibits excellent compliance boundaries. Continue implementing tracking loops to stabilize surrounding ecosystems.");
-    }
+    if(showerMins > 5) feedbackCards.push("Reducing your shower by 2–4 minutes could save 18–36 litres tomorrow.");
+    if(laundryLoads > 0) feedbackCards.push("Running only full laundry loads reduces water waste significantly.");
+    if(gardenMins > 0) feedbackCards.push("Watering your garden in the early morning or evening reduces evaporation losses.");
+    if(carSessions > 0) feedbackCards.push("Using a bucket instead of a hose for car washing can save over 100 litres per wash.");
+    if(feedbackCards.length === 0) feedbackCards.push("Great job! Your domestic water usage is well within efficient limits today.");
 
     feedbackCards.forEach(tip => {
         const card = document.createElement('div');
         card.className = "suggestion-item";
-        card.innerHTML = `
-            <div class="sug-icon"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
-            <p>${tip}</p>
-        `;
+        card.innerHTML = `<div class="sug-icon"><i class="fa-solid fa-wand-magic-sparkles"></i></div><p>${tip}</p>`;
         suggestionsBox.appendChild(card);
     });
 
-    // Update local variables storage states parameters maps
-    appState.userProfile.todayWaterLogged = totalImpactCalculated;
-    appState.userProfile.xp += 30; // Award transactional execution points
+    // Save to Supabase + award XP + bump streak
+    appState.userProfile.todayWaterLogged += totalImpactCalculated;
+    appState.userProfile.xp += 30;
     bumpStreak();
     await syncProfile();
-    await logActivity('footprint_calc', Math.round(totalImpactCalculated), 30, { meal: mealVal });
+    await logActivity('footprint_calc', Math.round(totalImpactCalculated), 30, {
+        shower: showerMins, laundry: laundryLoads, dishes: dishMins,
+        garden: gardenMins, car: carSessions, drink: directDrink
+    });
     updateUIRefreshes();
 }
 
