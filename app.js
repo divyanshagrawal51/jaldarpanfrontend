@@ -1195,9 +1195,33 @@ function triggerMockUpload() {
 }
 
 // Core Analytical Calculations Logic
-// Core Analytical Calculations Logic
+// Corrected Recalculation logic to extract historical logged meal items 
+async function recalculateTodayWaterLogged() {
+    const now = new Date();
+    const midnight = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const nextMidnight = new Date(midnight.getTime() + 86400000);
+
+    const { data: logs } = await supabaseClient
+        .from('activity_logs')
+        .select('log_type, litres')
+        .eq('user_id', currentUserId)
+        .gte('created_at', midnight.toISOString())
+        .lt('created_at', nextMidnight.toISOString());
+
+    // Filter only meal-related logs (Matching Section A / Profile View logic)
+    const mealsOnly = (logs || [])
+        .filter(l => l.log_type === 'meal_scan' || l.log_type === 'meal_lookup')
+        .reduce((sum, log) => sum + (log.litres || 0), 0);
+        
+    latestAIMealFootprint = mealsOnly;
+
+    // Synchronize global application profile state cleanly
+    appState.userProfile.todayWaterLogged = mealsOnly;
+}
+
+// Core Analytical Calculations Logic (Corrected Optimization)
 async function calculateFootprint() {
-    // Read the active meal footprint directly from what's tracked in the database state
+    // Read the active meal footprint directly from what's tracked in the clean state database
     let mealLitres = appState.userProfile.todayWaterLogged || 0;
 
     const showerMins = parseInt(document.getElementById('input-shower').value) || 0;
@@ -1216,7 +1240,7 @@ async function calculateFootprint() {
 
     const domesticSum = (showerMins * showerRate) + (laundryLoads * laundryRate) + (dishMins * dishRate) + (gardenMins * hoseRate) + (carSessions * carRate) + directDrink;
     
-    // Combining them for the current visual panel layout display
+    // Combine them dynamically without writing back or modifying global profiles
     const totalImpactCalculated = mealLitres + Math.round(domesticSum);
 
     // Update UI Elements
@@ -1253,17 +1277,16 @@ async function calculateFootprint() {
         diagnosticTextNode.textContent = `Today's Water Impact: ${totalImpactCalculated} Litres total system parameter profile tracking values loaded.`;
     }
 
-    // Update UI elements across panels without overwriting our clean meal data state
-    document.getElementById('dash-today-litres').textContent = appState.userProfile.todayWaterLogged;
+    // Safely update visual interface indicator values without modifying your baseline state
+    document.getElementById('dash-today-litres').textContent = totalImpactCalculated;
     
-    // Synchronize UI circle animation to mirror profile exactly
     const circle = document.getElementById('today-progress-circle');
     if (circle) {
         const radius = circle.r.baseVal.value;
         const circumference = radius * 2 * Math.PI;
         circle.style.strokeDasharray = `${circumference} ${circumference}`;
         const baselineCap = 500;
-        const percentage = Math.min((appState.userProfile.todayWaterLogged / baselineCap) * 100, 100);
+        const percentage = Math.min((totalImpactCalculated / baselineCap) * 100, 100);
         const offset = circumference - (percentage / 100) * circumference;
         circle.style.strokeDashoffset = offset;
     }
