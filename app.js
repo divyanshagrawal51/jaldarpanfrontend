@@ -1338,7 +1338,8 @@ function toggleThemeOverride() {
 window.addEventListener('DOMContentLoaded', async () => {
     const ok = await loadAppState();
     if (!ok) return; 
-    window.addEventListener('DOMContentLoaded')
+    await recalculateTodayWaterLogged();
+    updateUIRefreshes();
     // Enforce step parameters constraint directly onto slider elements programmatically
     const sliders = ['input-shower', 'input-laundry', 'input-dishes', 'input-garden', 'input-car'];
     sliders.forEach(id => {
