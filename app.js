@@ -1303,6 +1303,27 @@ async function updateProfileSettings() {
     updateUIRefreshes();
 }
 
+async function recalculateTodayWaterLogged() {
+    const now = new Date();
+    const midnight = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const nextMidnight = new Date(midnight.getTime() + 86400000);
+
+    const { data: logs } = await supabaseClient
+        .from('activity_logs')
+        .select('litres')
+        .eq('user_id', currentUserId)
+        .gte('created_at', midnight.toISOString())
+        .lt('created_at', nextMidnight.toISOString());
+
+    const total = (logs || []).reduce(
+        (sum, log) => sum + (log.litres || 0),
+        0
+    );
+
+    appState.userProfile.todayWaterLogged = total;
+}
+
+
 function toggleThemeOverride() {
     const isChecked = document.getElementById('theme-toggle-checkbox').checked;
     if(!isChecked) {
@@ -1317,7 +1338,7 @@ function toggleThemeOverride() {
 window.addEventListener('DOMContentLoaded', async () => {
     const ok = await loadAppState();
     if (!ok) return; 
-
+    window.addEventListener('DOMContentLoaded')
     // Enforce step parameters constraint directly onto slider elements programmatically
     const sliders = ['input-shower', 'input-laundry', 'input-dishes', 'input-garden', 'input-car'];
     sliders.forEach(id => {
