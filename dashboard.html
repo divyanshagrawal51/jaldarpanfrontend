@@ -75,7 +75,7 @@
                             </div>
                         </div>
                         <div class="footprint-summary">
-                            <p>Tracked items dynamically calculate your impact relative to global averages.</p>
+                            <p>Track your daily habits to see your impact compared to global averages.</p>
                             <button class="btn btn-primary" onclick="showPage('log')">Log Today's Activities</button>
                         </div>
                     </div>
@@ -117,7 +117,7 @@
         <section id="page-log" class="app-page">
             <div class="page-header">
                 <h2><i class="fa-solid fa-faucet-drip"></i> Log Daily Footprint</h2>
-                <p>Submit your resource interactions honestly to compute real-time aquatic equity models.</p>
+                <p>Be honest with your daily habits to see a real-time summary of your water savings.</p>
             </div>
 
             <div class="split-layout">
@@ -168,7 +168,7 @@
 
                     <div class="glass-card form-section" style="margin-bottom: 16px;">
                         <h4 style="margin: 0 0 12px 0;">
-                            <i class="fa-solid fa-utensils"></i> Section B — Meals
+                            <i class="fa-solid fa-utensils"></i> Section B — Diet
                         </h4>
 
                         <a href="diet.html"
@@ -269,7 +269,7 @@
         <section id="page-challenges" class="app-page">
             <div class="page-header">
                 <h2><i class="fa-solid fa-trophy"></i> Quest Center</h2>
-                <p>Complete curated ecological tasks to level up and accumulate operational experience points.</p>
+                <p>Complete daily and weekly challenges to level up, build your streak, and earn XP!</p>
             </div>
 
             <div class="challenges-layout">
@@ -515,7 +515,7 @@
         <section id="page-knowledge" class="app-page">
             <div class="page-header">
                 <h2><i class="fa-solid fa-book-open"></i> Knowledge Infrastructure</h2>
-                <p>Interrogate the metadata metrics governing embedded water parameters inside supply frameworks.</p>
+                <p>Learn the facts about water consumption and discover how you can save more.</p>
             </div>
 
             <div class="knowledge-grid">
@@ -586,7 +586,7 @@
         <section id="page-profile" class="app-page">
             <div class="page-header">
                 <h2><i class="fa-solid fa-user-gear"></i> System Profile Dashboard</h2>
-                <p>Manage localized account parameters and configuration structures.</p>
+                <p>Account Settings</p>
             </div>
 
             <div class="profile-layout">
@@ -604,55 +604,75 @@
                         <div class="p-stat"><strong>🏆 <span id="prof-challenges">8</span></strong><small>Quests completed</small></div>
                         <div class="p-stat"><strong>👥 <span id="prof-friends">3</span></strong><small>Allies Invited</small></div>
                     </div>
+                </div>
 
-                    <div class="heatmap-section">
-                        <h4>Activity Heatmap</h4>
-                        <div class="heatmap-grid" id="heatmap-container-grid">
+                <!-- ── MEAL HISTORY TAB & CONFIGURATION SEPARATION ── -->
+                <div class="dashboard-grid-layout">
+
+                    <!-- Card 1: Meal History (Occupies full Left Column status) -->
+                    <div class="meal-history-section glass-card">
+                        <div class="mh-header">
+                            <div class="mh-title-row">
+                                <span class="mh-title"><i class="fa-solid fa-clock-rotate-left"></i> Meal History</span>
+                                <span class="mh-badge" id="mh-meal-count">0 meals</span>
                             </div>
-                        <div class="heatmap-legend">
-                            <span>Less Impact</span>
-                            <div class="cube level-0"></div>
-                            <div class="cube level-1"></div>
-                            <div class="cube level-2"></div>
-                            <div class="cube level-3"></div>
-                            <span>More Impact</span>
+                            <div class="mh-diet-status" id="mh-diet-status">
+                                <i class="fa-solid fa-circle-info"></i> No diet plan set — <a href="diet.html" style="color:var(--primary-cyan)">set one</a> for feedback
+                            </div>
+                        </div>
+
+                        <div class="mh-total-bar">
+                            <span class="mh-total-icon">💧</span>
+                            <span class="mh-total-label">Meal water footprint today</span>
+                            <span class="mh-total-val" id="mh-total-litres">0 L</span>
+                        </div>
+
+                        <div class="mh-entries" id="mh-entries">
+                            <div class="mh-empty">No meals logged yet today.<br><small>Use Section A in Log Activity to add meals.</small></div>
+                        </div>
+
+                        <div class="mh-footer">
+                            <span class="mh-foot-label">Only meal logs shown · Resets at midnight</span>
+                            <button class="mh-log-btn" onclick="showPage('log')"><i class="fa-solid fa-plus"></i> Log a Meal</button>
                         </div>
                     </div>
-                </div>
 
-                <div class="glass-card profile-settings-card">
-                    <h3>Account Parameters Configuration</h3>
-                    <div class="input-group">
-                        <label for="settings-username">Display Name</label>
-                        <input type="text" id="settings-username" value="Eco Warrior" onchange="updateProfileSettings()">
+                    <!-- Card 2: Account Parameters Configuration (Pushed entirely to the Right empty space column) -->
+                    <div class="glass-card profile-settings-card">
+                        <h3>Account Parameters Configuration</h3>
+                        <div class="input-group">
+                            <label for="settings-username">Display Name</label>
+                            <input type="text" id="settings-username" value="Eco Warrior" onchange="updateProfileSettings()">
+                        </div>
+                        <div class="input-group">
+                            <label>Choose Avatar</label>
+                            <div class="avatar-picker" id="dash-avatar-picker"></div>
+                        </div>
+                        <div class="input-group">
+                            <label>Notification </label>
+                            <label class="switch">
+                                <input type="checkbox" checked>
+                                <span class="slider-round"></span>
+                            </label>
+                        </div>
+                        <div class="input-group">
+                            <label>Private mode</label>
+                            <label class="switch">
+                                <input type="checkbox">
+                                <span class="slider-round"></span>
+                            </label>
+                        </div>
+                        <div class="input-group">
+                            <label>Enable Dark Theme</label>
+                            <label class="switch">
+                                <input type="checkbox" id="theme-toggle-checkbox" checked onchange="toggleThemeOverride()">
+                                <span class="slider-round"></span>
+                            </label>
+                        </div>
+                        <button class="logout-btn" style="margin-top:1rem;width:100%;" onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i> Log out</button>
                     </div>
-                    <div class="input-group">
-                        <label>Choose Avatar</label>
-                        <div class="avatar-picker" id="dash-avatar-picker"></div>
-                    </div>
-                    <div class="input-group">
-                        <label>Notification Engine Status</label>
-                        <label class="switch">
-                            <input type="checkbox" checked>
-                            <span class="slider-round"></span>
-                        </label>
-                    </div>
-                    <div class="input-group">
-                        <label>Enforce High Anonymity Modes</label>
-                        <label class="switch">
-                            <input type="checkbox">
-                            <span class="slider-round"></span>
-                        </label>
-                    </div>
-                    <div class="input-group">
-                        <label>Dynamic Deep Water Render Engine</label>
-                        <label class="switch">
-                            <input type="checkbox" id="theme-toggle-checkbox" checked onchange="toggleThemeOverride()">
-                            <span class="slider-round"></span>
-                        </label>
-                    </div>
-                    <button class="logout-btn" style="margin-top:1rem;width:100%;" onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i> Log out</button>
-                </div>
+
+                </div> 
             </div>
         </section>
 
