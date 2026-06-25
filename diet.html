@@ -8,15 +8,16 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            /* Premium Refined Palette based on your mockup screenshots */
-            --bg-dark: #083444;               
-            --panel-bg: linear-gradient(145deg, #0c4454, #0a3a48);              
-            --panel-inner: rgba(0, 0, 0, 0.25);
+            --bg-dark: #06232d;               
+            --panel-bg: linear-gradient(145deg, #09313f, #072834);              
+            --panel-inner: rgba(0, 0, 0, 0.2);
             --primary-cyan: #05BFDB;          
             --accent-green: #2ed573;          
             --text-main: #ffffff;             
-            --text-muted: rgba(255, 255, 255, 0.65);
-            --border-glow: rgba(5, 191, 219, 0.15);
+            --text-muted: rgba(255, 255, 255, 0.6);
+            --border-glow: rgba(5, 191, 219, 0.25);
+            --input-bg: #051d25;
+            --card-accent: rgba(255, 255, 255, 0.03);
         }
 
         body {
@@ -29,7 +30,7 @@
         }
 
         .diet-container {
-            max-width: 1200px;
+            max-width: 1300px;
             margin: 0 auto;
         }
 
@@ -52,7 +53,6 @@
 
         .hero-header {
             margin-bottom: 36px;
-            position: relative;
         }
 
         .hero-header h2 {
@@ -64,11 +64,11 @@
 
         .diet-grid {
             display: grid;
-            grid-template-columns: 1.1fr 0.9fr;
+            grid-template-columns: 1.1fr 1.4fr;
             gap: 32px;
         }
 
-        @media (max-width: 960px) {
+        @media (max-width: 1100px) {
             .diet-grid { grid-template-columns: 1fr; }
         }
 
@@ -78,11 +78,7 @@
             border-radius: 16px;
             padding: 32px;
             box-shadow: 0 12px 32px rgba(0, 0, 0, 0.35);
-            transition: border-color 0.3s ease;
-        }
-        
-        .glass-card:hover {
-            border-color: var(--border-glow);
+            height: fit-content;
         }
 
         .choice-tabs {
@@ -107,33 +103,56 @@
             transition: all 0.2s ease;
         }
 
-        .tab-btn:hover {
-            color: #fff;
-        }
-
         .tab-btn.active {
             background: var(--primary-cyan);
             color: var(--bg-dark);
             box-shadow: 0 4px 12px rgba(5, 191, 219, 0.25);
         }
 
-        .form-group {
-            margin-bottom: 22px;
+        .section-divider {
+            color: var(--primary-cyan);
+            font-size: 0.85rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin: 32px 0 20px 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            padding-bottom: 8px;
+        }
+
+        .form-row-three {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .form-row-two {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        @media (max-width: 600px) {
+            .form-row-three, .form-row-two { grid-template-columns: 1fr; }
         }
 
         .form-group label {
             display: block;
             font-size: 0.85rem;
             font-weight: 600;
-            color: #fff;
+            color: var(--text-muted);
             margin-bottom: 10px;
-            letter-spacing: 0.3px;
         }
 
         .form-group input, .form-group select, .form-group textarea {
             width: 100%;
             padding: 14px;
-            background: var(--panel-inner);
+            background: var(--input-bg);
             border: 1px solid rgba(255, 255, 255, 0.08);
             border-radius: 8px;
             color: #fff;
@@ -146,8 +165,41 @@
         .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
             outline: none;
             border-color: var(--primary-cyan);
-            background: rgba(0,0,0,0.4);
             box-shadow: 0 0 0 3px rgba(5, 191, 219, 0.15);
+        }
+
+        .pill-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .pill-box {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--text-main);
+            padding: 10px 18px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            user-select: none;
+            transition: all 0.2s ease;
+        }
+
+        .pill-box:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .pill-box.selected {
+            background: rgba(5, 191, 219, 0.1);
+            border-color: var(--primary-cyan);
+            color: #fff;
         }
 
         .btn-primary {
@@ -160,129 +212,68 @@
             font-size: 1rem;
             cursor: pointer;
             width: 100%;
+            margin-top: 16px;
             transition: all 0.2s ease;
         }
 
         .btn-primary:hover {
             opacity: 0.95;
-            transform: translateY(-1px);
             box-shadow: 0 6px 20px rgba(5, 191, 219, 0.3);
         }
 
-        .btn-edit {
-            background: rgba(255, 255, 255, 0.05);
-            color: #fff;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            padding: 12px;
-            border-radius: 8px;
-            cursor: pointer;
-            width: 100%;
-            margin-top: 20px;
-            font-weight: 600;
-            transition: background 0.2s;
+        .weekly-scroller {
+            max-height: 500px;
+            overflow-y: auto;
+            padding-right: 8px;
+            margin-top: 16px;
         }
 
-        .btn-edit:hover {
-            background: rgba(255, 255, 255, 0.1);
-        }
+        .weekly-scroller::-webkit-scrollbar { width: 6px; }
+        .weekly-scroller::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 4px; }
 
-        .hook-badge {
-            background: rgba(46, 213, 115, 0.12);
-            border: 1px solid var(--accent-green);
-            color: var(--accent-green);
-            padding: 6px 12px;
-            border-radius: 6px;
-            font-size: 0.75rem;
-            font-weight: 700;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .score-circle-container {
-            display: flex;
-            align-items: center;
-            gap: 24px;
+        .day-card {
             background: var(--panel-inner);
-            padding: 20px;
-            border-radius: 12px;
-            margin-bottom: 28px;
-            border: 1px solid rgba(255,255,255,0.03);
-        }
-
-        .score-ring {
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
-            background: conic-gradient(var(--accent-green) 0%, rgba(255,255,255,0.1) 0);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 800;
-            font-size: 1.3rem;
-            color: #fff;
-            position: relative;
-            transition: background 0.4s ease;
-        }
-
-        .score-ring::after {
-            content: '';
-            position: absolute;
-            width: 64px;
-            height: 64px;
-            background: #0b3f4e; /* Clean visual center fill blend */
-            border-radius: 50%;
-            z-index: 1;
-        }
-
-        .score-text-inner {
-            position: relative;
-            z-index: 2;
-        }
-
-        /* NEW IMMERSIVE MEAL TRACKER COMPONENT */
-        .meal-checker-box {
-            margin-top: 24px;
-            background: var(--panel-inner);
+            border: 1px solid rgba(255,255,255,0.04);
+            border-radius: 10px;
             padding: 16px;
+            margin-bottom: 16px;
+        }
+
+        .day-title {
+            color: var(--primary-cyan);
+            font-weight: 700;
+            font-size: 1rem;
+            margin: 0 0 12px 0;
+            border-bottom: 1px solid rgba(5, 191, 219, 0.1);
+            padding-bottom: 4px;
+        }
+
+        .meal-item { margin-bottom: 8px; font-size: 0.9rem; line-height: 1.4; }
+        .meal-item strong { color: #fff; }
+
+        .water-impact-banner {
+            background: rgba(5, 191, 219, 0.08);
+            border: 1px solid rgba(5, 191, 219, 0.2);
             border-radius: 12px;
-        }
-        
-        .meal-row {
+            padding: 16px;
+            margin-bottom: 24px;
             display: flex;
             align-items: center;
-            justify-content: space-between;
-            padding: 12px 8px;
-            border-bottom: 1px solid rgba(255,255,255,0.05);
+            gap: 16px;
         }
-        
-        .meal-row:last-child { border-bottom: none; }
-        
-        .meal-label {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            font-size: 0.95rem;
-            font-weight: 500;
-        }
-        
-        .meal-checkbox {
-            width: 22px;
-            height: 22px;
-            accent-color: var(--accent-green);
-            cursor: pointer;
-        }
+
+        .water-impact-banner i { font-size: 2rem; color: var(--primary-cyan); }
 
         .swap-box {
-            background: rgba(5, 191, 219, 0.06);
-            border: 1px dashed rgba(5, 191, 219, 0.25);
+            background: rgba(46, 213, 115, 0.05);
+            border: 1px dashed rgba(46, 213, 115, 0.25);
             border-radius: 12px;
             padding: 18px;
-            margin-top: 28px;
+            margin-top: 24px;
         }
 
         .swap-title {
-            color: var(--primary-cyan);
+            color: var(--accent-green);
             font-weight: 700;
             font-size: 0.95rem;
             margin: 0 0 8px 0;
@@ -291,8 +282,8 @@
             gap: 8px;
         }
 
-        ul { padding-left: 20px; margin: 12px 0; }
-        li { margin-bottom: 12px; font-size: 0.9rem; color: rgba(255,255,255,0.85); line-height: 1.6; }
+        ul { padding-left: 20px; }
+        li { margin-bottom: 12px; font-size: 0.9rem; color: rgba(255,255,255,0.85); line-height: 1.5; }
     </style>
 </head>
 <body>
@@ -306,231 +297,341 @@
         </div>
 
         <div class="diet-grid">
-            
-            <!-- LEFT PANEL: Configuration System -->
-            <div class="glass-card" id="left-card">
-                
-                <!-- VIEW MODE -->
-                <div id="view-mode" style="display: none;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                        <h3 style="color: var(--primary-cyan); margin:0; font-weight: 700;"><i class="fa-solid fa-seedling"></i> Active Target Track</h3>
-                        <span class="hook-badge"><i class="fa-solid fa-fire"></i> 7-Day Streak Active</span>
-                    </div>
-                    
-                    <div id="saved-summary-box" style="line-height: 1.6;"></div>
-                    <button class="btn-edit" onclick="showForm()"><i class="fa-solid fa-pen-to-square"></i> Modify Plan Layout Settings</button>
+            <!-- LEFT PANEL -->
+            <div class="glass-card">
+                <div class="choice-tabs">
+                    <button class="tab-btn" id="tab-have" onclick="switchMainSetupTab('have')">My Dietitian Chart</button>
+                    <button class="tab-btn active" id="tab-need" onclick="switchMainSetupTab('need')">Build New Menu</button>
                 </div>
 
-                <!-- FORM/SETUP MODE -->
-                <div id="form-mode">
-                    <h3 style="margin-top:0; margin-bottom: 24px; color: var(--primary-cyan); font-weight: 700;">Configure Personal Nutrition</h3>
-                    
-                    <div class="choice-tabs">
-                        <button class="tab-btn active" id="tab-have" onclick="switchFormTab('have')">My Dietitian Chart</button>
-                        <button class="tab-btn" id="tab-need" onclick="switchFormTab('need')">Build New Menu</button>
+                <form id="form-have-diet" onsubmit="saveDirectDietitianText(event)" style="display: none;">
+                    <div class="form-group">
+                        <label style="font-size: 0.95rem;">Drop your tailored meal charts directly below:</label>
+                        <textarea id="diet-text-input" rows="10" placeholder="Breakfast: Idli Sambar..." required></textarea>
+                    </div>
+                    <button type="submit" class="btn-primary">Initialize My Chart</button>
+                </form>
+
+                <form id="form-need-diet" onsubmit="generateHighlyDiversifiedPlan(event)">
+                    <div class="form-row-three">
+                        <div class="form-group">
+                            <label>Age (years)</label>
+                            <input type="number" id="form-age" value="45" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Weight (kg)</label>
+                            <input type="number" id="form-weight" value="78" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Height (cm)</label>
+                            <input type="number" id="form-height" value="189" required>
+                        </div>
                     </div>
 
-                    <!-- TAB 1: User Paste -->
-                    <form id="form-have-diet" onsubmit="saveExistingDiet(event)">
-                        <div class="form-group">
-                            <label>Drop your tailored meal charts directly below:</label>
-                            <textarea id="diet-text-input" rows="8" placeholder="Breakfast: Eggs & Oats&#10;Lunch: Dal, Rice and Green Salad&#10;Dinner: Steamed Sprouts and Paneer Bowl" required></textarea>
+                    <div class="form-group">
+                        <label>Gender</label>
+                        <div class="pill-container" data-type="gender">
+                            <div class="pill-box" onclick="selectSinglePill(this)">Female</div>
+                            <div class="pill-box" onclick="selectSinglePill(this)">Male</div>
+                            <div class="pill-box selected" onclick="selectSinglePill(this)">Other</div>
                         </div>
-                        <button type="submit" class="btn-primary">Initialize My Chart</button>
-                    </form>
+                    </div>
 
-                    <!-- TAB 2: System Auto Generate -->
-                    <form id="form-need-diet" onsubmit="generateDietPlan(event)" style="display: none;">
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
-                            <div class="form-group">
-                                <label>Your Age (Years)</label>
-                                <input type="number" id="user-age" required placeholder="24">
-                            </div>
-                            <div class="form-group">
-                                <label>Weight Target (kg)</label>
-                                <input type="number" id="user-weight" required placeholder="68">
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label>What is your current fitness objective?</label>
-                            <select id="user-goal">
-                                <option value="Weight Loss">Fat Loss & Leaning Down</option>
-                                <option value="Maintain Fitness">Optimize Balance & Vitality</option>
-                                <option value="Muscle Gain">Muscle Matrix & Weight Scaling</option>
-                            </select>
-                        </div>
-                        <button type="submit" class="btn-primary">Generate Tailored Routine</button>
-                    </form>
-                </div>
+                    <div class="section-divider"><i class="fa-solid fa-bullseye"></i> Primary Goal</div>
+                    <div class="pill-container" data-type="goal">
+                        <div class="pill-box selected" onclick="selectSinglePill(this)">🔥 Fat Loss</div>
+                        <div class="pill-box" onclick="selectSinglePill(this)">💪 Muscle Gain</div>
+                        <div class="pill-box" onclick="selectSinglePill(this)">⚖️ Maintain</div>
+                    </div>
 
+                    <div class="section-divider"><i class="fa-solid fa-utensils"></i> Food Preferences</div>
+                    <div class="form-group">
+                        <label>Diet Type</label>
+                        <div class="pill-container" data-type="diet-type">
+                            <div class="pill-box selected" data-value="Veg" onclick="selectSinglePill(this)">🥦 Vegetarian</div>
+                            <div class="pill-box" data-value="Non-Veg" onclick="selectSinglePill(this)">🍗 Non-Veg</div>
+                            <div class="pill-box" data-value="Jain" onclick="selectSinglePill(this)">🙏 Jain</div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Cuisines <span style="font-size:0.75rem; color:var(--text-muted);">(Select multiple to mix them up!)</span></label>
+                        <div class="pill-container" data-type="cuisines">
+                            <div class="pill-box selected" data-value="North Indian" onclick="toggleMultiplePill(this)">🍛 North Indian</div>
+                            <div class="pill-box" data-value="South Indian" onclick="toggleMultiplePill(this)">🥥 South Indian</div>
+                            <div class="pill-box" data-value="Gujarati" onclick="toggleMultiplePill(this)">🫓 Gujarati</div>
+                            <div class="pill-box" data-value="Bengali" onclick="toggleMultiplePill(this)">🐟 Bengali</div>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn-primary">Generate Dynamic Indian Routine</button>
+                </form>
             </div>
 
-            <!-- RIGHT PANEL: Visual Gamified Tracking Analytics -->
+            <!-- RIGHT PANEL -->
             <div class="glass-card">
-                <h3 style="margin-top: 0; color: var(--primary-cyan); font-weight: 700;"><i class="fa-solid fa-chart-pie"></i> Performance Sync Audit</h3>
+                <h3 style="margin-top: 0; color: var(--primary-cyan); font-weight: 700;"><i class="fa-solid fa-chart-pie"></i> Performance & Conservation Sync</h3>
                 
-                <!-- Inactive Default Message -->
-                <div id="no-diet-warning" style="color: var(--text-muted); text-align: center; padding: 70px 0;">
+                <div id="no-diet-warning" style="color: var(--text-muted); text-align: center; padding: 60px 0;">
                     <i class="fa-solid fa-unlock-keyhole" style="font-size: 2.8rem; color: rgba(255,255,255,0.1); display:block; margin-bottom:16px;"></i>
-                    Unlock tracking configurations by setting up your active chart strategy parameters.
+                    Configure parameters on the left to activate your dynamic layout.
                 </div>
 
-                <!-- Active Analytical Modules -->
                 <div id="analysis-box" style="display: none;">
-                    <div class="score-circle-container">
-                        <div class="score-ring" id="compliance-ring">
-                            <span class="score-text-inner" id="compliance-pct">0%</span>
-                        </div>
+                    <!-- SITE WATER SAVING BANNER -->
+                    <div class="water-impact-banner">
+                        <i class="fa-solid fa-droplet-slash"></i>
                         <div>
-                            <h4 style="margin: 0 0 6px 0; color: var(--accent-green); font-size: 1.1rem;" id="compliance-headline">Day Plan Started</h4>
-                            <p style="margin: 0; font-size: 0.85rem; color: var(--text-muted);">Check off your meal targets below to watch your score update live.</p>
+                            <h4 style="margin: 0 0 4px 0; color: var(--primary-cyan); font-size: 1.05rem;">Your JalDarpan Footprint Impact</h4>
+                            <p style="margin: 0; font-size: 0.88rem; line-height: 1.4; color: rgba(255,255,255,0.85);">
+                                By generating this plan on our site instead of standard ultra-processed options, you save approximately <strong style="color: var(--accent-green);" id="site-water-savings">1,400 Liters</strong> this week!
+                            </p>
                         </div>
                     </div>
 
-                    <!-- NEW: HIGH RETENTION USER LOGGING INTERACTIVE BLOCK -->
-                    <h4 style="margin-bottom: 12px; font-size: 1rem;"><i class="fa-solid fa-calendar-check"></i> Mark Logged Meals Today</h4>
-                    <div class="meal-checker-box">
-                        <div class="meal-row">
-                            <div class="meal-label"><i class="fa-solid fa-egg" style="color:var(--primary-cyan);"></i> Breakfast Window</div>
-                            <input type="checkbox" class="meal-checkbox" onchange="updateComplianceMeter()">
-                        </div>
-                        <div class="meal-row">
-                            <div class="meal-label"><i class="fa-solid fa-bowl-rice" style="color:var(--primary-cyan);"></i> Lunch Window</div>
-                            <input type="checkbox" class="meal-checkbox" onchange="updateComplianceMeter()">
-                        </div>
-                        <div class="meal-row">
-                            <div class="meal-label"><i class="fa-solid fa-leaf" style="color:var(--primary-cyan);"></i> Dinner Window</div>
-                            <input type="checkbox" class="meal-checkbox" onchange="updateComplianceMeter()">
-                        </div>
-                    </div>
+                    <h4 style="color: var(--primary-cyan); margin-top: 10px; margin-bottom: 4px;"><i class="fa-solid fa-calendar-days"></i> Your Personalized 7-Day Indian Diet Plan</h4>
+                    
+                    <div class="weekly-scroller" id="weekly-plan-target"></div>
 
-                    <h4 style="color: var(--primary-cyan); margin-top: 24px; margin-bottom: 10px;"><i class="fa-solid fa-lightbulb"></i> Routine Optimization Directives</h4>
-                    <ul id="friendly-tips"></ul>
-
-                    <!-- THE SNEAKY CONSERVATION TARGET HOOK -->
+                    <!-- COOKING AND PREP WATER SAVING TIPS -->
                     <div class="swap-box">
-                        <p class="swap-title"><i class="fa-solid fa-droplet"></i> Dynamic Planet Water Save</p>
-                        <p style="margin: 0; font-size: 0.88rem; line-height: 1.5; color: rgba(255,255,255,0.9)" id="swap-suggestion-text"></p>
+                        <p class="swap-title"><i class="fa-solid fa-sink"></i> Sustainable Cooking Tips for Selected Diet:</p>
+                        <ul style="margin: 8px 0 0 0; padding-left: 20px;" id="water-tips-target"></ul>
                     </div>
                 </div>
-
             </div>
         </div>
     </div>
 
     <script>
-        document.addEventListener("DOMContentLoaded", () => {
-            checkSavedDiet();
-        });
+        // RECIPE REPOSITORY MATRIX
+        const MEAL_DATABASE = {
+            "North Indian": {
+                Veg: {
+                    bfast: ["Stuffed Methi Paratha with curd", "Besan Chilla with mint chutney", "Whole wheat Daliya Upma"],
+                    lunch: ["Jowar Roti, Moong Dal, and Bhindi Sabzi", "Phulka, Chole Curry, and Sirka Onion Salad", "Missi Roti with Lauki Sabzi and raita"],
+                    dinner: ["Bajra Khichdi with a teaspoon of ghee", "Jeera Rice with Yellow Dal Tadka", "Spiced Paneer Bhurji with 2 soft Phulkas"]
+                },
+                "Non-Veg": {
+                    bfast: ["Egg Bhurji with 2 whole wheat rotis", "Masala Omelet with toasted Wheat Pav", "Spiced Chicken Keema Paratha"],
+                    lunch: ["Phulka, Tari Wali Chicken Curry, and Salad", "Egg Curry cooked with unpolished rice", "Roti, Lean Mutton Sukha, and Cucumber Salad"],
+                    dinner: ["Light Moong Dal Soup with roasted chicken strips", "2 Phulkas with Grilled Chicken Tikka & Mint Chutney", "Egg White Podimas with Roti"]
+                },
+                Jain: {
+                    bfast: ["Moong Dal Chilla with fresh coriander dip", "Sada Paratha with curd", "Oats Upma with peas and corn"],
+                    lunch: ["Ghiya Sabzi, Moong Dal, and 2 Jowar Rotis", "Paneer Makhani (No Onion/Garlic) with Phulka", "Bhindi Bhaji, Yellow Dal, and Sada Rice"],
+                    dinner: ["Bajra Khichdi with curd", "Moong Dal Soup with crispy Khakhra", "Paneer Bhurji (Jain style) with Phulkas"]
+                }
+            },
+            "South Indian": {
+                Veg: {
+                    bfast: ["Ragi Chilka Dosa with Coconut Chutney", "Steamed Idlis with Sambhar", "Foxtail Millet Upma with curry leaves"],
+                    lunch: ["Brown Rice, Vegetable Sambhar, and Avial", "Millet Bisi Bele Bhath with cucumber raita", "Lemon Rice with Roasted Chana Dal salad"],
+                    dinner: ["Puttu with Kadala Curry", "Oats Idli with tomato chutney", "Light Rice Kanjee with a side of green stir-fry"]
+                },
+                "Non-Veg": {
+                    bfast: ["Egg Dosa with Tomato Onion Chutney", "Chicken Keema Idli stack", "Boiled Eggs with spiced boiled Kala Chana"],
+                    lunch: ["Parboiled Rice, Kerala Fish Curry, and Cabbage Poriyal", "Chettinad Chicken Curry with Jowar Roti", "Egg Thokku with Steamed Rice and Rasam"],
+                    dinner: ["Clear Chicken Lemon Soup with 2 Steamed Idlis", "Fish Fry (pan seared) with Ragi Roti", "Egg Podimas with rasam rice"]
+                },
+                Jain: {
+                    bfast: ["Sada Dosa with raw tomato chutney", "Steamed Idlis with green tomato sambhar", "Ragi Roti with grated coconut"],
+                    lunch: ["Rice, Raw Banana Poriyal, and Moong Dal Rasam", "Vegetable Sambhar (Jain) with Brown Rice", "Sada Uttapam with coconut chutney"],
+                    dinner: ["Moong Dal Kanjee with papad", "Oats Plain Upma with peas", "2 Steamed Idlis with ghee"]
+                }
+            },
+            "Gujarati": {
+                Veg: {
+                    bfast: ["Steamed Methi Muthiya", "Traditional Handvo or Khaman Dhokla", "Baked Khakhra with dynamic green sprout salad"],
+                    lunch: ["Gujarati Tuvar Dal, Bhindi Sambhariya, and 2 Rotlis", "Vagharoli Khichdi with Masala Chaas", "Sev Tameta Sabzi with Jowar Rotla"],
+                    dinner: ["Ringan No Oro (Baingan Bharta) with Bajra Rotlo", "Light Moong Khichdi and Kadhi", "Dudhi Chana Dal Sabzi with Phulkas"]
+                },
+                "Non-Veg": { // Regional crossover variation for mixed charts
+                    bfast: ["Egg Green Garlic Bhurji with Wheat Rotli", "Masala Omelet with Khakhra crumbs", "Boiled eggs with green chutney"],
+                    lunch: ["Jeera Rice, Egg Kadhi, and Cabbage Sambharo", "Chicken cooked in Gujarati style green masala with Rotli", "Fish Curry with parboiled rice"],
+                    dinner: ["Light Chicken Khichdi variant", "Egg Podimas with Phulkas", "Spiced pan-seared Tilapia with Tuvar Dal soup"]
+                },
+                Jain: {
+                    bfast: ["Sada Khaman Dhokla", "Kela (Raw Banana) Muthiya", "Plain Crispy Khakhra with dynamic herbal dip"],
+                    lunch: ["Gujarati Tuvar Dal (Jain), Ghiya Sabzi, and 2 Rotlis", "Plain Khichdi with Kadhi (No Onion/Garlic)", "Kela Nu Shaak with soft Phulkas"],
+                    dinner: ["Moong Dal Soup with Khakhra", "Dudhi Khichdi variant with curd", "Raw Banana Bharta with Bajra Rotlo"]
+                }
+            },
+            "Bengali": {
+                Veg: {
+                    bfast: ["Luchi variant using whole wheat flour with Alur Dom", "Chirar Poha with peanuts", "Suji Upma with grated carrots"],
+                    lunch: ["Cholar Dal with coconut, Begun Bhaja, and Rice", "Alu Posto (Jain/Veg style) with Biulir Dal and Roti", "Labra (Mixed Veg) with Bhuna Khichuri"],
+                    dinner: ["Potoler Dolma (Veg style) with Phulkas", "Light Masoor Dal with roasted papad and rice", "Doi Potol with wheat chapati"]
+                },
+                "Non-Veg": {
+                    bfast: ["Dimer Devil (Egg variant) or boiled egg salad", "Mughlai Paratha light edition with egg filling", "Egg Bhurji with Roti"],
+                    lunch: ["Traditional Machher Jhol (Fish Curry) with Steamed Rice", "Doi Maach (Yogurt Fish) with Gobindobhog Rice", "Chicken Jhol with whole wheat Chapatis"],
+                    dinner: ["Prawn Malai Curry (light) with Roti", "Pan-fried Fish fillet with green salad", "Egg Curry with a warm bowl of Masoor Dal"]
+                },
+                Jain: {
+                    bfast: ["Chirar Poha without onions", "Suji Upma with peas", "Plain Atta Chilla with sweet tomato chutney"],
+                    lunch: ["Cholar Dal (No Onion/Garlic), Potol Bhaja, and Sada Rice", "Dhokar Dalna (Lentil cakes curry) with Phulkas", "Labra (Jain style mixed vegetables) with Rice"],
+                    dinner: ["Green papaya curry (Peper Dalna) with Chapatis", "Moong Dal with parboiled rice", "Crispy fried Bittergourd slices with soft phulkas"]
+                }
+            }
+        };
 
-        function switchFormTab(mode) {
-            const tabHave = document.getElementById("form-have-diet");
-            const tabNeed = document.getElementById("form-need-diet");
-            const btnHave = document.getElementById("tab-have");
-            const btnNeed = document.getElementById("tab-need");
+        const WATER_TIPS_DATABASE = {
+            "Veg": [
+                "<strong>Lentil Wash Reuse:</strong> Don't wash dals under running water. Soak them in a bowl and use that water for your home plants <strong>(Saves 15L)</strong>.",
+                "<strong>Pressure Cooker Locking:</strong> Cooking your Sabzis and Dal in a pressure cooker instead of an open pan cuts steam evaporation by half <strong>(Saves 8L)</strong>.",
+                "<strong>Covered Boiling:</strong> Always put a lid over boiling water when prepping hard pulses like Chole or Rajma to reduce water waste <strong>(Saves 10L)</strong>."
+            ],
+            "Non-Veg": [
+                "<strong>Defrosting Hack:</strong> Never thaw frozen meat or fish under a running tap. Place it in the refrigerator overnight to eliminate waste completely <strong>(Saves 25L)</strong>.",
+                "<strong>Single-Pot Poultry:</strong> Cook your chicken curries or egg bases in single pots or pressure cookers to lower your post-cooking utensil washing loads <strong>(Saves 15L)</strong>.",
+                "<strong>Broth Conservation:</strong> Use the leftover boiling liquid from chicken or eggs directly as the base gravy rather than tossing it out <strong>(Saves 5L)</strong>."
+            ],
+            "Jain": [
+                "<strong>Rootless Prep:</strong> Because your cooking skips root vegetables, vegetable scrubbing cycles are reduced. Wash green leafy greens in a stagnant tub instead of running taps <strong>(Saves 12L)</strong>.",
+                "<strong>Pulse Soaking:</strong> Soaking your Moong and Chana overnight slashes required boiling fluid density and cooking hours <strong>(Saves 10L)</strong>.",
+                "<strong>Smart Utensil Rinsing:</strong> Clean your pots immediately after cooking to prevent food drying up, avoiding heavy scrubbing setups later <strong>(Saves 8L)</strong>."
+            ]
+        };
 
-            if (mode === 'have') {
-                tabHave.style.display = "block";
-                tabNeed.style.display = "none";
-                btnHave.classList.add("active");
-                btnNeed.classList.remove("active");
-            } else {
-                tabHave.style.display = "none";
-                tabNeed.style.display = "block";
-                btnHave.classList.remove("active");
-                btnNeed.classList.add("active");
+        function switchMainSetupTab(mode) {
+            document.getElementById("form-have-diet").style.display = mode === 'have' ? "block" : "none";
+            document.getElementById("form-need-diet").style.display = mode === 'need' ? "block" : "none";
+            document.getElementById("tab-have").classList.toggle("active", mode === 'have');
+            document.getElementById("tab-need").classList.toggle("active", mode === 'need');
+        }
+
+        function selectSinglePill(element) {
+            element.parentNode.querySelectorAll('.pill-box').forEach(el => el.classList.remove('selected'));
+            element.classList.add('selected');
+        }
+
+        function toggleMultiplePill(element) {
+            element.classList.toggle('selected');
+            const container = element.parentNode;
+            if (container.querySelectorAll('.pill-box.selected').length === 0) {
+                element.classList.add('selected');
             }
         }
 
-        function checkSavedDiet() {
-            const savedData = localStorage.getItem("jaldarpan_user_diet");
-            const viewMode = document.getElementById("view-mode");
-            const formMode = document.getElementById("form-mode");
-            const warningBox = document.getElementById("no-diet-warning");
-            const analysisBox = document.getElementById("analysis-box");
-
-            if (savedData) {
-                viewMode.style.display = "block";
-                formMode.style.display = "none";
-                warningBox.style.display = "none";
-                analysisBox.style.display = "block";
-
-                const diet = JSON.parse(savedData);
-                let displayHTML = `<p style="margin-top: 0; margin-bottom: 14px; font-size:0.95rem;"><strong>Active Model:</strong> ${diet.source === 'user' ? 'Dietitian Verified Schedule' : 'AI Custom Framework'}</p>`;
-                displayHTML += `<div style="white-space: pre-wrap; background: var(--panel-inner); padding: 18px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.05); font-size: 0.95rem; line-height:1.6; color:rgba(255,255,255,0.95);">${diet.text}</div>`;
-                document.getElementById("saved-summary-box").innerHTML = displayHTML;
-
-                loadInsightsAndHooks(diet);
-                updateComplianceMeter(); // Initialize default meter score state
-            } else {
-                viewMode.style.display = "none";
-                formMode.style.display = "block";
-                warningBox.style.display = "block";
-                analysisBox.style.display = "none";
-            }
-        }
-
-        // Real-Time Compliance Metric Engine Updates
-        function updateComplianceMeter() {
-            const boxes = document.querySelectorAll(".meal-checkbox");
-            let checkedCount = 0;
-            boxes.forEach(box => { if(box.checked) checkedCount++; });
-
-            const percent = Math.round((checkedCount / boxes.length) * 100);
-            
-            // Visual Update Elements
-            document.getElementById("compliance-pct").innerText = `${percent}%`;
-            document.getElementById("compliance-ring").style.background = `conic-gradient(var(--accent-green) ${percent}%, rgba(255,255,255,0.1) 0)`;
-
-            const headline = document.getElementById("compliance-headline");
-            if(percent === 0) headline.innerText = "Day Schedule Open";
-            else if(percent < 100) { headline.innerText = "Making Great Progress!"; headline.style.color = "var(--primary-cyan)"; }
-            else { headline.innerText = "Perfect Day Locked!"; headline.style.color = "var(--accent-green)"; }
-        }
-
-        function saveExistingDiet(e) {
+        // ── FIX: Missing function implemented ──────────────────────────────────
+        function saveDirectDietitianText(e) {
             e.preventDefault();
-            const textVal = document.getElementById("diet-text-input").value;
-            localStorage.setItem("jaldarpan_user_diet", JSON.stringify({ source: 'user', text: textVal, goal: 'Custom Routine' }));
-            checkSavedDiet();
-        }
+            const rawText = document.getElementById("diet-text-input").value.trim();
+            if (!rawText) return;
 
-        function generateDietPlan(e) {
+            // Parse lines into meal items (best-effort: lines containing ":" are meal entries)
+            const lines = rawText.split('\n').map(l => l.trim()).filter(Boolean);
+            let mealsHtml = '<div class="day-card">';
+            mealsHtml += '<div class="day-title">📋 Your Dietitian Chart</div>';
+            lines.forEach(line => {
+                mealsHtml += `<div class="meal-item">${line}</div>`;
+            });
+            mealsHtml += '</div>';
+
+            // Show the right panel with chart data
+            document.getElementById("no-diet-warning").style.display = "none";
+            document.getElementById("analysis-box").style.display = "block";
+
+            // Water savings: dietitian charts are inherently optimised — use a flat estimate
+            document.getElementById("site-water-savings").innerText = "1,350 Liters";
+
+            document.getElementById("weekly-plan-target").innerHTML = mealsHtml;
+
+            // Default tips to Veg since we don't know diet type from free text
+            let tipsHtml = "";
+            WATER_TIPS_DATABASE["Veg"].forEach(tip => {
+                tipsHtml += `<li>${tip}</li>`;
+            });
+            document.getElementById("water-tips-target").innerHTML = tipsHtml;
+
+            // Visual confirmation on the button
+            const btn = e.target.querySelector('button[type="submit"]');
+            btn.innerText = "✅ Chart Saved!";
+            btn.style.background = "var(--accent-green)";
+            setTimeout(() => {
+                btn.innerText = "Initialize My Chart";
+                btn.style.background = "";
+            }, 2500);
+        }
+        // ───────────────────────────────────────────────────────────────────────
+
+        function generateHighlyDiversifiedPlan(e) {
             e.preventDefault();
-            const goal = document.getElementById("user-goal").value;
-            let planText = "";
 
-            if (goal === "Weight Loss") {
-                planText = "🥣 Breakfast: Rolled oats with almond slivers and sliced apple.\n🥗 Lunch: 2 multigrain rotis, a broad cup of steamed dal, and large cucumber cucumber mint salad.\n🍲 Dinner: Pan-seared cottage cheese (paneer) cubes alongside warm vegetable broth.";
-            } else if (goal === "Muscle Gain") {
-                planText = "🍳 Breakfast: 3 egg omelet or customized tofu scramble paired with peanut butter toast.\n🥗 Lunch: Brown rice platter alongside chickpea stew and thick homemade yogurt.\n🍲 Dinner: Sautéed mushrooms, sweet potato mash, and a clean protein shake mix.";
-            } else {
-                planText = "🌾 Breakfast: Wholesome vegetable vegetable vegetable poha topped with lime juice.\n🥗 Lunch: Traditional wheat flatbreads served with mixed sabji curry and sprout salads.\n🍲 Dinner: Light yellow lentil khichdi cooked with a drizzle of ghee.";
-            }
+            // 1. Read inputs
+            const age    = parseInt(document.getElementById("form-age").value)    || 30;
+            const weight = parseInt(document.getElementById("form-weight").value) || 70;
+            const height = parseInt(document.getElementById("form-height").value) || 170;
 
-            localStorage.setItem("jaldarpan_user_diet", JSON.stringify({ source: 'generated', text: planText, goal: goal }));
-            checkSavedDiet();
-        }
+            // FIX: read pill values via data-value instead of parsing emoji innerText
+            const targetCategory = document.querySelector('[data-type="diet-type"] .pill-box.selected').dataset.value || "Veg";
+            const goal           = document.querySelector('[data-type="goal"] .pill-box.selected')?.innerText || "Fat Loss";
+            const gender         = document.querySelector('[data-type="gender"] .pill-box.selected')?.innerText || "Other";
 
-        function showForm() {
-            document.getElementById("view-mode").style.display = "none";
-            document.getElementById("form-mode").style.display = "block";
-            // Uncheck verification indicators for subsequent resets
-            document.querySelectorAll(".meal-checkbox").forEach(b => b.checked = false);
-        }
+            // FIX: use data-value for cuisines — no emoji stripping needed
+            const selectedCuisines = [];
+            document.querySelectorAll('[data-type="cuisines"] .pill-box.selected').forEach(el => {
+                selectedCuisines.push(el.dataset.value);
+            });
 
-        function loadInsightsAndHooks(diet) {
-            document.getElementById("friendly-tips").innerHTML = `
-                <li><strong>Metabolic Rate Sync:</strong> Keeping consistent windows running helps stabilize overall performance metrics perfectly.</li>
-                <li><strong>Hydration Alert:</strong> Remember to log direct fluid tracking values on the main page to ensure perfect internal metabolic transfer tracking.</li>
-            `;
+            // 2. Generate 7-Day Matrix
+            const daysOfWeek = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+            const dynamicDataset = [];
 
-            const swapText = document.getElementById("swap-suggestion-text");
-            if(diet.goal === "Muscle Gain" || diet.text.toLowerCase().includes("chicken") || diet.text.toLowerCase().includes("egg")) {
-                swapText.innerHTML = "✨ <strong>Impact Hack:</strong> Swapping out one serving of poultry for a clean plant protein source like dal or tofu tomorrow keeps muscle syntheses active while preserving <strong>1,200 Liters of implicit global water flow</strong>!";
-            } else {
-                swapText.innerHTML = "✨ <strong>Footprint Winner:</strong> Your current menu configuration minimizes hidden fluid overhead. By completing these targets, you save <strong>850 Liters of hidden embedded environmental resource flow</strong> today!";
-            }
+            daysOfWeek.forEach((day, index) => {
+                const assignedCuisine = selectedCuisines[index % selectedCuisines.length];
+                const pool = MEAL_DATABASE[assignedCuisine][targetCategory];
+                dynamicDataset.push({
+                    day: `Day ${index + 1} (${day}) — [${assignedCuisine}]`,
+                    bfast: pool.bfast[index % pool.bfast.length],
+                    lunch: pool.lunch[index % pool.lunch.length],
+                    dinner: pool.dinner[index % pool.dinner.length]
+                });
+            });
+
+            // 3. FIX: Water savings now factors in user profile
+            // BMI-based modifier: higher BMI → slightly higher footprint reduction potential
+            const bmi = weight / ((height / 100) ** 2);
+            const bmiModifier = bmi > 25 ? 80 : bmi > 18.5 ? 40 : 20;
+
+            // Age modifier: older users tend to have established high-water-footprint habits
+            const ageModifier = age > 50 ? 100 : age > 30 ? 60 : 30;
+
+            // Goal modifier
+            const goalModifier = goal.includes("Fat Loss") ? 120 : goal.includes("Muscle") ? 60 : 40;
+
+            // Diet type modifier
+            const dietModifier = targetCategory === "Jain" ? 450 : targetCategory === "Veg" ? 350 : 200;
+
+            // Gender modifier (minor hydration difference)
+            const genderModifier = gender === "Female" ? 20 : 0;
+
+            const baselineSavings = 1200 + dietModifier + bmiModifier + ageModifier + goalModifier + genderModifier + (selectedCuisines.length * 50);
+
+            // 4. Update View
+            document.getElementById("no-diet-warning").style.display = "none";
+            document.getElementById("analysis-box").style.display = "block";
+            document.getElementById("site-water-savings").innerText = `${baselineSavings} Liters`;
+
+            let mealsHtml = "";
+            dynamicDataset.forEach(item => {
+                mealsHtml += `
+                    <div class="day-card">
+                        <div class="day-title">${item.day}</div>
+                        <div class="meal-item"><strong>☕ Morning:</strong> ${item.bfast}</div>
+                        <div class="meal-item"><strong>🍱 Lunch:</strong> ${item.lunch}</div>
+                        <div class="meal-item"><strong>🍲 Dinner:</strong> ${item.dinner}</div>
+                    </div>
+                `;
+            });
+            document.getElementById("weekly-plan-target").innerHTML = mealsHtml;
+
+            let tipsHtml = "";
+            WATER_TIPS_DATABASE[targetCategory].forEach(tip => {
+                tipsHtml += `<li>${tip}</li>`;
+            });
+            document.getElementById("water-tips-target").innerHTML = tipsHtml;
         }
     </script>
 </body>
