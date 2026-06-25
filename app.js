@@ -8,6 +8,7 @@ const API_BASE = "https://jaldarpanbackend.onrender.com"; // Render deployment
 
 let currentUserId = null;
 let mealImageBase64 = null; // stores uploaded meal image for /analyze
+let currentMealMode = 'image'; // 'image' | 'text' — source of truth for analyzeMeal(), not the DOM
 
 // Track the latest AI calculated footprint to feed dynamically into the dashboard meter
 let latestAIMealFootprint = null;
@@ -182,6 +183,7 @@ async function handleImageUpload(event) {
 // ── MEAL ANALYZE ──
 
 function switchMealMode(mode) {
+    currentMealMode = mode;
     document.getElementById('meal-mode-text').style.display = mode === 'text' ? 'block' : 'none';
     document.getElementById('meal-mode-image').style.display = mode === 'image' ? 'block' : 'none';
     document.getElementById('btn-mode-text').classList.toggle('active', mode === 'text');
@@ -296,7 +298,7 @@ function renderMealAnalysisResult(data) {
 }
 
 async function analyzeMeal() {
-    const isImageMode = document.getElementById('meal-mode-image').style.display !== 'none';
+    const isImageMode = currentMealMode === 'image';
 
     let body;
     if (isImageMode) {
@@ -304,7 +306,7 @@ async function analyzeMeal() {
             alert('Please upload a meal image first.');
             return;
         }
-        body = { image_base_64: mealImageBase64 };
+        body = { image_base64: mealImageBase64 };
     } else {
         const rows = document.querySelectorAll('#meal-items-list .meal-item-row');
         const items = [];
