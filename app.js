@@ -27,7 +27,6 @@ function renderResult(data, foodName) {
     
     container.innerHTML = `
         <div class="result-card">
-
             <div class="result-header">
                 <h2>${data.matched_food.toUpperCase()}</h2>
                 <div class="water-number">
@@ -62,9 +61,8 @@ function renderResult(data, foodName) {
             <div class="advice-box">
                 ${data.advice}
             </div>
-
         </div>
-        `;
+    `;
 }
 
 async function lookup() {
@@ -180,7 +178,6 @@ async function handleImageUpload(event) {
     document.getElementById("upload-status").textContent = file.name;
     await scan(file);
 }
-
 
 // ── MEAL ANALYZE ──
 
@@ -634,7 +631,6 @@ async function loadAppState() {
         .single();
 
     if (profileErr || !profile) {
-        // New user — profile row doesn't exist yet, send to onboarding
         window.location.href = 'auth.html';
         return false;
     }
@@ -747,7 +743,6 @@ function showPage(pageId) {
         }
     });
 
-    // Refresh profile page every time it's opened so meal history is live
     if (pageId === 'profile') {
         renderProfileHeatmaps();
     }
@@ -776,14 +771,16 @@ function updateUIRefreshes() {
     document.getElementById('dash-today-litres').textContent = profile.todayWaterLogged;
 
     const circle = document.getElementById('today-progress-circle');
-    const radius = circle.r.baseVal.value;
-    const circumference = radius * 2 * Math.PI;
-    circle.style.strokeDasharray = `${circumference} ${circumference}`;
-    
-    const baselineCap = 500;
-    const percentage = Math.min((profile.todayWaterLogged / baselineCap) * 100, 100);
-    const offset = circumference - (percentage / 100) * circumference;
-    circle.style.strokeDashoffset = offset;
+    if (circle) {
+        const radius = circle.r.baseVal.value;
+        const circumference = radius * 2 * Math.PI;
+        circle.style.strokeDasharray = `${circumference} ${circumference}`;
+        
+        const baselineCap = 500;
+        const percentage = Math.min((profile.todayWaterLogged / baselineCap) * 100, 100);
+        const offset = circumference - (percentage / 100) * circumference;
+        circle.style.strokeDashoffset = offset;
+    }
 
     renderDashboardQuests();
     renderMainQuestMatrix();
@@ -793,6 +790,7 @@ function updateUIRefreshes() {
 
 function renderDashboardQuests() {
     const container = document.getElementById('dash-challenges-list');
+    if (!container) return;
     container.innerHTML = "";
     
     const activeQuests = appState.challenges.filter(c => !c.completed).slice(0, 2);
@@ -850,19 +848,21 @@ function renderMainQuestMatrix() {
     });
 
     const badgeGrid = document.getElementById('badges-container-grid');
-    badgeGrid.innerHTML = "";
-    appState.badges.forEach(badge => {
-        const isUnlocked = appState.userProfile.xp >= badge.requirement;
-        const div = document.createElement('div');
-        div.className = `badge-node ${isUnlocked ? 'unlocked' : ''}`;
-        div.innerHTML = `
-            <div class="badge-icon-layer">${badge.name.split(' ')[0]}</div>
-            <h5>${badge.name.substring(2)}</h5>
-            <p>${badge.desc}</p>
-            <small style="font-size:0.65rem; color:var(--color-aqua);">${isUnlocked ? 'Matrix Active' : 'Req: ' + badge.requirement + ' XP'}</small>
-        `;
-        badgeGrid.appendChild(div);
-    });
+    if (badgeGrid) {
+        badgeGrid.innerHTML = "";
+        appState.badges.forEach(badge => {
+            const isUnlocked = appState.userProfile.xp >= badge.requirement;
+            const div = document.createElement('div');
+            div.className = `badge-node ${isUnlocked ? 'unlocked' : ''}`;
+            div.innerHTML = `
+                <div class="badge-icon-layer">${badge.name.split(' ')[0]}</div>
+                <h5>${badge.name.substring(2)}</h5>
+                <p>${badge.desc}</p>
+                <small style="font-size:0.65rem; color:var(--color-aqua);">${isUnlocked ? 'Matrix Active' : 'Req: ' + badge.requirement + ' XP'}</small>
+            `;
+            badgeGrid.appendChild(div);
+        });
+    }
 }
 
 async function renderLeaderboards(filterType = 'veg') {
@@ -908,11 +908,11 @@ async function renderLeaderboards(filterType = 'veg') {
     mainBody.innerHTML = "";
     
     if(filterType === 'veg') {
-        document.getElementById('btn-toggle-veg').classList.add('active');
-        document.getElementById('btn-toggle-nonveg').classList.remove('active');
+        if(document.getElementById('btn-toggle-veg')) document.getElementById('btn-toggle-veg').classList.add('active');
+        if(document.getElementById('btn-toggle-nonveg')) document.getElementById('btn-toggle-nonveg').classList.remove('active');
     } else {
-        document.getElementById('btn-toggle-veg').classList.remove('active');
-        document.getElementById('btn-toggle-nonveg').classList.add('active');
+        if(document.getElementById('btn-toggle-veg')) document.getElementById('btn-toggle-veg').classList.remove('active');
+        if(document.getElementById('btn-toggle-nonveg')) document.getElementById('btn-toggle-nonveg').classList.add('active');
     }
 
     const filteredData = dataset.filter(i => filterType === 'veg' ? i.isVeg : !i.isVeg || i.isUser);
@@ -936,7 +936,6 @@ async function renderLeaderboards(filterType = 'veg') {
 }
 
 async function renderProfileHeatmaps() {
-    // Profile identity fields
     document.getElementById('profile-name-display').textContent = appState.userProfile.username;
     document.getElementById('profile-rank-display').textContent = getLevelName(appState.userProfile.xp);
     document.getElementById('prof-xp').textContent = appState.userProfile.xp;
@@ -945,17 +944,14 @@ async function renderProfileHeatmaps() {
     document.getElementById('prof-challenges').textContent = appState.userProfile.challengesCompletedCount;
     document.getElementById('prof-friends').textContent = appState.userProfile.friendsInvitedCount;
 
-    // Sync big profile avatar to current seed
     const profileAvatarDisplay = document.getElementById('profile-avatar-display');
     if (profileAvatarDisplay) {
         profileAvatarDisplay.src = `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(appState.userProfile.avatarSeed)}`;
     }
 
-    // Populate username field in settings
     const usernameInput = document.getElementById('settings-username');
     if (usernameInput) usernameInput.value = appState.userProfile.username;
 
-    // ── AVATAR PICKER ──
     const avatarPicker = document.getElementById('dash-avatar-picker');
     if (avatarPicker && !avatarPicker.dataset.initialized) {
         avatarPicker.dataset.initialized = 'true';
@@ -973,7 +969,6 @@ async function renderProfileHeatmaps() {
                 avatarPicker.querySelectorAll('.avatar-option').forEach(el => el.classList.remove('selected'));
                 wrapper.classList.add('selected');
                 appState.userProfile.avatarSeed = seed;
-                // Update all avatar images instantly
                 document.getElementById('nav-avatar-img').src = `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(seed)}`;
                 if (profileAvatarDisplay) profileAvatarDisplay.src = `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(seed)}`;
                 await syncProfile();
@@ -984,29 +979,27 @@ async function renderProfileHeatmaps() {
             avatarPicker.appendChild(wrapper);
         });
     } else if (avatarPicker) {
-        // Re-sync selected state when re-navigating to profile
         avatarPicker.querySelectorAll('.avatar-option').forEach(el => {
             el.classList.toggle('selected', el.title === appState.userProfile.avatarSeed);
         });
     }
 
-    // ── MEAL HISTORY + DIET FEEDBACK ──
     const entriesEl = document.getElementById('mh-entries');
     const totalEl = document.getElementById('mh-total-litres');
     const countEl = document.getElementById('mh-meal-count');
     const dietStatusEl = document.getElementById('mh-diet-status');
     if (!entriesEl) return;
 
-    // Show loading state while fetching
     entriesEl.innerHTML = '<div class="mh-empty" style="opacity:0.6"><i class="fa-solid fa-spinner fa-spin" style="margin-right:6px"></i> Loading meal history...</div>';
 
-    // Load diet from localStorage
     let dietPlan = null;
     try { dietPlan = JSON.parse(localStorage.getItem('jaldarpan_user_diet')); } catch(e) {}
 
     if (dietPlan && dietPlan.text) {
-        dietStatusEl.innerHTML = `<i class="fa-solid fa-circle-check" style="color:#2ed573"></i> Diet plan active — feedback enabled`;
-        dietStatusEl.style.color = '#2ed573';
+        if (dietStatusEl) {
+            dietStatusEl.innerHTML = `<i class="fa-solid fa-circle-check" style="color:#2ed573"></i> Diet plan active — feedback enabled`;
+            dietStatusEl.style.color = '#2ed573';
+        }
     }
 
     const now = new Date();
@@ -1022,7 +1015,6 @@ async function renderProfileHeatmaps() {
         .order('created_at', { ascending: false });
 
     const allLogs = logs || [];
-    // Filter only meal-related logs (Section A)
     const mealLogs = allLogs.filter(l =>
         l.log_type === 'meal_scan' || l.log_type === 'meal_lookup'
     );
@@ -1044,7 +1036,6 @@ async function renderProfileHeatmaps() {
         const time = new Date(entry.created_at).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', hour12: true });
         const litres = entry.litres || 0;
 
-        // Diet feedback
         let feedbackHTML = '';
         if (dietPlan && dietPlan.text) {
             const feedback = getMealDietFeedback(name, litres, dietPlan);
@@ -1074,7 +1065,6 @@ function getMealDietFeedback(mealName, litres, dietPlan) {
     const dietText = (dietPlan.text || '').toLowerCase();
     const meal = mealName.toLowerCase();
 
-    // High water footprint items
     const highFootprint = ['beef', 'lamb', 'mutton', 'pork', 'chicken', 'meat', 'prawn', 'shrimp', 'fish'];
     const medFootprint  = ['egg', 'dairy', 'milk', 'cheese', 'paneer', 'curd', 'yogurt'];
     const lowFootprint  = ['dal', 'lentil', 'vegetable', 'rice', 'roti', 'chapati', 'sabji', 'salad', 'oats', 'poha', 'khichdi', 'tofu'];
@@ -1083,7 +1073,6 @@ function getMealDietFeedback(mealName, litres, dietPlan) {
     const isMed  = medFootprint.some(k => meal.includes(k));
     const isLow  = lowFootprint.some(k => meal.includes(k));
 
-    // Check if this food is in diet
     const inDiet = dietText.includes(meal.split(' ')[0]) || dietText.includes(meal.split(',')[0].trim());
 
     if (isHigh && litres > 1000) {
@@ -1148,6 +1137,7 @@ function histEntryName(entry) {
     if (m.title) return m.title;
     return entry.log_type.replace(/_/g, ' ');
 }
+
 // User Actions Handlers
 async function completeQuestDirectly(id) {
     const quest = appState.challenges.find(c => c.id === id);
@@ -1194,34 +1184,8 @@ function triggerMockUpload() {
     }, 1200);
 }
 
-// Core Analytical Calculations Logic
-// Corrected Recalculation logic to extract historical logged meal items 
-async function recalculateTodayWaterLogged() {
-    const now = new Date();
-    const midnight = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-    const nextMidnight = new Date(midnight.getTime() + 86400000);
-
-    const { data: logs } = await supabaseClient
-        .from('activity_logs')
-        .select('log_type, litres')
-        .eq('user_id', currentUserId)
-        .gte('created_at', midnight.toISOString())
-        .lt('created_at', nextMidnight.toISOString());
-
-    // Filter only meal-related logs (Matching Section A / Profile View logic)
-    const mealsOnly = (logs || [])
-        .filter(l => l.log_type === 'meal_scan' || l.log_type === 'meal_lookup')
-        .reduce((sum, log) => sum + (log.litres || 0), 0);
-        
-    latestAIMealFootprint = mealsOnly;
-
-    // Synchronize global application profile state cleanly
-    appState.userProfile.todayWaterLogged = mealsOnly;
-}
-
-// Core Analytical Calculations Logic (Corrected Optimization)
+// Core Analytical Calculations Logic (Fixed Database loop error)
 async function calculateFootprint() {
-    // Read the active meal footprint directly from what's tracked in the clean state database
     let mealLitres = appState.userProfile.todayWaterLogged || 0;
 
     const showerMins = parseInt(document.getElementById('input-shower').value) || 0;
@@ -1239,8 +1203,6 @@ async function calculateFootprint() {
     const carRate = 150; 
 
     const domesticSum = (showerMins * showerRate) + (laundryLoads * laundryRate) + (dishMins * dishRate) + (gardenMins * hoseRate) + (carSessions * carRate) + directDrink;
-    
-    // Combine them dynamically without writing back or modifying global profiles
     const totalImpactCalculated = mealLitres + Math.round(domesticSum);
 
     // Update UI Elements
@@ -1253,10 +1215,19 @@ async function calculateFootprint() {
     if (suggestionsBox) {
         suggestionsBox.innerHTML = "";
         let feedbackCards = [];
-        if(showerMins > 5) feedbackCards.push("You could conserve approximately 18-36 litres tomorrow by restricting structural shower durations by 2-4 minutes.");
-        if(mealLitres > 1000) feedbackCards.push("Transitioning high footprint AI detected meals to plant-based choices optimizes regional hydro systems.");
-        if(laundryLoads > 0) feedbackCards.push("Consolidating garment cycles strictly into completely full load distributions reduces wastewater downstream processing friction.");
-        
+        if(showerMins > 5) {
+            feedbackCards.push("You could conserve approximately 18-36 litres tomorrow by restricting structural shower durations by 2-4 minutes.");
+        }
+        if(mealLitres > 1000) {
+            feedbackCards.push("Transitioning high footprint AI detected meals to plant-based choices optimizes regional hydro systems.");
+        }
+        if(laundryLoads > 0) {
+            feedbackCards.push("Consolidating garment cycles strictly into completely full load distributions reduces wastewater downstream processing friction.");
+        }
+        if(gardenMins > 0) {
+            feedbackCards.push("Consider shifting automated irrigation parameters to cool evening or pre-dawn slots to bypass heavy atmospheric evaporation penalties.");
+        }
+
         if(feedbackCards.length === 0) {
             feedbackCards.push("Operational profile exhibits excellent compliance boundaries. Continue implementing tracking loops to stabilize surrounding ecosystems.");
         }
@@ -1277,9 +1248,9 @@ async function calculateFootprint() {
         diagnosticTextNode.textContent = `Today's Water Impact: ${totalImpactCalculated} Litres total system parameter profile tracking values loaded.`;
     }
 
-    // Safely update visual interface indicator values without modifying your baseline state
+    // Safely refresh dashboard numbers without creating database loops
     document.getElementById('dash-today-litres').textContent = totalImpactCalculated;
-    
+
     const circle = document.getElementById('today-progress-circle');
     if (circle) {
         const radius = circle.r.baseVal.value;
@@ -1329,6 +1300,7 @@ async function updateProfileSettings() {
     updateUIRefreshes();
 }
 
+// Changed to strictly query logged meal data from activity logs
 async function recalculateTodayWaterLogged() {
     const now = new Date();
     const midnight = new Date(now.getFullYear(), now.getMonth(), now.getDate());
@@ -1336,19 +1308,17 @@ async function recalculateTodayWaterLogged() {
 
     const { data: logs } = await supabaseClient
         .from('activity_logs')
-        .select('litres')
+        .select('log_type, litres')
         .eq('user_id', currentUserId)
         .gte('created_at', midnight.toISOString())
         .lt('created_at', nextMidnight.toISOString());
 
-    const total = (logs || []).reduce(
-        (sum, log) => sum + (log.litres || 0),
-        0
-    );
+    const mealsOnly = (logs || [])
+        .filter(l => l.log_type === 'meal_scan' || l.log_type === 'meal_lookup')
+        .reduce((sum, log) => sum + (log.litres || 0), 0);
 
-    appState.userProfile.todayWaterLogged = total;
+    appState.userProfile.todayWaterLogged = mealsOnly;
 }
-
 
 function toggleThemeOverride() {
     const isChecked = document.getElementById('theme-toggle-checkbox').checked;
@@ -1366,7 +1336,8 @@ window.addEventListener('DOMContentLoaded', async () => {
     if (!ok) return; 
     await recalculateTodayWaterLogged();
     updateUIRefreshes();
-    // Enforce step parameters constraint directly onto slider elements programmatically
+    calculateFootprint();
+
     const sliders = ['input-shower', 'input-laundry', 'input-dishes', 'input-garden', 'input-car'];
     sliders.forEach(id => {
         const el = document.getElementById(id);
