@@ -2228,3 +2228,105 @@ html, body {
     background: rgba(5,191,219,0.15);
     box-shadow: 0 0 0 3px rgba(5,191,219,0.25);
 }
+
+/* ── SWAP SUGGESTIONS ── */
+.swap-section {
+    text-align: left;
+    margin-top: 18px;
+    border-top: 1px solid rgba(255,255,255,0.07);
+    padding-top: 14px;
+}
+.swap-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+.swap-title {
+    font-size: 0.92rem;
+    font-weight: 600;
+    color: var(--color-aqua);
+}
+.swap-badge {
+    font-size: 0.62rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    background: rgba(5,191,219,0.15);
+    color: var(--color-aqua);
+    border: 1px solid rgba(5,191,219,0.3);
+    border-radius: 4px;
+    padding: 1px 6px;
+}
+.swap-loading {
+    font-size: 0.82rem;
+    color: var(--text-muted);
+    padding: 6px 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.swap-card {
+    background: rgba(5,191,219,0.05);
+    border: 1px solid rgba(5,191,219,0.15);
+    border-radius: 10px;
+    padding: 11px 13px;
+    margin-bottom: 9px;
+}
+.swap-items {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 6px;
+}
+.swap-from, .swap-to {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex: 1;
+    min-width: 0;
+}
+.swap-food-name {
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--text-primary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.swap-arrow {
+    font-size: 1rem;
+    color: var(--color-aqua);
+    flex-shrink: 0;
+}
+.swap-litres {
+    font-size: 0.75rem;
+    font-weight: 700;
+    border-radius: 4px;
+    padding: 1px 6px;
+    flex-shrink: 0;
+}
+.swap-litres-high {
+    background: rgba(248,113,113,0.12);
+    color: #f87171;
+}
+.swap-litres-low {
+    background: rgba(74,222,128,0.12);
+    color: #4ade80;
+}
+.swap-saving {
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: #38bdf8;
+    margin-bottom: 4px;
+}
+.swap-reason {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    line-height: 1.4;
+}
+.swap-empty {
+    font-size: 0.82rem;
+    color: var(--text-muted);
+    padding: 4px 0;
+}
