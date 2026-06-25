@@ -296,7 +296,7 @@ function renderMealAnalysisResult(data) {
 }
 
 async function analyzeMeal() {
-    const isImageMode = document.getElementById('btn-mode-image').classList.contains('active');
+    const isImageMode = document.getElementById('meal-mode-image').style.display !== 'none';
 
     let body;
     if (isImageMode) {
@@ -796,7 +796,7 @@ function updateUIRefreshes() {
 
     document.getElementById('hero-username').textContent = profile.username;
     document.getElementById('dash-level-name').textContent = computedLevel;
-    document.getElementById('dash-water-saved').textContent = profile.waterSavedMonth.toLocaleString();
+    // dash-water-saved element removed from UI
     document.getElementById('dash-today-litres').textContent = profile.todayWaterLogged;
 
     const circle = document.getElementById('today-progress-circle');
@@ -969,7 +969,7 @@ async function renderProfileHeatmaps() {
     document.getElementById('profile-rank-display').textContent = getLevelName(appState.userProfile.xp);
     document.getElementById('prof-xp').textContent = appState.userProfile.xp;
     document.getElementById('prof-streak').textContent = appState.userProfile.streak;
-    document.getElementById('prof-saved').textContent = (appState.userProfile.waterSavedMonth / 1000).toFixed(1) + 'k';
+    // prof-saved element removed from UI
     document.getElementById('prof-challenges').textContent = appState.userProfile.challengesCompletedCount;
     document.getElementById('prof-friends').textContent = appState.userProfile.friendsInvitedCount;
 
