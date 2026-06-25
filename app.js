@@ -1197,15 +1197,7 @@ function triggerMockUpload() {
 // Core Analytical Calculations Logic
 async function calculateFootprint() {
     // Check if an AI calculation was performed. If so, prioritize its footprint directly!
-    let mealLitres = 400;
-    if (latestAIMealFootprint !== null) {
-        mealLitres = latestAIMealFootprint;
-    } else {
-        const mealVal = document.getElementById('meal-select').value;
-        if(mealVal === 'dairy') mealLitres = 1200;
-        if(mealVal === 'poultry') mealLitres = 900;
-        if(mealVal === 'meat') mealLitres = 2500;
-    }
+    let mealLitres = latestAIMealFootprint ?? 0;
 
     const showerMins = parseInt(document.getElementById('input-shower').value) || 0;
     const laundryLoads = parseInt(document.getElementById('input-laundry').value) || 0;
