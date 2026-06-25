@@ -747,6 +747,11 @@ function showPage(pageId) {
         }
     });
 
+    // Refresh profile page every time it's opened so meal history is live
+    if (pageId === 'profile') {
+        renderProfileHeatmaps();
+    }
+
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
@@ -940,12 +945,60 @@ async function renderProfileHeatmaps() {
     document.getElementById('prof-challenges').textContent = appState.userProfile.challengesCompletedCount;
     document.getElementById('prof-friends').textContent = appState.userProfile.friendsInvitedCount;
 
+    // Sync big profile avatar to current seed
+    const profileAvatarDisplay = document.getElementById('profile-avatar-display');
+    if (profileAvatarDisplay) {
+        profileAvatarDisplay.src = `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(appState.userProfile.avatarSeed)}`;
+    }
+
+    // Populate username field in settings
+    const usernameInput = document.getElementById('settings-username');
+    if (usernameInput) usernameInput.value = appState.userProfile.username;
+
+    // ── AVATAR PICKER ──
+    const avatarPicker = document.getElementById('dash-avatar-picker');
+    if (avatarPicker && !avatarPicker.dataset.initialized) {
+        avatarPicker.dataset.initialized = 'true';
+        const AVATAR_SEEDS = [
+            'JalWater', 'AquaBot', 'RiverGuard', 'EcoWave', 'DropsBot',
+            'StreamBot', 'TidalFlow', 'WaterLeaf', 'OceanMind', 'RainBot',
+            'PondLife', 'CloudBot'
+        ];
+        AVATAR_SEEDS.forEach(seed => {
+            const wrapper = document.createElement('div');
+            wrapper.className = 'avatar-option' + (seed === appState.userProfile.avatarSeed ? ' selected' : '');
+            wrapper.title = seed;
+            wrapper.innerHTML = `<img src="https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(seed)}" alt="${seed}">`;
+            wrapper.onclick = async () => {
+                avatarPicker.querySelectorAll('.avatar-option').forEach(el => el.classList.remove('selected'));
+                wrapper.classList.add('selected');
+                appState.userProfile.avatarSeed = seed;
+                // Update all avatar images instantly
+                document.getElementById('nav-avatar-img').src = `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(seed)}`;
+                if (profileAvatarDisplay) profileAvatarDisplay.src = `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(seed)}`;
+                await syncProfile();
+                if (typeof showToast === 'function') {
+                    showToast('Avatar updated!', 'fa-solid fa-circle-check', true);
+                }
+            };
+            avatarPicker.appendChild(wrapper);
+        });
+    } else if (avatarPicker) {
+        // Re-sync selected state when re-navigating to profile
+        avatarPicker.querySelectorAll('.avatar-option').forEach(el => {
+            el.classList.toggle('selected', el.title === appState.userProfile.avatarSeed);
+        });
+    }
+
     // ── MEAL HISTORY + DIET FEEDBACK ──
     const entriesEl = document.getElementById('mh-entries');
     const totalEl = document.getElementById('mh-total-litres');
     const countEl = document.getElementById('mh-meal-count');
     const dietStatusEl = document.getElementById('mh-diet-status');
     if (!entriesEl) return;
+
+    // Show loading state while fetching
+    entriesEl.innerHTML = '<div class="mh-empty" style="opacity:0.6"><i class="fa-solid fa-spinner fa-spin" style="margin-right:6px"></i> Loading meal history...</div>';
 
     // Load diet from localStorage
     let dietPlan = null;
