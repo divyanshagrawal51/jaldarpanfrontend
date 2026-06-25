@@ -9,7 +9,8 @@ const API_BASE = "https://jaldarpanbackend.onrender.com"; // Render deployment
 let currentUserId = null;
 let mealImageBase64 = null; // stores uploaded meal image for /analyze
 
-// (Mock friends removed — leaderboard now shows only the real logged-in user)
+// Track the latest AI calculated footprint to feed dynamically into the dashboard meter
+let latestAIMealFootprint = null;
 
 // Runtime state — populated from Supabase on load
 let appState = {
@@ -21,7 +22,10 @@ let appState = {
 };
 
 function renderResult(data, foodName) {
-    document.getElementById("result").innerHTML = `
+    const container = document.getElementById("result-container");
+    if (!container) return;
+    
+    container.innerHTML = `
         <div class="result-card">
 
             <div class="result-header">
@@ -63,14 +67,60 @@ function renderResult(data, foodName) {
         `;
 }
 
+async function lookup() {
+    const food = document.getElementById("meal-text").value;
+
+    try {
+        const response = await fetch(`${API_BASE}/lookup`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                food_name: food
+            })
+        });
+
+        const data = await response.json();
+
+        if (!data.found) {
+            const container = document.getElementById("result-container");
+            if (container) {
+                container.innerHTML = `<p>${data.message}</p>`;
+            }
+            return;
+        }
+
+        renderResult(data, food);
+
+        // Track and sync calculation changes to state & backend
+        const litres = Math.round(data.water_liters || 0);
+        latestAIMealFootprint = litres; // Cache for the indicator recalculation panel
+        
+        appState.userProfile.todayWaterLogged += litres;
+        appState.userProfile.xp += 30;
+        bumpStreak();
+        await syncProfile();
+        await logActivity('meal_lookup', litres, 30, {
+            source: 'text_lookup',
+            food_name: food
+        });
+        updateUIRefreshes();
+        
+        // Push updates seamlessly straight to the dashboard visual indicators
+        calculateFootprint();
+
+    } catch (err) {
+        console.error("Lookup error:", err);
+    }
+}
+
 // 1. The Core Logic: Handles reading the file and sending it to the API
 async function scan(file) {
     if (!file) return;
 
-    // 1. Get your existing result element (replace "result-container" with your actual ID)
-    const resultElement = document.getElementById("result");
+    const resultElement = document.getElementById("result-container");
     
-    // 2. Put the loading text inside it immediately
     if (resultElement) {
         resultElement.innerHTML = "<p class='loading-text'>Please wait, scanning image...</p>";
     }
@@ -91,13 +141,28 @@ async function scan(file) {
 
             const data = await response.json();
             
-            // 3. Your existing function will automatically overwrite the loading text with the real data
             renderResult(data, data.identified_as || "Unknown");
+
+            // Track and sync calculation changes to state & backend
+            const litres = Math.round(data.water_liters || 0);
+            latestAIMealFootprint = litres; // Cache for the indicator recalculation panel
+            
+            appState.userProfile.todayWaterLogged += litres;
+            appState.userProfile.xp += 30;
+            bumpStreak();
+            await syncProfile();
+            await logActivity('meal_scan', litres, 30, {
+                source: 'image_scan',
+                identified_as: data.identified_as || "Unknown"
+            });
+            updateUIRefreshes();
+            
+            // Push updates seamlessly straight to the dashboard visual indicators
+            calculateFootprint();
 
         } catch (error) {
             console.error("Scanning failed:", error);
             
-            // 4. If it fails, clear the loading message and show an error instead
             if (resultElement) {
                 resultElement.innerHTML = "<p style='color: red;'>Failed to scan image. Please try again.</p>";
             }
@@ -110,12 +175,9 @@ async function scan(file) {
 // 2. The Event Handler: Extracts the file and updates the UI status
 async function handleImageUpload(event) {
     const file = event.target.files[0];
-    
     if (!file) return;
 
     document.getElementById("upload-status").textContent = file.name;
-
-    // Reuse the scan function here
     await scan(file);
 }
 
@@ -146,7 +208,7 @@ function addMealRow() {
 
 function removeMealRow(btn) {
     const list = document.getElementById('meal-items-list');
-    if (list.children.length <= 1) return; // keep at least one row
+    if (list.children.length <= 1) return; 
     btn.closest('.meal-item-row').remove();
 }
 
@@ -168,7 +230,7 @@ function handleMealImageUpload(event) {
 }
 
 function renderMealAnalysisResult(data) {
-    const resultsPanel = document.getElementById('result');
+    const resultsPanel = document.getElementById('result-container');
     if (!resultsPanel) return;
 
     const itemsHTML = (data.items || []).map(item => `
@@ -182,33 +244,34 @@ function renderMealAnalysisResult(data) {
     `).join('');
 
     resultsPanel.innerHTML = `
-        <div class="result-header">
-            <h3>Meal Analysis <span class="estimated-badge">AI Estimated</span></h3>
-            <div class="water-number">${data.total_litres}<span>L</span></div>
-            <p style="color:var(--text-muted);font-size:0.85rem">total water footprint</p>
+        <div class="result-card">
+            <div class="result-header">
+                <h3>Meal Analysis <span class="estimated-badge">AI Estimated</span></h3>
+                <div class="water-number">${data.total_litres}<span>L</span></div>
+                <p style="color:var(--text-muted);font-size:0.85rem">total water footprint</p>
+            </div>
+            <div class="breakdown-grid" style="margin:16px 0">
+                <div class="stat-card">
+                    <div style="font-size:1.4rem;font-weight:700;color:#4ade80">${data.green}L</div>
+                    <div style="font-size:0.75rem;color:var(--text-muted);margin-top:4px">🌿 Green</div>
+                </div>
+                <div class="stat-card">
+                    <div style="font-size:1.4rem;font-weight:700;color:#38bdf8">${data.blue}L</div>
+                    <div style="font-size:0.75rem;color:var(--text-muted);margin-top:4px">💧 Blue</div>
+                </div>
+                <div class="stat-card">
+                    <div style="font-size:1.4rem;font-weight:700;color:#94a3b8">${data.grey}L</div>
+                    <div style="font-size:0.75rem;color:var(--text-muted);margin-top:4px">🌫️ Grey</div>
+                </div>
+            </div>
+            <div class="meal-result-items">${itemsHTML}</div>
+            ${data.summary ? `<div class="meal-result-summary" style="margin-top:12px; font-size:0.9rem; padding:10px; border-radius:6px; background:rgba(255,255,255,0.05);">${data.summary}</div>` : ''}
         </div>
-        <div class="breakdown-grid" style="margin:16px 0">
-            <div class="stat-card">
-                <div style="font-size:1.4rem;font-weight:700;color:#4ade80">${data.green}L</div>
-                <div style="font-size:0.75rem;color:var(--text-muted);margin-top:4px">🌿 Green</div>
-            </div>
-            <div class="stat-card">
-                <div style="font-size:1.4rem;font-weight:700;color:#38bdf8">${data.blue}L</div>
-                <div style="font-size:0.75rem;color:var(--text-muted);margin-top:4px">💧 Blue</div>
-            </div>
-            <div class="stat-card">
-                <div style="font-size:1.4rem;font-weight:700;color:#94a3b8">${data.grey}L</div>
-                <div style="font-size:0.75rem;color:var(--text-muted);margin-top:4px">🌫️ Grey</div>
-            </div>
-        </div>
-        <div class="meal-result-items">${itemsHTML}</div>
-        ${data.summary ? `<div class="meal-result-summary">${data.summary}</div>` : ''}
     `;
 }
 
 async function analyzeMeal() {
     const isImageMode = document.getElementById('meal-mode-image').style.display !== 'none';
-    console.log('analyzeMeal called, isImageMode:', isImageMode);
 
     let body;
     if (isImageMode) {
@@ -216,7 +279,7 @@ async function analyzeMeal() {
             alert('Please upload a meal image first.');
             return;
         }
-        body = { image_base64: mealImageBase64 };
+        body = { image_base_64: mealImageBase64 };
     } else {
         const rows = document.querySelectorAll('#meal-items-list .meal-item-row');
         const items = [];
@@ -225,7 +288,6 @@ async function analyzeMeal() {
             const quantity = row.querySelector('.meal-item-qty').value.trim();
             if (name) items.push({ name, quantity: quantity || '1 serving' });
         });
-        console.log('items collected:', items);
         if (items.length === 0) {
             alert('Please add at least one food item.');
             return;
@@ -233,47 +295,44 @@ async function analyzeMeal() {
         body = { items };
     }
 
-    const btn = document.getElementById('meal-analyze-btn');
+    // Show loading state
+    const btn = document.querySelector('[onclick="analyzeMeal()"]');
     const originalText = btn.innerHTML;
     btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Analyzing...';
     btn.disabled = true;
 
     try {
-        console.log('fetching /analyze with body:', body);
         const res = await fetch(`${API_BASE}/analyze`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(body)
         });
-        console.log('response status:', res.status);
         const data = await res.json();
-        console.log('response data:', data);
 
         if (!data.success) {
             alert('Analysis failed: ' + (data.message || 'Unknown error'));
             return;
         }
 
+        // Render result
         renderMealAnalysisResult(data);
 
+        // Save to activity_logs + award XP + bump streak
         const litres = Math.round(data.total_litres || 0);
+        latestAIMealFootprint = litres; // Cache for the indicator recalculation panel
+        
         appState.userProfile.todayWaterLogged += litres;
         appState.userProfile.xp += 30;
         bumpStreak();
-
-        // Update water impact meter
-        const newTotal = appState.userProfile.todayWaterLogged;
-        document.getElementById('calculated-litres').textContent = newTotal;
-        const fillPercent = Math.min((newTotal / 3000) * 100, 100);
-        document.getElementById('meter-fill').style.height = `${fillPercent}%`;
-
         await syncProfile();
         await logActivity('meal_scan', litres, 30, {
             source: isImageMode ? 'image' : 'text',
             items: JSON.parse(JSON.stringify(data.items || []))
         });
         updateUIRefreshes();
-        console.log('analyzeMeal complete');
+        
+        // Push updates seamlessly straight to the dashboard visual indicators
+        calculateFootprint();
 
     } catch (err) {
         console.error('Analyze error:', err);
@@ -358,7 +417,6 @@ function renderEvents() {
     const grid = document.getElementById('events-grid');
     if (!grid) return;
 
-    // Remove previously rendered cards (keep the "Host Your Own Drive" add-card)
     grid.querySelectorAll('.event-card:not(.add-event-card)').forEach(el => el.remove());
 
     const addCard = grid.querySelector('.add-event-card');
@@ -408,7 +466,6 @@ function renderEvents() {
         }
     });
 
-    // Re-apply active filter, if any
     const activeFilter = document.querySelector('#event-filters .toggle-btn.active');
     if (activeFilter && typeof filterEvents === 'function') {
         filterEvents(activeFilter.dataset.filter, activeFilter);
@@ -420,7 +477,6 @@ async function registerEvent(eventId, btn) {
     if (!ev) return;
 
     if (ev.isRegistered) {
-        // Cancel registration
         await supabaseClient
             .from('event_registrations')
             .delete()
@@ -489,7 +545,7 @@ function bumpStreak() {
     const todayStr = new Date().toISOString().slice(0, 10);
     const last = appState.userProfile.lastActiveDate;
 
-    if (last === todayStr) return; // already counted today
+    if (last === todayStr) return; 
 
     if (last) {
         const lastDate = new Date(last + 'T00:00:00Z');
@@ -497,12 +553,12 @@ function bumpStreak() {
         const diffDays = Math.round((today - lastDate) / 86400000);
 
         if (diffDays === 1) {
-            appState.userProfile.streak += 1; // consecutive day
+            appState.userProfile.streak += 1; 
         } else {
-            appState.userProfile.streak = 1; // gap — restart
+            appState.userProfile.streak = 1; 
         }
     } else {
-        appState.userProfile.streak = 1; // first ever activity
+        appState.userProfile.streak = 1; 
     }
 
     appState.userProfile.lastActiveDate = todayStr;
@@ -511,9 +567,8 @@ function bumpStreak() {
 // ── PERIODIC RESETS ──
 
 function getISOWeekKey(d) {
-    // Returns "YYYY-WW" for ISO week comparison
     const date = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
-    const dayNum = (date.getUTCDay() + 6) % 7; // Mon=0..Sun=6
+    const dayNum = (date.getUTCDay() + 6) % 7; 
     date.setUTCDate(date.getUTCDate() - dayNum + 3);
     const firstThursday = new Date(Date.UTC(date.getUTCFullYear(), 0, 4));
     const week = 1 + Math.round(((date - firstThursday) / 86400000 - 3 + ((firstThursday.getUTCDay() + 6) % 7)) / 7);
@@ -522,11 +577,10 @@ function getISOWeekKey(d) {
 
 async function applyPeriodicResets(profile) {
     const today = new Date();
-    const todayStr = today.toISOString().slice(0, 10); // YYYY-MM-DD
+    const todayStr = today.toISOString().slice(0, 10); 
     const profileUpdates = {};
     let resetTypes = [];
 
-    // DAILY
     if (profile.last_daily_reset !== todayStr) {
         resetTypes.push('daily');
         profileUpdates.today_water_logged = 0;
@@ -534,14 +588,12 @@ async function applyPeriodicResets(profile) {
         appState.userProfile.todayWaterLogged = 0;
     }
 
-    // WEEKLY (ISO week comparison)
     const lastWeekDate = new Date(profile.last_weekly_reset + 'T00:00:00Z');
     if (getISOWeekKey(lastWeekDate) !== getISOWeekKey(today)) {
         resetTypes.push('weekly');
         profileUpdates.last_weekly_reset = todayStr;
     }
 
-    // MONTHLY
     const lastMonthDate = new Date(profile.last_monthly_reset + 'T00:00:00Z');
     if (lastMonthDate.getUTCFullYear() !== today.getFullYear() || lastMonthDate.getUTCMonth() !== today.getMonth()) {
         resetTypes.push('monthly');
@@ -550,7 +602,6 @@ async function applyPeriodicResets(profile) {
 
     if (resetTypes.length === 0) return;
 
-    // Reset matching user_challenges rows
     const { data: matchingChallenges } = await supabaseClient
         .from('challenges')
         .select('id')
@@ -565,12 +616,10 @@ async function applyPeriodicResets(profile) {
             .in('challenge_id', ids);
     }
 
-    // Persist profile reset markers
     await supabaseClient.from('profiles').update(profileUpdates).eq('id', currentUserId);
 }
 
 async function loadAppState() {
-    // 1. Check session
     const { data: { session } } = await supabaseClient.auth.getSession();
     if (!session) {
         window.location.href = 'auth.html';
@@ -578,7 +627,6 @@ async function loadAppState() {
     }
     currentUserId = session.user.id;
 
-    // 2. Load profile
     const { data: profile, error: profileErr } = await supabaseClient
         .from('profiles')
         .select('*')
@@ -586,7 +634,8 @@ async function loadAppState() {
         .single();
 
     if (profileErr || !profile) {
-        console.error('Failed to load profile:', profileErr);
+        // New user — profile row doesn't exist yet, send to onboarding
+        window.location.href = 'auth.html';
         return false;
     }
 
@@ -607,21 +656,17 @@ async function loadAppState() {
         lastActiveDate: profile.last_active_date
     };
 
-    // 2b. Periodic resets (daily / weekly / monthly)
     await applyPeriodicResets(profile);
 
-    // 3. Load master challenges
     const { data: masterChallenges } = await supabaseClient
         .from('challenges')
         .select('*');
 
-    // 4. Load this user's challenge completion status
     let { data: userChallenges } = await supabaseClient
         .from('user_challenges')
         .select('*')
         .eq('user_id', currentUserId);
 
-    // 5. First-time user: seed user_challenges rows
     if (!userChallenges || userChallenges.length === 0) {
         const rows = masterChallenges.map(c => ({
             user_id: currentUserId,
@@ -632,7 +677,6 @@ async function loadAppState() {
         userChallenges = rows.map(r => ({ ...r, completed_at: null }));
     }
 
-    // 6. Merge master challenges with completion status
     const completionMap = {};
     userChallenges.forEach(uc => { completionMap[uc.challenge_id] = uc.completed; });
 
@@ -644,7 +688,6 @@ async function loadAppState() {
         completed: !!completionMap[c.id]
     }));
 
-    // 7. Load master badges
     const { data: masterBadges } = await supabaseClient
         .from('badges')
         .select('*');
@@ -656,7 +699,6 @@ async function loadAppState() {
         requirement: b.requirement
     }));
 
-    // 8. Load approved events + registration counts + this user's registrations
     const { data: events } = await supabaseClient
         .from('events')
         .select('*')
@@ -691,7 +733,6 @@ async function loadAppState() {
     return true;
 }
 
-// Single Page Nav Engine
 function showPage(pageId) {
     document.querySelectorAll('.app-page').forEach(page => page.classList.remove('active'));
     document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
@@ -699,7 +740,6 @@ function showPage(pageId) {
     const TargetPage = document.getElementById(`page-${pageId}`);
     if(TargetPage) TargetPage.classList.add('active');
 
-    // Sync menu highlighting nodes
     const menuItems = document.querySelectorAll('.nav-menu .nav-item');
     menuItems.forEach(item => {
         if(item.textContent.toLowerCase().includes(pageId === 'log' ? 'log activity' : pageId)) {
@@ -710,7 +750,6 @@ function showPage(pageId) {
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-// Compute Tier Rank Classifications dynamically from XP values
 function getLevelName(xp) {
     if (xp < 500) return "Water Explorer";
     if (xp < 1000) return "Stream Protector";
@@ -718,47 +757,39 @@ function getLevelName(xp) {
     return "Ocean Hero";
 }
 
-// Core Rendering Pipeline
 function updateUIRefreshes() {
     const profile = appState.userProfile;
     const computedLevel = getLevelName(profile.xp);
 
-    // Navigation Status syncs
     document.getElementById('nav-streak').textContent = profile.streak;
     document.getElementById('nav-xp').textContent = profile.xp;
     document.getElementById('nav-avatar-img').src = `https://api.dicebear.com/7.x/bottts/svg?seed=${profile.avatarSeed}`;
 
-    // Dashboard elements syncs
     document.getElementById('hero-username').textContent = profile.username;
     document.getElementById('dash-level-name').textContent = computedLevel;
     document.getElementById('dash-water-saved').textContent = profile.waterSavedMonth.toLocaleString();
     document.getElementById('dash-today-litres').textContent = profile.todayWaterLogged;
 
-    // Progress circle evaluation logic
     const circle = document.getElementById('today-progress-circle');
     const radius = circle.r.baseVal.value;
     const circumference = radius * 2 * Math.PI;
     circle.style.strokeDasharray = `${circumference} ${circumference}`;
     
-    // Baselines limit at 500 Litres for circular progress visualization bounds
     const baselineCap = 500;
     const percentage = Math.min((profile.todayWaterLogged / baselineCap) * 100, 100);
     const offset = circumference - (percentage / 100) * circumference;
     circle.style.strokeDashoffset = offset;
 
-    // Sub-component renders
     renderDashboardQuests();
     renderMainQuestMatrix();
     renderLeaderboards();
     renderProfileHeatmaps();
 }
 
-// Render Core Lists
 function renderDashboardQuests() {
     const container = document.getElementById('dash-challenges-list');
     container.innerHTML = "";
     
-    // Render top 2 incomplete challenges
     const activeQuests = appState.challenges.filter(c => !c.completed).slice(0, 2);
     if(activeQuests.length === 0) {
         container.innerHTML = "<p style='font-size:0.9rem; color:var(--text-muted);'>All active operational directives cleared!</p>";
@@ -786,7 +817,7 @@ function renderMainQuestMatrix() {
     const weeklyBox = document.getElementById('container-weekly-challenges');
     const monthlyBox = document.getElementById('container-monthly-challenges');
 
-    if(!dailyBox) return; // Guard clause for structural checking
+    if(!dailyBox) return; 
 
     dailyBox.innerHTML = ""; weeklyBox.innerHTML = ""; monthlyBox.innerHTML = "";
 
@@ -813,7 +844,6 @@ function renderMainQuestMatrix() {
         if(quest.type === 'monthly') monthlyBox.appendChild(row);
     });
 
-    // Render Badge Matrix
     const badgeGrid = document.getElementById('badges-container-grid');
     badgeGrid.innerHTML = "";
     appState.badges.forEach(badge => {
@@ -834,7 +864,6 @@ async function renderLeaderboards(filterType = 'veg') {
     const mainBody = document.getElementById('main-leaderboard-body');
     const dashMiniList = document.getElementById('dash-leaderboard-list');
 
-    // Fetch all profiles from Supabase, ranked by XP
     const { data: profiles, error } = await supabaseClient
         .from('profiles')
         .select('id, username, avatar_seed, xp, diet')
@@ -855,10 +884,8 @@ async function renderLeaderboards(filterType = 'veg') {
         isUser: p.id === currentUserId
     }));
 
-    // Already sorted by XP from the query, but ensure consistency
     dataset.sort((a, b) => b.xp - a.xp);
 
-    // Mini Dash Render (Top 3)
     if(dashMiniList) {
         dashMiniList.innerHTML = "";
         dataset.slice(0, 3).forEach(ind => {
@@ -872,11 +899,9 @@ async function renderLeaderboards(filterType = 'veg') {
         });
     }
 
-    // Filter main view matrix configuration parameters
     if(!mainBody) return;
     mainBody.innerHTML = "";
     
-    // Update active structural toggle styling buttons
     if(filterType === 'veg') {
         document.getElementById('btn-toggle-veg').classList.add('active');
         document.getElementById('btn-toggle-nonveg').classList.remove('active');
@@ -905,32 +930,171 @@ async function renderLeaderboards(filterType = 'veg') {
     });
 }
 
-function renderProfileHeatmaps() {
-    const grid = document.getElementById('heatmap-container-grid');
-    if(!grid) return;
-    grid.innerHTML = "";
-    
-    // Create static array nodes simulating dynamic git footprint logging history matrix map
-    const mockContributions = [0,1,0,3,2,0,1,0,0,2,1,3,0,1,2,0,1,1,0,2,3,0,0,1,2,1,0,2];
-    mockContributions.forEach(lvl => {
-        const node = document.createElement('div');
-        node.className = `cube level-${lvl}`;
-        node.title = `Ecosystem interaction level validation state: ${lvl}`;
-        grid.appendChild(node);
-    });
-
-    // Populate standard textual field arrays inside settings panels
+async function renderProfileHeatmaps() {
+    // Profile identity fields
     document.getElementById('profile-name-display').textContent = appState.userProfile.username;
     document.getElementById('profile-rank-display').textContent = getLevelName(appState.userProfile.xp);
     document.getElementById('prof-xp').textContent = appState.userProfile.xp;
     document.getElementById('prof-streak').textContent = appState.userProfile.streak;
-    document.getElementById('prof-saved').textContent = (appState.userProfile.waterSavedMonth/1000).toFixed(1) + 'k';
+    document.getElementById('prof-saved').textContent = (appState.userProfile.waterSavedMonth / 1000).toFixed(1) + 'k';
     document.getElementById('prof-challenges').textContent = appState.userProfile.challengesCompletedCount;
     document.getElementById('prof-friends').textContent = appState.userProfile.friendsInvitedCount;
 
-    initDashAvatarPicker();
+    // ── MEAL HISTORY + DIET FEEDBACK ──
+    const entriesEl = document.getElementById('mh-entries');
+    const totalEl = document.getElementById('mh-total-litres');
+    const countEl = document.getElementById('mh-meal-count');
+    const dietStatusEl = document.getElementById('mh-diet-status');
+    if (!entriesEl) return;
+
+    // Load diet from localStorage
+    let dietPlan = null;
+    try { dietPlan = JSON.parse(localStorage.getItem('jaldarpan_user_diet')); } catch(e) {}
+
+    if (dietPlan && dietPlan.text) {
+        dietStatusEl.innerHTML = `<i class="fa-solid fa-circle-check" style="color:#2ed573"></i> Diet plan active — feedback enabled`;
+        dietStatusEl.style.color = '#2ed573';
+    }
+
+    const now = new Date();
+    const midnight = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const nextMidnight = new Date(midnight.getTime() + 86400000);
+
+    const { data: logs } = await supabaseClient
+        .from('activity_logs')
+        .select('*')
+        .eq('user_id', currentUserId)
+        .gte('created_at', midnight.toISOString())
+        .lt('created_at', nextMidnight.toISOString())
+        .order('created_at', { ascending: false });
+
+    const allLogs = logs || [];
+    // Filter only meal-related logs (Section A)
+    const mealLogs = allLogs.filter(l =>
+        l.log_type === 'meal_scan' || l.log_type === 'meal_lookup'
+    );
+
+    const mealSum = mealLogs.reduce((a, l) => a + (l.litres || 0), 0);
+    if (totalEl) totalEl.textContent = mealSum + ' L';
+    if (countEl) countEl.textContent = mealLogs.length + (mealLogs.length === 1 ? ' meal' : ' meals');
+
+    if (mealLogs.length === 0) {
+        entriesEl.innerHTML = '<div class="mh-empty">No meals logged yet today.<br><small>Use Section A in Log Activity to add meals.</small></div>';
+        return;
+    }
+
+    entriesEl.innerHTML = '';
+    mealLogs.forEach(entry => {
+        const name = histEntryName(entry);
+        const m = entry.metadata || {};
+        const source = m.source === 'image' ? '📷 Image Scan' : (entry.log_type === 'meal_lookup' ? '🔍 Single Lookup' : '📝 Text Entry');
+        const time = new Date(entry.created_at).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', hour12: true });
+        const litres = entry.litres || 0;
+
+        // Diet feedback
+        let feedbackHTML = '';
+        if (dietPlan && dietPlan.text) {
+            const feedback = getMealDietFeedback(name, litres, dietPlan);
+            feedbackHTML = `<div class="mh-feedback ${feedback.cls}"><i class="${feedback.icon}"></i> ${feedback.text}</div>`;
+        }
+
+        const card = document.createElement('div');
+        card.className = 'mh-entry';
+        card.innerHTML = `
+            <div class="mh-entry-top">
+                <div class="mh-entry-left">
+                    <div class="mh-entry-name">${escapeHTML(name)}</div>
+                    <div class="mh-entry-meta">${source} · ${time}</div>
+                </div>
+                <div class="mh-entry-right">
+                    <div class="mh-litres">${litres} L</div>
+                    <div class="mh-xp">+${entry.xp_earned} XP</div>
+                </div>
+            </div>
+            ${feedbackHTML}
+        `;
+        entriesEl.appendChild(card);
+    });
 }
 
+function getMealDietFeedback(mealName, litres, dietPlan) {
+    const dietText = (dietPlan.text || '').toLowerCase();
+    const meal = mealName.toLowerCase();
+
+    // High water footprint items
+    const highFootprint = ['beef', 'lamb', 'mutton', 'pork', 'chicken', 'meat', 'prawn', 'shrimp', 'fish'];
+    const medFootprint  = ['egg', 'dairy', 'milk', 'cheese', 'paneer', 'curd', 'yogurt'];
+    const lowFootprint  = ['dal', 'lentil', 'vegetable', 'rice', 'roti', 'chapati', 'sabji', 'salad', 'oats', 'poha', 'khichdi', 'tofu'];
+
+    const isHigh = highFootprint.some(k => meal.includes(k));
+    const isMed  = medFootprint.some(k => meal.includes(k));
+    const isLow  = lowFootprint.some(k => meal.includes(k));
+
+    // Check if this food is in diet
+    const inDiet = dietText.includes(meal.split(' ')[0]) || dietText.includes(meal.split(',')[0].trim());
+
+    if (isHigh && litres > 1000) {
+        return {
+            cls: 'fb-warn',
+            icon: 'fa-solid fa-triangle-exclamation',
+            text: inDiet
+                ? `This is part of your diet plan but carries a high water footprint (${litres}L). Consider a plant protein swap to save ~1,200L.`
+                : `High footprint meal (${litres}L) — not in your diet plan. Replacing with dal or tofu can save over 1,000L per serving.`
+        };
+    }
+    if (isLow && litres < 500) {
+        return {
+            cls: 'fb-good',
+            icon: 'fa-solid fa-leaf',
+            text: inDiet
+                ? `Great match with your diet plan! Low footprint choice at ${litres}L — well within your target.`
+                : `Eco-friendly meal (${litres}L)! Not explicitly in your diet plan, but a great water-saving choice.`
+        };
+    }
+    if (isMed) {
+        return {
+            cls: 'fb-neutral',
+            icon: 'fa-solid fa-droplet',
+            text: inDiet
+                ? `Aligns with your diet plan. Moderate footprint at ${litres}L — balanced choice.`
+                : `Moderate water footprint (${litres}L). Not in your set diet plan — check your plan for better alternatives.`
+        };
+    }
+    if (litres > 1500) {
+        return {
+            cls: 'fb-warn',
+            icon: 'fa-solid fa-triangle-exclamation',
+            text: `Very high footprint detected (${litres}L). ${inDiet ? 'This is in your diet plan — consider reviewing it for water efficiency.' : 'This meal is not in your diet plan and significantly raises your daily impact.'}`
+        };
+    }
+    return {
+        cls: 'fb-neutral',
+        icon: 'fa-solid fa-circle-info',
+        text: inDiet
+            ? `Matches your diet plan. Footprint: ${litres}L.`
+            : `Footprint: ${litres}L. Not directly found in your diet plan — log meals from your plan for better tracking.`
+    };
+}
+
+function histTypeInfo(entry) {
+    const t = entry.log_type;
+    const m = entry.metadata || {};
+    if (t === 'meal_scan' && m.source === 'image') return { icon: '📷', label: 'Meal Scan', cls: 'type-scan' };
+    if (t === 'meal_scan') return { icon: '🍽️', label: 'Meal Log', cls: 'type-meal' };
+    if (t === 'meal_lookup') return { icon: '🔍', label: 'Food Lookup', cls: 'type-meal' };
+    if (t === 'quick_log') return { icon: '⚡', label: 'Quick Log', cls: 'type-quick' };
+    if (t === 'footprint_calc') return { icon: '📊', label: 'Footprint Calc', cls: 'type-calc' };
+    return { icon: '📝', label: t.replace(/_/g, ' '), cls: 'type-calc' };
+}
+
+function histEntryName(entry) {
+    const m = entry.metadata || {};
+    if (m.identified_as) return m.identified_as;
+    if (m.items && m.items.length) return m.items.map(i => i.name).join(', ');
+    if (m.food_name) return m.food_name;
+    if (m.title) return m.title;
+    return entry.log_type.replace(/_/g, ' ');
+}
 // User Actions Handlers
 async function completeQuestDirectly(id) {
     const quest = appState.challenges.find(c => c.id === id);
@@ -954,7 +1118,7 @@ async function completeQuestDirectly(id) {
 
 async function quickLog(amount, title) {
     appState.userProfile.todayWaterLogged += amount;
-    appState.userProfile.xp += 10; // Fixed incentive base configuration values
+    appState.userProfile.xp += 10; 
     bumpStreak();
     await syncProfile();
     await logActivity('quick_log', Math.round(amount), 10, { title: title });
@@ -972,81 +1136,96 @@ function triggerMockUpload() {
     setTimeout(() => {
         status.textContent = "AI Classification Match Found: [Paneer Butter Masala Matrix Combo]";
         document.getElementById('meal-select').value = "dairy";
+        latestAIMealFootprint = 1200; // Mock preset mapping
+        calculateFootprint();
     }, 1200);
 }
 
 // Core Analytical Calculations Logic
 async function calculateFootprint() {
+    // Check if an AI calculation was performed. If so, prioritize its footprint directly!
+    let mealLitres = 400;
+    if (latestAIMealFootprint !== null) {
+        mealLitres = latestAIMealFootprint;
+    } else {
+        const mealVal = document.getElementById('meal-select').value;
+        if(mealVal === 'dairy') mealLitres = 1200;
+        if(mealVal === 'poultry') mealLitres = 900;
+        if(mealVal === 'meat') mealLitres = 2500;
+    }
+
     const showerMins = parseInt(document.getElementById('input-shower').value) || 0;
     const laundryLoads = parseInt(document.getElementById('input-laundry').value) || 0;
     const dishMins = parseInt(document.getElementById('input-dishes').value) || 0;
     const gardenMins = parseInt(document.getElementById('input-garden').value) || 0;
     const carSessions = parseInt(document.getElementById('input-car').value) || 0;
+    
+    // Explicit 0.5 float step metric extraction
     const directDrink = parseFloat(document.getElementById('input-drink').value) || 0;
 
-    // Direct Consumption Variable Allocation Formula Indices
-    const showerRate = 9;   // Litres per min
-    const laundryRate = 75; // Litres per load
-    const dishRate = 6;     // Litres per min
-    const hoseRate = 12;    // Litres per min
-    const carRate = 150;    // Litres per wash
+    const showerRate = 9; 
+    const laundryRate = 75; 
+    const dishRate = 6; 
+    const hoseRate = 12; 
+    const carRate = 150; 
 
-    const totalImpactCalculated = Math.round(
-        (showerMins * showerRate) +
-        (laundryLoads * laundryRate) +
-        (dishMins * dishRate) +
-        (gardenMins * hoseRate) +
-        (carSessions * carRate) +
-        directDrink
-    );
+    const domesticSum = (showerMins * showerRate) + (laundryLoads * laundryRate) + (dishMins * dishRate) + (gardenMins * hoseRate) + (carSessions * carRate) + directDrink;
+    const totalImpactCalculated = mealLitres + Math.round(domesticSum);
 
     // Update UI Elements
     document.getElementById('calculated-litres').textContent = totalImpactCalculated;
-
-    // Animate meter fill
+    
     const fillPercent = Math.min((totalImpactCalculated / 3000) * 100, 100);
     document.getElementById('meter-fill').style.height = `${fillPercent}%`;
 
-    // Diagnostic text
-    const diagnosticTextNode = document.getElementById('impact-evaluation-text');
-    if (diagnosticTextNode) diagnosticTextNode.textContent = `Today's Domestic Water Impact: ${totalImpactCalculated} Litres`;
-
-    // Suggestions
     const suggestionsBox = document.getElementById('ai-suggestions-list');
     suggestionsBox.innerHTML = "";
-    let feedbackCards = [];
 
-    if(showerMins > 5) feedbackCards.push("Reducing your shower by 2–4 minutes could save 18–36 litres tomorrow.");
-    if(laundryLoads > 0) feedbackCards.push("Running only full laundry loads reduces water waste significantly.");
-    if(gardenMins > 0) feedbackCards.push("Watering your garden in the early morning or evening reduces evaporation losses.");
-    if(carSessions > 0) feedbackCards.push("Using a bucket instead of a hose for car washing can save over 100 litres per wash.");
-    if(feedbackCards.length === 0) feedbackCards.push("Great job! Your domestic water usage is well within efficient limits today.");
+    const diagnosticTextNode = document.getElementById('impact-evaluation-text');
+    diagnosticTextNode.textContent = `Today's Water Impact: ${totalImpactCalculated} Litres total system parameter profile tracking values loaded.`;
+
+    let feedbackCards = [];
+    if(showerMins > 5) {
+        feedbackCards.push("You could conserve approximately 18-36 litres tomorrow by restricting structural shower durations by 2-4 minutes.");
+    }
+    if(latestAIMealFootprint > 1000) {
+        feedbackCards.push("Transitioning high footprint AI detected meals to plant-based choices optimizes regional hydro systems.");
+    }
+    if(laundryLoads > 0) {
+        feedbackCards.push("Consolidating garment cycles strictly into completely full load distributions reduces wastewater downstream processing friction.");
+    }
+    if(gardenMins > 0) {
+        feedbackCards.push("Consider shifting automated irrigation parameters to cool evening or pre-dawn slots to bypass heavy atmospheric evaporation penalties.");
+    }
+
+    if(feedbackCards.length === 0) {
+        feedbackCards.push("Operational profile exhibits excellent compliance boundaries. Continue implementing tracking loops to stabilize surrounding ecosystems.");
+    }
 
     feedbackCards.forEach(tip => {
         const card = document.createElement('div');
         card.className = "suggestion-item";
-        card.innerHTML = `<div class="sug-icon"><i class="fa-solid fa-wand-magic-sparkles"></i></div><p>${tip}</p>`;
+        card.innerHTML = `
+            <div class="sug-icon"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
+            <p>${tip}</p>
+        `;
         suggestionsBox.appendChild(card);
     });
 
-    // Save to Supabase + award XP + bump streak
-    appState.userProfile.todayWaterLogged += totalImpactCalculated;
-    appState.userProfile.xp += 30;
+    // Update local variables storage states parameters maps
+    appState.userProfile.todayWaterLogged = totalImpactCalculated;
+    appState.userProfile.xp += 30; 
     bumpStreak();
     await syncProfile();
-    await logActivity('footprint_calc', Math.round(totalImpactCalculated), 30, {
-        shower: showerMins, laundry: laundryLoads, dishes: dishMins,
-        garden: gardenMins, car: carSessions, drink: directDrink
-    });
+    await logActivity('footprint_calc', Math.round(totalImpactCalculated), 30, { ai_impact: latestAIMealFootprint });
     updateUIRefreshes();
 }
 
-// Modal Interaction Framework
 function openInviteModal() {
     document.getElementById('invite-modal').classList.add('active');
 }
 function closeInviteModal() {
-    document.getElementById('invite-modal').classList.remove('active');
+    document.getElementById('invite-modal').remove('active');
 }
 async function copyInviteCode() {
     const field = document.getElementById('invite-code-field');
@@ -1064,45 +1243,17 @@ function filterLeaderboard(type) {
     renderLeaderboards(type);
 }
 
-// Interactive Knowledge Hub Accordion Nodes
 function toggleAccordion(element) {
     element.classList.toggle('open');
 }
 
-// ── AVATAR PICKER ──
-
-const AVATAR_SEEDS = [
-    'JalWater', 'EcoBot', 'RiverRaj', 'GreenMira', 'AquaVeer',
-    'NeerSavy', 'DropBot', 'TidalTara', 'WaveWiz', 'StreamStar'
-];
-
-function initDashAvatarPicker() {
-    const container = document.getElementById('dash-avatar-picker');
-    if (!container) return;
-    container.innerHTML = '';
-    AVATAR_SEEDS.forEach((seed, i) => {
-        const div = document.createElement('div');
-        const isSelected = seed === appState.userProfile.avatarSeed;
-        div.className = 'avatar-option' + (isSelected ? ' selected' : '');
-        div.onclick = async () => {
-            container.querySelectorAll('.avatar-option').forEach(el => el.classList.remove('selected'));
-            div.classList.add('selected');
-            appState.userProfile.avatarSeed = seed;
-            await syncProfile();
-            updateUIRefreshes();
-        };
-        const img = document.createElement('img');
-        img.src = `https://api.dicebear.com/7.x/bottts/svg?seed=${seed}`;
-        img.alt = seed;
-        div.appendChild(img);
-        container.appendChild(div);
-    });
-}
-
-// Profile Sync Configurations Layer updates
 async function updateProfileSettings() {
     const newName = document.getElementById('settings-username').value;
+    const newSeed = document.getElementById('settings-avatar-seed').value;
+    
     if(newName.trim()) appState.userProfile.username = newName;
+    if(newSeed.trim()) appState.userProfile.avatarSeed = newSeed;
+
     await syncProfile();
     updateUIRefreshes();
 }
@@ -1120,12 +1271,21 @@ function toggleThemeOverride() {
 // Initialization Entry Vector
 window.addEventListener('DOMContentLoaded', async () => {
     const ok = await loadAppState();
-    if (!ok) return; // redirected to auth.html or load failed
+    if (!ok) return; 
+
+    // Enforce step parameters constraint directly onto slider elements programmatically
+    const sliders = ['input-shower', 'input-laundry', 'input-dishes', 'input-garden', 'input-car'];
+    sliders.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.setAttribute('step', '1');
+    });
+
+    const drinkSlider = document.getElementById('input-drink');
+    if (drinkSlider) drinkSlider.setAttribute('step', '0.5');
 
     updateUIRefreshes();
     renderEvents();
     
-    // Set standard periodic carousel data update intervals
     const facts = [
         "1 kg of beef may require significantly more water than most vegetables—averaging around 15,000 litres!",
         "A leaky faucet expanding at exactly one drop per second sheds up to 11,000 litres of clean fluid annually.",
