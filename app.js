@@ -1258,7 +1258,7 @@ async function calculateFootprint() {
     });
 
     // Update local variables storage states parameters maps
-    appState.userProfile.todayWaterLogged = totalImpactCalculated;
+    appState.userProfile.todayWaterLogged += totalImpactCalculated;
     appState.userProfile.xp += 30; 
     bumpStreak();
     await syncProfile();
