@@ -230,8 +230,8 @@ function handleMealImageUpload(event) {
 }
 
 function renderMealAnalysisResult(data) {
-    const resultsPanel = document.getElementById('result-container');
-    if (!resultsPanel) return;
+    const fontPanel = document.getElementById('result-container');
+    if (!fontPanel) return;
 
     const itemsHTML = (data.items || []).map(item => `
         <div class="meal-result-item">
@@ -243,7 +243,7 @@ function renderMealAnalysisResult(data) {
         </div>
     `).join('');
 
-    resultsPanel.innerHTML = `
+    fontPanel.innerHTML = `
         <div class="result-card">
             <div class="result-header">
                 <h3>Meal Analysis <span class="estimated-badge">AI Estimated</span></h3>
@@ -1257,12 +1257,16 @@ async function calculateFootprint() {
         suggestionsBox.appendChild(card);
     });
 
-    // Update local variables storage states parameters maps
-    appState.userProfile.todayWaterLogged += totalImpactCalculated;
+    // Update local variable states profile metrics mapping seamlessly 
+    // instead of incrementing continuously via += loop metrics
+    await recalculateTodayWaterLogged();
+    appState.userProfile.todayWaterLogged += Math.round(domesticSum);
     appState.userProfile.xp += 30; 
     bumpStreak();
     await syncProfile();
-    await logActivity('footprint_calc', Math.round(totalImpactCalculated), 30, { ai_impact: latestAIMealFootprint });
+    
+    // Explicit clean write profile update targeting domestic calculations independently
+    await logActivity('footprint_calc', Math.round(domesticSum), 30, { ai_impact: latestAIMealFootprint });
     updateUIRefreshes();
 }
 
@@ -1310,7 +1314,7 @@ async function recalculateTodayWaterLogged() {
 
     const { data: logs } = await supabaseClient
         .from('activity_logs')
-        .select('litres')
+        .select('log_type, litres')
         .eq('user_id', currentUserId)
         .gte('created_at', midnight.toISOString())
         .lt('created_at', nextMidnight.toISOString());
@@ -1319,6 +1323,13 @@ async function recalculateTodayWaterLogged() {
         (sum, log) => sum + (log.litres || 0),
         0
     );
+
+    // Pull meal footprint specifically to sync with dashboard requirements instantly on initialization refresh cycles
+    const mealsOnly = (logs || [])
+        .filter(l => l.log_type === 'meal_scan' || l.log_type === 'meal_lookup')
+        .reduce((sum, log) => sum + (log.litres || 0), 0);
+        
+    latestAIMealFootprint = mealsOnly;
 
     appState.userProfile.todayWaterLogged = total;
 }
@@ -1340,6 +1351,10 @@ window.addEventListener('DOMContentLoaded', async () => {
     if (!ok) return; 
     await recalculateTodayWaterLogged();
     updateUIRefreshes();
+    
+    // Trigger local calculation parameters seamlessly on load
+    calculateFootprint();
+
     // Enforce step parameters constraint directly onto slider elements programmatically
     const sliders = ['input-shower', 'input-laundry', 'input-dishes', 'input-garden', 'input-car'];
     sliders.forEach(id => {
