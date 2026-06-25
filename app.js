@@ -230,8 +230,8 @@ function handleMealImageUpload(event) {
 }
 
 function renderMealAnalysisResult(data) {
-    const fontPanel = document.getElementById('result-container');
-    if (!fontPanel) return;
+    const resultsPanel = document.getElementById('result-container');
+    if (!resultsPanel) return;
 
     const itemsHTML = (data.items || []).map(item => `
         <div class="meal-result-item">
@@ -243,7 +243,7 @@ function renderMealAnalysisResult(data) {
         </div>
     `).join('');
 
-    fontPanel.innerHTML = `
+    resultsPanel.innerHTML = `
         <div class="result-card">
             <div class="result-header">
                 <h3>Meal Analysis <span class="estimated-badge">AI Estimated</span></h3>
@@ -1195,9 +1195,10 @@ function triggerMockUpload() {
 }
 
 // Core Analytical Calculations Logic
+// Core Analytical Calculations Logic
 async function calculateFootprint() {
-    // Check if an AI calculation was performed. If so, prioritize its footprint directly!
-    let mealLitres = latestAIMealFootprint ?? 0;
+    // Read the active meal footprint directly from what's tracked in the database state
+    let mealLitres = appState.userProfile.todayWaterLogged || 0;
 
     const showerMins = parseInt(document.getElementById('input-shower').value) || 0;
     const laundryLoads = parseInt(document.getElementById('input-laundry').value) || 0;
@@ -1205,7 +1206,6 @@ async function calculateFootprint() {
     const gardenMins = parseInt(document.getElementById('input-garden').value) || 0;
     const carSessions = parseInt(document.getElementById('input-car').value) || 0;
     
-    // Explicit 0.5 float step metric extraction
     const directDrink = parseFloat(document.getElementById('input-drink').value) || 0;
 
     const showerRate = 9; 
@@ -1215,6 +1215,8 @@ async function calculateFootprint() {
     const carRate = 150; 
 
     const domesticSum = (showerMins * showerRate) + (laundryLoads * laundryRate) + (dishMins * dishRate) + (gardenMins * hoseRate) + (carSessions * carRate) + directDrink;
+    
+    // Combining them for the current visual panel layout display
     const totalImpactCalculated = mealLitres + Math.round(domesticSum);
 
     // Update UI Elements
@@ -1224,50 +1226,47 @@ async function calculateFootprint() {
     document.getElementById('meter-fill').style.height = `${fillPercent}%`;
 
     const suggestionsBox = document.getElementById('ai-suggestions-list');
-    suggestionsBox.innerHTML = "";
+    if (suggestionsBox) {
+        suggestionsBox.innerHTML = "";
+        let feedbackCards = [];
+        if(showerMins > 5) feedbackCards.push("You could conserve approximately 18-36 litres tomorrow by restricting structural shower durations by 2-4 minutes.");
+        if(mealLitres > 1000) feedbackCards.push("Transitioning high footprint AI detected meals to plant-based choices optimizes regional hydro systems.");
+        if(laundryLoads > 0) feedbackCards.push("Consolidating garment cycles strictly into completely full load distributions reduces wastewater downstream processing friction.");
+        
+        if(feedbackCards.length === 0) {
+            feedbackCards.push("Operational profile exhibits excellent compliance boundaries. Continue implementing tracking loops to stabilize surrounding ecosystems.");
+        }
+
+        feedbackCards.forEach(tip => {
+            const card = document.createElement('div');
+            card.className = "suggestion-item";
+            card.innerHTML = `
+                <div class="sug-icon"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
+                <p>${tip}</p>
+            `;
+            suggestionsBox.appendChild(card);
+        });
+    }
 
     const diagnosticTextNode = document.getElementById('impact-evaluation-text');
-    diagnosticTextNode.textContent = `Today's Water Impact: ${totalImpactCalculated} Litres total system parameter profile tracking values loaded.`;
-
-    let feedbackCards = [];
-    if(showerMins > 5) {
-        feedbackCards.push("You could conserve approximately 18-36 litres tomorrow by restricting structural shower durations by 2-4 minutes.");
-    }
-    if(latestAIMealFootprint > 1000) {
-        feedbackCards.push("Transitioning high footprint AI detected meals to plant-based choices optimizes regional hydro systems.");
-    }
-    if(laundryLoads > 0) {
-        feedbackCards.push("Consolidating garment cycles strictly into completely full load distributions reduces wastewater downstream processing friction.");
-    }
-    if(gardenMins > 0) {
-        feedbackCards.push("Consider shifting automated irrigation parameters to cool evening or pre-dawn slots to bypass heavy atmospheric evaporation penalties.");
+    if (diagnosticTextNode) {
+        diagnosticTextNode.textContent = `Today's Water Impact: ${totalImpactCalculated} Litres total system parameter profile tracking values loaded.`;
     }
 
-    if(feedbackCards.length === 0) {
-        feedbackCards.push("Operational profile exhibits excellent compliance boundaries. Continue implementing tracking loops to stabilize surrounding ecosystems.");
-    }
-
-    feedbackCards.forEach(tip => {
-        const card = document.createElement('div');
-        card.className = "suggestion-item";
-        card.innerHTML = `
-            <div class="sug-icon"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
-            <p>${tip}</p>
-        `;
-        suggestionsBox.appendChild(card);
-    });
-
-    // Update local variable states profile metrics mapping seamlessly 
-    // instead of incrementing continuously via += loop metrics
-    await recalculateTodayWaterLogged();
-    appState.userProfile.todayWaterLogged += Math.round(domesticSum);
-    appState.userProfile.xp += 30; 
-    bumpStreak();
-    await syncProfile();
+    // Update UI elements across panels without overwriting our clean meal data state
+    document.getElementById('dash-today-litres').textContent = appState.userProfile.todayWaterLogged;
     
-    // Explicit clean write profile update targeting domestic calculations independently
-    await logActivity('footprint_calc', Math.round(domesticSum), 30, { ai_impact: latestAIMealFootprint });
-    updateUIRefreshes();
+    // Synchronize UI circle animation to mirror profile exactly
+    const circle = document.getElementById('today-progress-circle');
+    if (circle) {
+        const radius = circle.r.baseVal.value;
+        const circumference = radius * 2 * Math.PI;
+        circle.style.strokeDasharray = `${circumference} ${circumference}`;
+        const baselineCap = 500;
+        const percentage = Math.min((appState.userProfile.todayWaterLogged / baselineCap) * 100, 100);
+        const offset = circumference - (percentage / 100) * circumference;
+        circle.style.strokeDashoffset = offset;
+    }
 }
 
 function openInviteModal() {
@@ -1314,7 +1313,7 @@ async function recalculateTodayWaterLogged() {
 
     const { data: logs } = await supabaseClient
         .from('activity_logs')
-        .select('log_type, litres')
+        .select('litres')
         .eq('user_id', currentUserId)
         .gte('created_at', midnight.toISOString())
         .lt('created_at', nextMidnight.toISOString());
@@ -1323,13 +1322,6 @@ async function recalculateTodayWaterLogged() {
         (sum, log) => sum + (log.litres || 0),
         0
     );
-
-    // Pull meal footprint specifically to sync with dashboard requirements instantly on initialization refresh cycles
-    const mealsOnly = (logs || [])
-        .filter(l => l.log_type === 'meal_scan' || l.log_type === 'meal_lookup')
-        .reduce((sum, log) => sum + (log.litres || 0), 0);
-        
-    latestAIMealFootprint = mealsOnly;
 
     appState.userProfile.todayWaterLogged = total;
 }
@@ -1351,10 +1343,6 @@ window.addEventListener('DOMContentLoaded', async () => {
     if (!ok) return; 
     await recalculateTodayWaterLogged();
     updateUIRefreshes();
-    
-    // Trigger local calculation parameters seamlessly on load
-    calculateFootprint();
-
     // Enforce step parameters constraint directly onto slider elements programmatically
     const sliders = ['input-shower', 'input-laundry', 'input-dishes', 'input-garden', 'input-car'];
     sliders.forEach(id => {
