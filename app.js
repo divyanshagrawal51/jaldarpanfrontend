@@ -240,6 +240,27 @@ function renderMealAnalysisResult(data) {
         </div>
     `).join('');
 
+    const swaps = data.swaps || [];
+    const swapsHTML = swaps.length
+        ? swaps.map(s => `
+            <div class="swap-card">
+                <div class="swap-items">
+                    <div class="swap-from">
+                        <span class="swap-food-name">${s.original}</span>
+                        <span class="swap-litres swap-litres-high">${s.originalLitres}L</span>
+                    </div>
+                    <div class="swap-arrow">→</div>
+                    <div class="swap-to">
+                        <span class="swap-food-name">${s.swap}</span>
+                        <span class="swap-litres swap-litres-low">${s.swapLitres}L</span>
+                    </div>
+                </div>
+                <div class="swap-saving">💧 Save ~${s.saving}L</div>
+                <div class="swap-reason">${s.reason}</div>
+            </div>
+        `).join('')
+        : `<div class="swap-empty">✅ Your meal is already relatively water-efficient. Great choices!</div>`;
+
     resultsPanel.innerHTML = `
         <div class="result-card">
             <div class="result-header">
@@ -262,7 +283,14 @@ function renderMealAnalysisResult(data) {
                 </div>
             </div>
             <div class="meal-result-items">${itemsHTML}</div>
-            ${data.summary ? `<div class="meal-result-summary" style="margin-top:12px; font-size:0.9rem; padding:10px; border-radius:6px; background:rgba(255,255,255,0.05);">${data.summary}</div>` : ''}
+            ${data.summary ? `<div class="meal-result-summary" style="margin-top:12px;font-size:0.9rem;padding:10px;border-radius:6px;background:rgba(255,255,255,0.05);">${data.summary}</div>` : ''}
+            <div class="swap-section">
+                <div class="swap-header">
+                    <span class="swap-title">💡 Smarter Swaps</span>
+                    <span class="swap-badge">AI</span>
+                </div>
+                ${swapsHTML}
+            </div>
         </div>
     `;
 }
@@ -743,6 +771,7 @@ function showPage(pageId) {
         }
     });
 
+    // Refresh profile page every time it's opened so meal history is live
     if (pageId === 'profile') {
         renderProfileHeatmaps();
     }
