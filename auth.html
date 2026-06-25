@@ -122,6 +122,40 @@ html,body{height:100%;font-family:'DM Sans',sans-serif;overflow:hidden}
   .panel-right{background:#090f18}
   html,body{overflow:auto}
 }
+
+/* ── MANUAL BASELINE ADJUST ── */
+.adjust-toggle{
+  background:none;border:1px solid rgba(94,201,240,0.25);color:rgba(94,201,240,0.65);
+  font-family:'DM Sans',sans-serif;font-size:0.78rem;font-weight:500;
+  padding:0.38rem 0.9rem;border-radius:50px;cursor:pointer;
+  transition:all 0.18s;margin-top:0.7rem;letter-spacing:0.02em;
+}
+.adjust-toggle:hover{border-color:#5ec9f0;color:#5ec9f0;background:rgba(94,201,240,0.06)}
+.adjust-panel{
+  background:rgba(5,30,55,0.6);border:1px solid rgba(94,201,240,0.14);
+  border-radius:12px;padding:1rem 1.1rem;margin-top:0.9rem;
+  display:none;text-align:left;
+}
+.adjust-panel.open{display:block}
+.adjust-panel-title{font-size:0.7rem;letter-spacing:0.1em;text-transform:uppercase;
+  color:rgba(94,201,240,0.5);margin-bottom:0.9rem;}
+.adj-row{margin-bottom:0.75rem;}
+.adj-row label{display:block;font-size:0.72rem;color:rgba(160,210,240,0.6);
+  font-weight:500;letter-spacing:0.04em;text-transform:uppercase;margin-bottom:0.3rem;}
+.adj-slider-row{display:flex;align-items:center;gap:0.7rem;}
+.adj-slider-row input[type=range]{flex:1;accent-color:#5ec9f0;background:transparent;border:none;padding:0;height:auto;}
+.adj-val{font-family:'Syne',sans-serif;font-weight:700;font-size:0.9rem;color:#5ec9f0;min-width:54px;text-align:right;}
+.adj-breakdown{display:grid;grid-template-columns:1fr 1fr 1fr;gap:0.5rem;margin:0.9rem 0 0.5rem;}
+.adj-mini{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);
+  border-radius:8px;padding:0.45rem 0.6rem;text-align:center;}
+.adj-mini-label{font-size:0.65rem;color:rgba(160,210,240,0.45);text-transform:uppercase;letter-spacing:0.06em;}
+.adj-mini-val{font-family:'Syne',sans-serif;font-size:0.85rem;font-weight:700;color:rgba(94,201,240,0.8);margin-top:0.15rem;}
+.adj-hint{font-size:0.7rem;color:rgba(160,200,230,0.35);margin-bottom:0.8rem;line-height:1.5;}
+.adj-save{width:100%;padding:0.6rem;background:rgba(94,201,240,0.15);
+  border:1px solid rgba(94,201,240,0.3);color:#5ec9f0;
+  font-family:'DM Sans',sans-serif;font-size:0.85rem;font-weight:600;
+  border-radius:8px;cursor:pointer;transition:all 0.18s;}
+.adj-save:hover{background:rgba(94,201,240,0.25);}
 </style>
 </head>
 <body>
@@ -339,12 +373,70 @@ html,body{height:100%;font-family:'DM Sans',sans-serif;overflow:hidden}
             We've estimated your baseline water footprint.<br>
             Start logging to see it in action.
           </p>
-          <div style="background:rgba(94,201,240,0.08);border:1px solid rgba(94,201,240,0.18);border-radius:14px;padding:1.2rem;margin-bottom:2rem;">
+          <div style="background:rgba(94,201,240,0.08);border:1px solid rgba(94,201,240,0.18);border-radius:14px;padding:1.2rem;margin-bottom:0.6rem;">
             <div style="font-size:0.72rem;letter-spacing:0.12em;text-transform:uppercase;color:rgba(94,201,240,0.6);margin-bottom:0.5rem;">Your estimated baseline</div>
             <div id="display-baseline-val" style="font-family:'Syne',sans-serif;font-size:2.2rem;font-weight:800;color:#5ec9f0;letter-spacing:-0.02em;">~1,580 <span style="font-size:1rem;font-weight:300;color:rgba(160,220,240,0.6)">L/day</span></div>
             <div id="display-baseline-sub" style="font-size:0.78rem;color:rgba(160,200,230,0.5);margin-top:0.3rem;">Rajasthan average · based on your profile</div>
+            <!-- manual adjust toggle -->
+            <button class="adjust-toggle" onclick="toggleAdjustPanel()">✏️ Adjust manually</button>
           </div>
-          <button class="btn-submit" onclick="window.location.href='dashboard.html'">Go to my dashboard →</button>
+
+          <!-- Manual adjust panel -->
+          <div class="adjust-panel" id="adjust-panel">
+            <div class="adjust-panel-title">Set your own daily target</div>
+            <div class="adj-hint">
+              Auto-calculated from your profile. Slide to override — your target will be saved.
+              India per-capita avg ≈ 1,700 L/day (IWMI). Urban avg ≈ 600–900 L/day (direct use only).
+            </div>
+
+            <div class="adj-row">
+              <label>Total daily target (L/day)</label>
+              <div class="adj-slider-row">
+                <input type="range" id="adj-total" min="200" max="5000" step="10" value="1580"
+                  oninput="onAdjTotalSlide(this.value)"/>
+                <div class="adj-val" id="adj-total-val">1,580 L</div>
+              </div>
+            </div>
+
+            <div class="adj-row">
+              <label>Direct use — drinking, bathing, cleaning (L/day)</label>
+              <div class="adj-slider-row">
+                <input type="range" id="adj-direct" min="30" max="500" step="5" value="150"
+                  oninput="onAdjPartialSlide()"/>
+                <div class="adj-val" id="adj-direct-val">150 L</div>
+              </div>
+            </div>
+
+            <div class="adj-row">
+              <label>Food virtual water — embedded in what you eat (L/day)</label>
+              <div class="adj-slider-row">
+                <input type="range" id="adj-food" min="100" max="3000" step="10" value="900"
+                  oninput="onAdjPartialSlide()"/>
+                <div class="adj-val" id="adj-food-val">900 L</div>
+              </div>
+            </div>
+
+            <div class="adj-breakdown">
+              <div class="adj-mini">
+                <div class="adj-mini-label">Direct</div>
+                <div class="adj-mini-val" id="adj-pct-direct">—</div>
+              </div>
+              <div class="adj-mini">
+                <div class="adj-mini-label">Food</div>
+                <div class="adj-mini-val" id="adj-pct-food">—</div>
+              </div>
+              <div class="adj-mini">
+                <div class="adj-mini-label">Regional</div>
+                <div class="adj-mini-val" id="adj-pct-regional">—</div>
+              </div>
+            </div>
+
+            <button class="adj-save" id="adj-save-btn" onclick="saveManualBaseline()">💾 Save this target</button>
+          </div>
+
+          <div style="margin-top:1rem">
+            <button class="btn-submit" onclick="window.location.href='dashboard.html'">Go to my dashboard →</button>
+          </div>
         </div>
       </div>
 
@@ -613,8 +705,119 @@ async function finishOnboarding() {
   document.getElementById('display-baseline-val').innerHTML = `~${calculatedBaseline.toLocaleString('en-IN')} <span style="font-size:1rem;font-weight:300;color:rgba(160,220,240,0.6)">L/day</span>`;
   document.getElementById('display-baseline-sub').textContent = `${state} · ${dietLabel[diet] || diet} diet · ${residence_type.toLowerCase()}`;
 
+  // Seed the manual adjust panel with computed values
+  initAdjustPanel(calculatedBaseline, directBase, virtualWater);
+
   goTo('screen-done');
 }
+/* ══════════════════════════════════════════
+   MANUAL BASELINE ADJUSTMENT
+══════════════════════════════════════════ */
+// Holds the auto-calculated baseline so adjust panel can seed from it
+var _autoBaseline = 1580;
+var _autoDirectUse = 150;
+var _autoFoodWater = 900;
+
+function initAdjustPanel(baseline, directUse, foodWater) {
+  _autoBaseline  = baseline;
+  _autoDirectUse = Math.round(directUse);
+  _autoFoodWater = Math.round(foodWater);
+
+  var totalSlider   = document.getElementById('adj-total');
+  var directSlider  = document.getElementById('adj-direct');
+  var foodSlider    = document.getElementById('adj-food');
+
+  // Clamp to slider ranges
+  totalSlider.value  = Math.min(5000, Math.max(200, baseline));
+  directSlider.value = Math.min(500, Math.max(30, _autoDirectUse));
+  foodSlider.value   = Math.min(3000, Math.max(100, _autoFoodWater));
+
+  document.getElementById('adj-total-val').textContent  = baseline.toLocaleString('en-IN') + ' L';
+  document.getElementById('adj-direct-val').textContent = _autoDirectUse.toLocaleString('en-IN') + ' L';
+  document.getElementById('adj-food-val').textContent   = _autoFoodWater.toLocaleString('en-IN') + ' L';
+
+  updateAdjBreakdown();
+}
+
+function toggleAdjustPanel() {
+  var panel = document.getElementById('adjust-panel');
+  panel.classList.toggle('open');
+}
+
+function onAdjTotalSlide(val) {
+  var v = parseInt(val);
+  document.getElementById('adj-total-val').textContent = v.toLocaleString('en-IN') + ' L';
+  // Proportionally scale direct + food sub-sliders
+  var ratio = v / _autoBaseline;
+  var newDirect = Math.round(Math.min(500, Math.max(30, _autoDirectUse * ratio)));
+  var newFood   = Math.round(Math.min(3000, Math.max(100, _autoFoodWater * ratio)));
+  document.getElementById('adj-direct').value = newDirect;
+  document.getElementById('adj-food').value   = newFood;
+  document.getElementById('adj-direct-val').textContent = newDirect.toLocaleString('en-IN') + ' L';
+  document.getElementById('adj-food-val').textContent   = newFood.toLocaleString('en-IN') + ' L';
+  updateAdjBreakdown();
+}
+
+function onAdjPartialSlide() {
+  var direct = parseInt(document.getElementById('adj-direct').value);
+  var food   = parseInt(document.getElementById('adj-food').value);
+  document.getElementById('adj-direct-val').textContent = direct.toLocaleString('en-IN') + ' L';
+  document.getElementById('adj-food-val').textContent   = food.toLocaleString('en-IN') + ' L';
+  // Recompute total from parts + regional remainder
+  var regional = Math.max(0, parseInt(document.getElementById('adj-total').value) - _autoDirectUse - _autoFoodWater);
+  var total = direct + food + regional;
+  total = Math.min(5000, Math.max(200, total));
+  document.getElementById('adj-total').value = total;
+  document.getElementById('adj-total-val').textContent = total.toLocaleString('en-IN') + ' L';
+  updateAdjBreakdown();
+}
+
+function updateAdjBreakdown() {
+  var total   = parseInt(document.getElementById('adj-total').value) || 1;
+  var direct  = parseInt(document.getElementById('adj-direct').value) || 0;
+  var food    = parseInt(document.getElementById('adj-food').value) || 0;
+  var regional = Math.max(0, total - direct - food);
+  document.getElementById('adj-pct-direct').textContent  = Math.round(direct  / total * 100) + '%';
+  document.getElementById('adj-pct-food').textContent    = Math.round(food    / total * 100) + '%';
+  document.getElementById('adj-pct-regional').textContent = Math.round(regional / total * 100) + '%';
+}
+
+async function saveManualBaseline() {
+  var newBaseline = parseInt(document.getElementById('adj-total').value);
+  if (!newBaseline || newBaseline < 200) { alert('Please set a valid baseline (min 200 L/day).'); return; }
+
+  var btn = document.getElementById('adj-save-btn');
+  btn.textContent = 'Saving…';
+  btn.disabled = true;
+
+  const { data: { session } } = await supabaseClient.auth.getSession();
+  if (!session) { alert('Session expired.'); return; }
+
+  const { error } = await supabaseClient
+    .from('profiles')
+    .update({ water_baseline: newBaseline })
+    .eq('id', session.user.id);
+
+  if (error) {
+    btn.textContent = '💾 Save this target';
+    btn.disabled = false;
+    alert('Failed to save: ' + error.message);
+    return;
+  }
+
+  // Update the displayed baseline card
+  document.getElementById('display-baseline-val').innerHTML =
+    `~${newBaseline.toLocaleString('en-IN')} <span style="font-size:1rem;font-weight:300;color:rgba(160,220,240,0.6)">L/day</span>`;
+  document.getElementById('display-baseline-sub').textContent = 'Manually set · your custom target';
+
+  btn.textContent = '✅ Saved!';
+  setTimeout(function(){
+    btn.textContent = '💾 Save this target';
+    btn.disabled = false;
+    document.getElementById('adjust-panel').classList.remove('open');
+  }, 1800);
+}
+
 /* ══════════════════════════════════════════
    SCREEN NAVIGATION
 ══════════════════════════════════════════ */
