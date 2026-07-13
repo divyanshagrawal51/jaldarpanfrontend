@@ -296,7 +296,7 @@ function renderMealAnalysisResult(data) {
 }
 
 async function analyzeMeal() {
-    const isImageMode = document.getElementById('meal-mode-image').style.display !== 'none';
+    const isImageMode = document.getElementById('btn-mode-image').classList.contains('active');
 
     let body;
     if (isImageMode) {
@@ -600,9 +600,15 @@ function getISOWeekKey(d) {
     return `${date.getUTCFullYear()}-${week}`;
 }
 
+function localDateStr(d) {
+    // Local calendar date (not UTC) so this always agrees with
+    // recalculateTodayWaterLogged() and the user's own clock/timezone.
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+}
+
 async function applyPeriodicResets(profile) {
     const today = new Date();
-    const todayStr = today.toISOString().slice(0, 10); 
+    const todayStr = localDateStr(today);
     const profileUpdates = {};
     let resetTypes = [];
 
@@ -613,19 +619,34 @@ async function applyPeriodicResets(profile) {
         appState.userProfile.todayWaterLogged = 0;
     }
 
-    const lastWeekDate = new Date(profile.last_weekly_reset + 'T00:00:00Z');
+    const lastWeekDate = new Date(profile.last_weekly_reset + 'T00:00:00');
     if (getISOWeekKey(lastWeekDate) !== getISOWeekKey(today)) {
         resetTypes.push('weekly');
         profileUpdates.last_weekly_reset = todayStr;
     }
 
-    const lastMonthDate = new Date(profile.last_monthly_reset + 'T00:00:00Z');
-    if (lastMonthDate.getUTCFullYear() !== today.getFullYear() || lastMonthDate.getUTCMonth() !== today.getMonth()) {
+    const lastMonthDate = new Date(profile.last_monthly_reset + 'T00:00:00');
+    if (lastMonthDate.getFullYear() !== today.getFullYear() || lastMonthDate.getMonth() !== today.getMonth()) {
         resetTypes.push('monthly');
         profileUpdates.last_monthly_reset = todayStr;
     }
 
-    if (resetTypes.length === 0) return;
+    // ── PASSIVE STREAK DECAY ──
+    // bumpStreak() only fires when the user logs an activity, so if someone
+    // just opens the app after a gap without logging anything, the old
+    // streak number silently stays on screen. Correct it here, on load,
+    // instead of waiting for the next log.
+    if (profile.last_active_date) {
+        const lastActive = new Date(profile.last_active_date + 'T00:00:00');
+        const todayLocal = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+        const diffDays = Math.round((todayLocal - lastActive) / 86400000);
+        if (diffDays > 1 && profile.streak !== 0) {
+            appState.userProfile.streak = 0;
+            profileUpdates.streak = 0;
+        }
+    }
+
+    if (resetTypes.length === 0 && Object.keys(profileUpdates).length === 0) return;
 
     const { data: matchingChallenges } = await supabaseClient
         .from('challenges')
@@ -796,7 +817,7 @@ function updateUIRefreshes() {
 
     document.getElementById('hero-username').textContent = profile.username;
     document.getElementById('dash-level-name').textContent = computedLevel;
-    // dash-water-saved element removed from UI
+    document.getElementById('dash-water-saved').textContent = profile.waterSavedMonth.toLocaleString();
     document.getElementById('dash-today-litres').textContent = profile.todayWaterLogged;
 
     const circle = document.getElementById('today-progress-circle');
@@ -969,7 +990,7 @@ async function renderProfileHeatmaps() {
     document.getElementById('profile-rank-display').textContent = getLevelName(appState.userProfile.xp);
     document.getElementById('prof-xp').textContent = appState.userProfile.xp;
     document.getElementById('prof-streak').textContent = appState.userProfile.streak;
-    // prof-saved element removed from UI
+    document.getElementById('prof-saved').textContent = (appState.userProfile.waterSavedMonth / 1000).toFixed(1) + 'k';
     document.getElementById('prof-challenges').textContent = appState.userProfile.challengesCompletedCount;
     document.getElementById('prof-friends').textContent = appState.userProfile.friendsInvitedCount;
 
@@ -1329,7 +1350,9 @@ async function updateProfileSettings() {
     updateUIRefreshes();
 }
 
-// Changed to strictly query logged meal data from activity logs
+// Recalculates today's total from activity_logs so it can never drift
+// from what's actually on the server. Counts every loggable type
+// (meals + quick-logged domestic activities), not meals only.
 async function recalculateTodayWaterLogged() {
     const now = new Date();
     const midnight = new Date(now.getFullYear(), now.getMonth(), now.getDate());
@@ -1342,11 +1365,18 @@ async function recalculateTodayWaterLogged() {
         .gte('created_at', midnight.toISOString())
         .lt('created_at', nextMidnight.toISOString());
 
-    const mealsOnly = (logs || [])
-        .filter(l => l.log_type === 'meal_scan' || l.log_type === 'meal_lookup')
+    const todayTotal = (logs || [])
+        .filter(l => ['meal_scan', 'meal_lookup', 'quick_log'].includes(l.log_type))
         .reduce((sum, log) => sum + (log.litres || 0), 0);
 
-    appState.userProfile.todayWaterLogged = mealsOnly;
+    appState.userProfile.todayWaterLogged = todayTotal;
+
+    // Keep the DB row in sync too, so other reads of this profile
+    // (leaderboard, other devices) don't show the stale number.
+    await supabaseClient
+        .from('profiles')
+        .update({ today_water_logged: todayTotal })
+        .eq('id', currentUserId);
 }
 
 function toggleThemeOverride() {
