@@ -807,18 +807,24 @@ function getLevelName(xp) {
     return "Ocean Hero";
 }
 
+function setText(id, value) {
+    const el = document.getElementById(id);
+    if (el) el.textContent = value;
+}
+
 function updateUIRefreshes() {
     const profile = appState.userProfile;
     const computedLevel = getLevelName(profile.xp);
 
-    document.getElementById('nav-streak').textContent = profile.streak;
-    document.getElementById('nav-xp').textContent = profile.xp;
-    document.getElementById('nav-avatar-img').src = `https://api.dicebear.com/7.x/bottts/svg?seed=${profile.avatarSeed}`;
+    setText('nav-streak', profile.streak);
+    setText('nav-xp', profile.xp);
+    const navAvatar = document.getElementById('nav-avatar-img');
+    if (navAvatar) navAvatar.src = `https://api.dicebear.com/7.x/bottts/svg?seed=${profile.avatarSeed}`;
 
-    document.getElementById('hero-username').textContent = profile.username;
-    document.getElementById('dash-level-name').textContent = computedLevel;
-    document.getElementById('dash-water-saved').textContent = profile.waterSavedMonth.toLocaleString();
-    document.getElementById('dash-today-litres').textContent = profile.todayWaterLogged;
+    setText('hero-username', profile.username);
+    setText('dash-level-name', computedLevel);
+    setText('dash-water-saved', profile.waterSavedMonth.toLocaleString());
+    setText('dash-today-litres', profile.todayWaterLogged);
 
     const circle = document.getElementById('today-progress-circle');
     if (circle) {
@@ -986,13 +992,13 @@ async function renderLeaderboards(filterType = 'veg') {
 }
 
 async function renderProfileHeatmaps() {
-    document.getElementById('profile-name-display').textContent = appState.userProfile.username;
-    document.getElementById('profile-rank-display').textContent = getLevelName(appState.userProfile.xp);
-    document.getElementById('prof-xp').textContent = appState.userProfile.xp;
-    document.getElementById('prof-streak').textContent = appState.userProfile.streak;
-    document.getElementById('prof-saved').textContent = (appState.userProfile.waterSavedMonth / 1000).toFixed(1) + 'k';
-    document.getElementById('prof-challenges').textContent = appState.userProfile.challengesCompletedCount;
-    document.getElementById('prof-friends').textContent = appState.userProfile.friendsInvitedCount;
+    setText('profile-name-display', appState.userProfile.username);
+    setText('profile-rank-display', getLevelName(appState.userProfile.xp));
+    setText('prof-xp', appState.userProfile.xp);
+    setText('prof-streak', appState.userProfile.streak);
+    setText('prof-saved', (appState.userProfile.waterSavedMonth / 1000).toFixed(1) + 'k');
+    setText('prof-challenges', appState.userProfile.challengesCompletedCount);
+    setText('prof-friends', appState.userProfile.friendsInvitedCount);
 
     const profileAvatarDisplay = document.getElementById('profile-avatar-display');
     if (profileAvatarDisplay) {
