@@ -52,7 +52,10 @@
                         <span class="stat-label">Level</span>
                         <span class="stat-val" id="dash-level-name">Stream Protector</span>
                     </div>
-
+                    <div class="mini-stat">
+                        <span class="stat-label">Water Saved (Month)</span>
+                        <span class="stat-val-highlight">💧 <span id="dash-water-saved">3,200</span> L</span>
+                    </div>
                 </div>
             </div>
 
@@ -182,9 +185,9 @@
                         <div class="range-group">
                             <div class="range-labels">
                                 <label>Shower Duration</label>
-                                <span class="range-value"><span id="val-shower">5</span> mins</span>
+                                <span class="range-value"><span id="val-shower">0</span> mins</span>
                             </div>
-                            <input type="range" id="input-shower" min="0" max="30" value="5" oninput="updateRangeVal(this, 'val-shower')">
+                            <input type="range" id="input-shower" min="0" max="30" value="0" oninput="updateRangeVal(this, 'val-shower')">
                         </div>
 
                         <div class="range-group">
@@ -198,9 +201,9 @@
                         <div class="range-group">
                             <div class="range-labels">
                                 <label>Dishwashing (Manual Run Time)</label>
-                                <span class="range-value"><span id="val-dishes">10</span> mins</span>
+                                <span class="range-value"><span id="val-dishes">0</span> mins</span>
                             </div>
-                            <input type="range" id="input-dishes" min="0" max="40" value="10" oninput="updateRangeVal(this, 'val-dishes')">
+                            <input type="range" id="input-dishes" min="0" max="40" value="0" oninput="updateRangeVal(this, 'val-dishes')">
                         </div>
 
                         <div class="range-group">
@@ -222,9 +225,9 @@
                         <div class="range-group">
                             <div class="range-labels">
                                 <label>Direct Drinking Water Intake</label>
-                                <span class="range-value"><span id="val-drink">2</span> Litres</span>
+                                <span class="range-value"><span id="val-drink">0</span> Litres</span>
                             </div>
-                            <input type="range" id="input-drink" min="0" max="8" value="2" step="0.5" oninput="updateRangeVal(this, 'val-drink')">
+                            <input type="range" id="input-drink" min="0" max="8" value="0" step="0.5" oninput="updateRangeVal(this, 'val-drink')">
                         </div>
 
                         <button class="btn btn-primary btn-block" onclick="calculateFootprint()">Process Metrics & Log Entry</button>
@@ -597,6 +600,7 @@
                     <div class="profile-stats-grid">
                         <div class="p-stat"><strong>⭐ <span id="prof-xp">540</span></strong><small>XP</small></div>
                         <div class="p-stat"><strong>🔥 <span id="prof-streak">12</span></strong><small>Streak</small></div>
+                        <div class="p-stat"><strong>💧 <span id="prof-saved">3.2k</span>L</strong><small>Conserved</small></div>
                         <div class="p-stat"><strong>🏆 <span id="prof-challenges">8</span></strong><small>Quests completed</small></div>
                         <div class="p-stat"><strong>👥 <span id="prof-friends">3</span></strong><small>Allies Invited</small></div>
                     </div>
