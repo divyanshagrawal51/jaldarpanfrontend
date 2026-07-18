@@ -2193,181 +2193,113 @@ html, body {
     gap: 5px;
 }
 .mh-log-btn:hover { background: rgba(5,191,219,0.2); }
-/* ── AVATAR PICKER ── */
-.avatar-picker {
-    display: grid;
-    grid-template-columns: repeat(6, 1fr);
-    gap: 8px;
-    margin-top: 6px;
-}
-.avatar-option {
-    width: 100%;
-    aspect-ratio: 1;
-    border-radius: 10px;
-    border: 2px solid rgba(255,255,255,0.08);
-    cursor: pointer;
-    transition: all 0.2s ease;
-    overflow: hidden;
-    background: rgba(255,255,255,0.04);
-    padding: 4px;
-    box-sizing: border-box;
-}
-.avatar-option img {
-    width: 100%;
-    height: 100%;
-    display: block;
-    border-radius: 6px;
-}
-.avatar-option:hover {
-    border-color: rgba(5,191,219,0.5);
-    background: rgba(5,191,219,0.08);
-    transform: scale(1.07);
-}
-.avatar-option.selected {
-    border-color: var(--color-aqua);
-    background: rgba(5,191,219,0.15);
-    box-shadow: 0 0 0 3px rgba(5,191,219,0.25);
-}
-
-/* ── SWAP SUGGESTIONS ── */
+/* ── SMARTER SWAPS (AI swap suggestions) ── */
 .swap-section {
-    text-align: left;
-    margin-top: 18px;
-    border-top: 1px solid rgba(255,255,255,0.07);
-    padding-top: 14px;
+    margin-top: 16px;
 }
 .swap-header {
     display: flex;
     align-items: center;
     gap: 8px;
-    margin-bottom: 12px;
+    margin-bottom: 10px;
 }
 .swap-title {
-    font-size: 0.92rem;
-    font-weight: 600;
-    color: var(--color-aqua);
+    font-weight: 700;
+    color: var(--text-main);
+    font-size: 0.95rem;
 }
 .swap-badge {
-    font-size: 0.62rem;
+    font-size: 0.65rem;
     font-weight: 700;
-    letter-spacing: 0.08em;
-    background: rgba(5,191,219,0.15);
     color: var(--color-aqua);
+    background: rgba(5,191,219,0.12);
     border: 1px solid rgba(5,191,219,0.3);
-    border-radius: 4px;
-    padding: 1px 6px;
-}
-.swap-loading {
-    font-size: 0.82rem;
-    color: var(--text-muted);
-    padding: 6px 0;
-    display: flex;
-    align-items: center;
-    gap: 8px;
+    padding: 2px 8px;
+    border-radius: 50px;
 }
 .swap-card {
-    background: rgba(5,191,219,0.05);
-    border: 1px solid rgba(5,191,219,0.15);
-    border-radius: 10px;
-    padding: 11px 13px;
-    margin-bottom: 9px;
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-md);
+    padding: 14px 16px;
+    margin-bottom: 12px;
 }
 .swap-items {
     display: flex;
     align-items: center;
-    gap: 8px;
-    flex-wrap: wrap;
-    margin-bottom: 6px;
+    gap: 10px;
+    width: 100%;
 }
 .swap-from, .swap-to {
     display: flex;
-    align-items: center;
-    gap: 6px;
-    flex: 1;
-    min-width: 0;
+    flex-direction: column;
+    gap: 4px;
+    flex: 1 1 0;
+    min-width: 0; /* critical: lets long names wrap instead of overflowing a flex child */
 }
 .swap-food-name {
-    font-size: 0.85rem;
-    font-weight: 500;
-    color: var(--text-primary);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-.swap-arrow {
-    font-size: 1rem;
-    color: var(--color-aqua);
-    flex-shrink: 0;
+    font-weight: 600;
+    color: var(--text-main);
+    font-size: 0.9rem;
+    line-height: 1.3;
+    white-space: normal;
+    overflow-wrap: break-word;
+    word-break: break-word;
 }
 .swap-litres {
-    font-size: 0.75rem;
+    display: inline-block;
+    width: fit-content;
+    font-size: 0.7rem;
     font-weight: 700;
-    border-radius: 4px;
-    padding: 1px 6px;
-    flex-shrink: 0;
+    padding: 2px 8px;
+    border-radius: 50px;
 }
 .swap-litres-high {
-    background: rgba(248,113,113,0.12);
-    color: #f87171;
+    background: rgba(255,71,87,0.12);
+    color: #ff4757;
+    border: 1px solid rgba(255,71,87,0.3);
 }
 .swap-litres-low {
-    background: rgba(74,222,128,0.12);
-    color: #4ade80;
+    background: rgba(46,213,115,0.12);
+    color: #2ed573;
+    border: 1px solid rgba(46,213,115,0.3);
+}
+.swap-arrow {
+    flex-shrink: 0;
+    color: var(--color-aqua);
+    font-size: 1.1rem;
+    align-self: center;
 }
 .swap-saving {
-    font-size: 0.78rem;
+    margin-top: 10px;
+    font-size: 0.85rem;
     font-weight: 600;
-    color: #38bdf8;
-    margin-bottom: 4px;
+    color: var(--color-aqua);
 }
 .swap-reason {
-    font-size: 0.78rem;
+    margin-top: 4px;
+    font-size: 0.8rem;
     color: var(--text-muted);
     line-height: 1.4;
 }
 .swap-empty {
-    font-size: 0.82rem;
+    font-size: 0.85rem;
     color: var(--text-muted);
-    padding: 4px 0;
-}
-.didyouknowbtn {
-    width: 100%;
-    padding: 14px 20px;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-
-    background: linear-gradient(
-        90deg,
-        #22c7e6 0%,
-        #19b8d8 50%,
-        #15abc9 100%
-    );
-
-    color: #071c24;
-    font-size: 1rem;
-    font-weight: 600;
-
-    border: none;
-    border-radius: 16px;
-    cursor: pointer;
-
-    box-shadow:
-        0 4px 12px rgba(34, 199, 230, 0.25),
-        inset 0 1px 0 rgba(255, 255, 255, 0.15);
-
-    transition: all 0.25s ease;
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-md);
+    padding: 14px 16px;
+    text-align: center;
 }
 
-.didyouknowbtn:hover {
-    transform: translateY(-1px);
-    box-shadow:
-        0 6px 18px rgba(34, 199, 230, 0.35),
-        inset 0 1px 0 rgba(255, 255, 255, 0.2);
-}
-
-.didyouknowbtn:active {
-    transform: translateY(0);
+@media (max-width: 480px) {
+    .swap-items {
+        flex-wrap: wrap;
+    }
+    .swap-from, .swap-to {
+        flex: 1 1 100%;
+    }
+    .swap-arrow {
+        display: none;
+    }
 }
