@@ -2331,3 +2331,39 @@ html, body {
         transform: rotate(90deg);
     }
 }
+
+/* ── AVATAR PICKER (Profile settings) ── */
+.avatar-picker {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(64px, 1fr));
+    gap: 12px;
+    margin-top: 12px;
+    max-width: 480px;
+}
+.avatar-option {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    overflow: hidden;
+    cursor: pointer;
+    border: 2px solid transparent;
+    background: var(--glass-bg);
+    transition: var(--transition-smooth);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.avatar-option img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+}
+.avatar-option:hover {
+    border-color: rgba(5,191,219,0.4);
+    transform: scale(1.05);
+}
+.avatar-option.selected {
+    border-color: var(--color-aqua);
+    box-shadow: 0 0 0 2px rgba(5,191,219,0.25);
+}
