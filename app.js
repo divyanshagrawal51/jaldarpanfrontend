@@ -665,16 +665,27 @@ async function applyPeriodicResets(profile) {
     await supabaseClient.from('profiles').update(profileUpdates).eq('id', currentUserId);
 }
 
-async function loadAppState() {
-    const {
-        data: { session },
-        } = await supabaseClient.auth.getSession();
+async function getSessionWithRetry(maxAttempts = 5, delayMs = 300) {
+    // Right after a Google OAuth redirect back to this page, supabase-js needs a
+    // moment to parse the auth tokens out of the URL and persist the session.
+    // A single getSession() call on the very first tick can still see `null`
+    // even though the user IS logged in, which used to bounce us back to
+    // auth.html and force a second login. Retry briefly before giving up.
+    for (let attempt = 0; attempt < maxAttempts; attempt++) {
+        const { data: { session } } = await supabaseClient.auth.getSession();
+        if (session) return session;
+        await new Promise(resolve => setTimeout(resolve, delayMs));
+    }
+    return null;
+}
 
-        if (!session) {
-        setTimeout(() => {
-            window.location.href = "auth.html";
-        }, 1000);
-        }
+async function loadAppState() {
+    const session = await getSessionWithRetry();
+
+    if (!session) {
+        window.location.href = "auth.html";
+        return false;
+    }
     currentUserId = session.user.id;
 
     const { data: profile, error: profileErr } = await supabaseClient
