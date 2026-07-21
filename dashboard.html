@@ -153,12 +153,50 @@
 
                         <!-- IMAGE MODE -->
                         <div id="meal-mode-image" style="display:none">
-                            <input type="file" id="food-image" accept="image/*" style="display:none" onchange="handleMealImageUpload(event)"/>
-                            <div class="upload-box" onclick="document.getElementById('food-image').click()">
-                                <i class="fa-solid fa-cloud-arrow-up"></i>
-                                <span id="upload-status">Drop or Click to Upload Meal Image</span>
+
+                            <!-- Camera Input -->
+                            <input
+                                type="file"
+                                id="camera-input"
+                                accept="image/*"
+                                capture="environment"
+                                style="display:none"
+                                onchange="handleMealImageUpload(event)"
+                            />
+
+                            <!-- Gallery Input -->
+                            <input
+                                type="file"
+                                id="gallery-input"
+                                accept="image/*"
+                                style="display:none"
+                                onchange="handleMealImageUpload(event)"
+                            />
+
+                            <div style="display:flex; gap:12px; flex-wrap:wrap;">
+
+                                <div class="upload-box"
+                                    onclick="document.getElementById('camera-input').click()"
+                                    style="flex:1;">
+                                    <i class="fa-solid fa-camera"></i>
+                                    <span>Take Photo</span>
+                                </div>
+
+                                <div class="upload-box"
+                                    onclick="document.getElementById('gallery-input').click()"
+                                    style="flex:1;">
+                                    <i class="fa-solid fa-image"></i>
+                                    <span>Choose from Gallery</span>
+                                </div>
+
                             </div>
-                            <img id="meal-image-preview" style="display:none;width:100%;border-radius:10px;margin-top:0.75rem;max-height:200px;object-fit:cover;" alt="Meal preview"/>
+
+                            <img
+                                id="meal-image-preview"
+                                style="display:none;width:100%;border-radius:10px;margin-top:0.75rem;max-height:200px;object-fit:cover;"
+                                alt="Meal preview"
+                            />
+
                         </div>
 
                         <button class="btn btn-primary btn-block" id="meal-analyze-btn" style="margin-top:1.25rem" onclick="analyzeMeal()">
