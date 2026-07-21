@@ -732,25 +732,9 @@ document.querySelectorAll('.field input, .field select').forEach(inp=>{
    - onboarding_completed = true  → go to dashboard
    - onboarding_completed = false / no profile row yet → go to onboarding step 1
 ══════════════════════════════════════════ */
-async function getSessionWithRetry(maxAttempts = 5, delayMs = 300) {
-  // If we land here because dashboard.html bounced us back (its session check
-  // hadn't settled yet), this page's own supabase client may still be a beat
-  // behind reading the session from storage. Retry briefly before concluding
-  // the user really isn't logged in — otherwise they get stuck on the login
-  // screen and have to click "Continue with Google" again.
-  for (let attempt = 0; attempt < maxAttempts; attempt++) {
-    const { data: { session } } = await supabaseClient.auth.getSession();
-    if (session) return session;
-    await new Promise(resolve => setTimeout(resolve, delayMs));
-  }
-  return null;
-}
-
-let _sessionRouted = false;
-
-async function routeIfLoggedIn(session) {
-  if (!session || _sessionRouted) return;
-  _sessionRouted = true;
+(async function checkSessionOnLoad() {
+  const { data: { session } } = await supabaseClient.auth.getSession();
+  if (!session) return; // Not logged in — show login screen normally
 
   const userId = session.user.id;
 
@@ -767,18 +751,6 @@ async function routeIfLoggedIn(session) {
 
   // New user or incomplete onboarding — jump straight to profile setup
   goTo('screen-profile-1');
-}
-
-// Backstop: if the session only finishes settling after our retries give up
-// (slow network, etc.), catch it here instead of leaving the user stuck on
-// the login screen.
-supabaseClient.auth.onAuthStateChange((_event, session) => {
-  routeIfLoggedIn(session);
-});
-
-(async function checkSessionOnLoad() {
-  const session = await getSessionWithRetry();
-  await routeIfLoggedIn(session);
 })();
 </script>
 </body>
