@@ -666,11 +666,15 @@ async function applyPeriodicResets(profile) {
 }
 
 async function loadAppState() {
-    const { data: { session } } = await supabaseClient.auth.getSession();
-    if (!session) {
-        window.location.href = 'auth.html';
-        return false;
-    }
+    const {
+        data: { session },
+        } = await supabaseClient.auth.getSession();
+
+        if (!session) {
+        setTimeout(() => {
+            window.location.href = "auth.html";
+        }, 1000);
+        }
     currentUserId = session.user.id;
 
     const { data: profile, error: profileErr } = await supabaseClient
