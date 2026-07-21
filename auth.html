@@ -732,8 +732,23 @@ document.querySelectorAll('.field input, .field select').forEach(inp=>{
    - onboarding_completed = true  → go to dashboard
    - onboarding_completed = false / no profile row yet → go to onboarding step 1
 ══════════════════════════════════════════ */
+async function getSessionWithRetry(maxAttempts = 5, delayMs = 300) {
+  // Right after a Google OAuth redirect back to this page, supabase-js needs a
+  // moment to parse the auth tokens out of the URL and persist the session.
+  // A single getSession() call on the very first tick can still see `null`
+  // even though the user IS logged in, which used to leave the login screen
+  // showing and force a second click on "Continue with Google". Retry briefly
+  // before giving up (same fix as getSessionWithRetry() in app.js).
+  for (let attempt = 0; attempt < maxAttempts; attempt++) {
+    const { data: { session } } = await supabaseClient.auth.getSession();
+    if (session) return session;
+    await new Promise(resolve => setTimeout(resolve, delayMs));
+  }
+  return null;
+}
+
 (async function checkSessionOnLoad() {
-  const { data: { session } } = await supabaseClient.auth.getSession();
+  const session = await getSessionWithRetry();
   if (!session) return; // Not logged in — show login screen normally
 
   const userId = session.user.id;
