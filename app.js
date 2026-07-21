@@ -668,13 +668,13 @@ async function applyPeriodicResets(profile) {
 async function loadAppState() {
     const {
         data: { session },
-    } = await supabaseClient.auth.getSession();
+        } = await supabaseClient.auth.getSession();
 
-    if (!session) {
-        window.location.href = "auth.html";
-        return false;
-    }
-
+        if (!session) {
+        setTimeout(() => {
+            window.location.href = "auth.html";
+        }, 1000);
+        }
     currentUserId = session.user.id;
 
     const { data: profile, error: profileErr } = await supabaseClient
@@ -1401,12 +1401,8 @@ function toggleThemeOverride() {
 
 // Initialization Entry Vector
 window.addEventListener('DOMContentLoaded', async () => {
-    await supabaseClient.auth.exchangeCodeForSession();
-
     const ok = await loadAppState();
-    if (ok) {
-        initializeUI();
-    }
+    if (!ok) return; 
     await recalculateTodayWaterLogged();
     updateUIRefreshes();
     calculateFootprint();
